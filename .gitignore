@@ -1,0 +1,10 @@
+# Large binary files — PDFs are cached locally, re-downloadable via url: in wiki frontmatter
+papers/
+assets/
+
+# Obsidian workspace files
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# OS files
+.DS_Store

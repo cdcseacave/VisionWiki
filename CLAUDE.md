@@ -19,12 +19,12 @@ VisionWiki/
 ├── index.md               # content-oriented catalog of every wiki page
 ├── log.md                 # chronological append-only activity log
 ├── raw/                   # INBOX — drop anything here, emptied on ingest (see §1.1)
-├── papers/                # permanent store: research papers, PDFs (see §1.2)
+├── papers/                # LOCAL CACHE (git-ignored): PDFs, re-downloadable via url: (see §1.2)
 │   ├── radiance-fields/   # example subfolder — see §1.2 for taxonomy
 │   ├── feature-matching/
 │   └── ...
 ├── articles/              # permanent store: blog posts, web articles, notes (see §1.3)
-├── assets/                # permanent store: images, figures, diagrams (see §1.4)
+├── assets/                # LOCAL CACHE (git-ignored): images, figures, diagrams (see §1.4)
 └── wiki/                  # LLM-authored, constantly-maintained knowledge base
     ├── papers/            # one page per ingested paper (the "source summary")
     ├── methods/           # algorithms, architectures, techniques (e.g. `3d-gaussian-splatting.md`)
@@ -52,9 +52,21 @@ there are unprocessed sources waiting. This is the primary signal to the user
 
 ### 1.2 Paper storage (`papers/`)
 
-The top-level `papers/` directory holds all collected source papers (PDFs,
-markdown clippings, arXiv HTML exports). The LLM manages this folder — it
-downloads, renames, and organizes papers here.
+The top-level `papers/` directory is a **local cache** of source papers (PDFs,
+markdown clippings, arXiv HTML exports). It is **not committed to git** (listed
+in `.gitignore`) because PDFs are large and binary. The wiki pages in
+`wiki/papers/` *are* committed — they contain the `url:` field that allows
+any clone to re-download the original paper on demand.
+
+The LLM manages this folder — it downloads, renames, and organizes papers here.
+
+**Cache behavior**: when reading a paper (for ingest or query), if the local
+file at `local_paper:` is missing but `url:` exists in the wiki page's
+frontmatter, download the paper from the URL first:
+- arXiv URLs: `curl -L -o <local_paper_path> https://arxiv.org/pdf/<id>`
+- Other URLs: `curl -L -o <local_paper_path> <url>`
+Then proceed normally. This makes the wiki portable — clone the repo, and
+papers are fetched on first access.
 
 **Naming convention**: `<FirstAuthor>_<Year>_<Short-Title>.<ext>`
 - lowercase, kebab-case for the short title
@@ -118,6 +130,8 @@ tags: [nerf, differentiable-rendering, ...]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 sources: [papers/kerbl2023_3dgs.md, papers/mildenhall2020_nerf.md]
+local_paper: papers/<subfolder>/<filename>.pdf   # paper pages only
+url: https://arxiv.org/abs/XXXX.XXXXX            # paper pages only — external URL
 status: stub | draft | stable | contested
 ---
 ```
@@ -139,6 +153,8 @@ status: stub | draft | stable | contested
 
 **Paper page** (`wiki/papers/<key>.md`):
 ```markdown
+📄 [Full paper](../../papers/<subfolder>/<filename>.pdf) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX)
+
 ## TL;DR
 One paragraph. What is the contribution in one breath?
 
@@ -238,6 +254,12 @@ After acquiring:
 
 #### Step 1 — Read the source
 
+**Cache check**: if the local file at `local_paper:` does not exist but the
+wiki page has a `url:` field, download the paper first:
+- arXiv: `curl -L -o <local_paper_path> https://arxiv.org/pdf/<id>`
+- Other: `curl -L -o <local_paper_path> <url>`
+Create any missing subdirectories under `papers/` before downloading.
+
 Read the source fully. For PDFs, read all pages. For arXiv markdown,
 read the whole file. Don't skim.
 
@@ -250,14 +272,20 @@ emphasize anything before you commit edits.
 #### Step 3 — Write the paper page
 
 Create `wiki/papers/<key>.md` using the paper template from §2. In the
-frontmatter, add a `local_paper:` field pointing to the local file:
+frontmatter, add `local_paper:` and `url:` fields:
 
 ```yaml
 local_paper: papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf
+url: https://arxiv.org/abs/2308.14737
 ```
 
-In the body, include a link to the local paper at the top:
-`📄 [Full paper](../../papers/<subfolder>/<filename>)`
+In the body, include links to both the local paper and the external URL at the top:
+`📄 [Full paper](../../papers/<subfolder>/<filename>) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX)`
+
+**Finding the URL**: if the user provides a URL, use it. If the paper was
+dropped as a local file, search the web for the paper title + "arXiv" to find
+the canonical URL. If no URL can be found, omit the `url:` field and the
+arXiv link — don't guess.
 
 #### Step 4 — Cascade updates
 
@@ -303,6 +331,8 @@ When the user asks a question:
 
 1. **Read `index.md` first** to locate relevant pages. Then read those pages.
    Don't grep the raw sources unless the wiki clearly doesn't cover it.
+   If you need to read a source paper and the local file is missing, use
+   the cache-check from Step 1 of §3.1 to download it first.
 2. **Answer with citations** using relative links to paper/method pages.
 3. **If the wiki is insufficient**, say so explicitly: "the wiki doesn't
    cover X — want me to ingest a source on it?"

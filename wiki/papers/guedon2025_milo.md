@@ -1,0 +1,62 @@
+---
+title: "MILo: Mesh-In-the-Loop Gaussian Splatting for Detailed and Efficient Surface Reconstruction"
+type: paper
+tags: [gaussian-splatting, mesh-extraction, delaunay-triangulation, surface-reconstruction, differentiable-rendering]
+created: 2026-04-12
+updated: 2026-04-12
+sources: []
+local_paper: papers/mesh-reconstruction/guedon_2025_milo.pdf
+url: https://arxiv.org/abs/2506.24096
+status: draft
+---
+
+📄 [Full paper](../../papers/mesh-reconstruction/guedon_2025_milo.pdf) · [arXiv](https://arxiv.org/abs/2506.24096)
+
+## TL;DR
+
+MILo introduces a fully differentiable mesh-in-the-loop framework for [[3d-gaussian-splatting]] that constructs a mesh at every training iteration directly from Gaussian parameters via Delaunay triangulation. This produces compact, high-fidelity meshes with an order of magnitude fewer vertices than prior methods, while achieving state-of-the-art surface reconstruction quality on Tanks and Temples and competitive results on DTU.
+
+## Problem
+
+Current Gaussian Splatting methods extract surfaces through costly post-processing steps (e.g., [[TSDF]] fusion, [[marching-cubes]]), resulting in loss of fine geometric details or very dense meshes with millions of vertices. The a posteriori conversion from volumetric to surface representation fundamentally limits the final mesh's ability to preserve all geometric structures captured during training. Existing meshes are also too heavy for practical downstream applications like physics simulation and animation.
+
+## Method
+
+MILo introduces three key technical contributions:
+
+1. **Bidirectional Consistency Framework**: Ensures both Gaussians and the extracted mesh capture the same underlying geometry during training. Gradient backpropagation flows from mesh losses directly to Gaussian parameters.
+
+2. **Adaptive Mesh Extraction via Gaussian Pivots**: At each training iteration, uses Gaussians as differentiable pivots for [[delaunay-triangulation]]. The mesh vertices and connectivity are constructed directly from Gaussian parameters, enabling end-to-end differentiable mesh optimization.
+
+3. **SDF from Gaussians**: A novel method for computing signed distance values from 3D Gaussians that enables precise surface extraction while avoiding geometric erosion.
+
+The method works with any Gaussian splatting backend (demonstrated with RaDe-GS rasterizer). The base model uses 0.1--0.5M Gaussians (up to 10x fewer than competing methods), with a dense variant using 2--4M.
+
+## Results
+
+- **Tanks and Temples**: Best F1-score among all Gaussian-based approaches (dense variant). Achieves high quality with significantly fewer mesh vertices and lower resource requirements.
+- **DTU**: Competitive Chamfer distance with significantly fewer Gaussians and mesh vertices compared to previous approaches.
+- **Mip-NeRF 360 / Deep Blending**: Meshes produce clean, accurate results well-suited for downstream applications.
+- **Efficiency**: Base model requires only 10GB VRAM; dense model up to 17GB on a single RTX 4090.
+- Mesh-Based Novel View Synthesis metric on T&T shows strong correlation with F1-score.
+
+## Why it matters
+
+MILo is a conceptual advance: instead of extracting meshes as a post-processing afterthought, it makes mesh quality a first-class optimization objective during training. The resulting meshes are dramatically lighter (10x fewer vertices) while being more accurate, making them practical for downstream applications like physics simulation, animation, and real-time rendering. This bridges the gap between volumetric and surface representations.
+
+## Relation to prior work
+
+- Builds on [[3d-gaussian-splatting]], specifically using the RaDe-GS codebase.
+- Contrasts with post-hoc extraction methods: [[TSDF]] fusion (used by 2DGS, GOF, PGSR), [[marching-cubes]] (used by SOF, GOF), SuGaR's Poisson reconstruction.
+- Uses [[delaunay-triangulation]] instead of [[marching-cubes]] or [[poisson-reconstruction]] for mesh generation.
+- Compared against GOF, [[2d-gaussian-splatting]], PGSR, RaDe-GS, GS-Pull, VCR-GauS, Neuralangelo, NeuS, VolSDF.
+
+## Open questions / limitations
+
+- The dense variant requires more memory and training time.
+- DTU evaluation focuses on small, object-centric scenes where the mesh-in-the-loop approach has less advantage over simpler methods.
+- Background handling relies on a separate evaluation protocol (Mesh-Based NVS) since no dataset provides ground truth for backgrounds.
+
+## References added to the wiki
+
+- [[guedon2025_milo]] (this page)

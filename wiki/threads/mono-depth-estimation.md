@@ -4,38 +4,58 @@ type: thread
 tags: [depth-estimation, monocular, metric-depth, relative-depth, foundation-model]
 created: 2026-04-12
 updated: 2026-04-12
-sources: []
-status: stub
+sources: [papers/pataki2025_mp-sfm.md, papers/zhong2026_instantsfm.md, papers/li2025_megasam.md, papers/tang2025_dronesplat.md, papers/kim2025_multiview-geometric-gs.md, papers/chebbi2025_multiview-dense-matching.md]
+status: draft
 ---
 
 ## Working hypothesis
-_(to be filled as papers are ingested)_
 
-Monocular depth estimation has gone from a curiosity to a load-bearing
-component in reconstruction pipelines — providing priors for sparse-view
-NeRF/3DGS, initializing MVS, and enabling single-image 3D. This thread tracks:
-
-1. The shift from relative/affine depth to metric depth (ZoeDepth, Metric3D,
-   UniDepth, DepthAnythingV2).
-2. Foundation-model approaches: large-scale pretraining on mixed datasets,
-   zero-shot generalization (Depth Anything, MariGold, Depth Pro).
-3. How mono depth integrates with multi-view methods: as a prior, a
-   regularizer, or an initialization.
-4. Accuracy ceilings: where does monocular depth reliably help, and where
-   does it introduce systematic bias?
-5. Video-consistent depth: temporal stability for dynamic scenes.
+Monocular depth has become a **load-bearing prior** for both classical and
+learned 3D pipelines. It's no longer a standalone task — its value is measured
+by how much it improves downstream SfM, 3DGS, or MVS. The current frontier is
+integrating mono depth without over-constraining the geometry.
 
 ## Evidence
-_(empty — will accumulate as papers are ingested)_
+
+### As SfM prior
+- [MP-SfM (Pataki 2025)](../papers/pataki2025_mp-sfm.md): uses [[Metric3Dv2]]
+  depth + normals to eliminate the three-view overlap requirement. Mono depth
+  makes SfM work on sparse imagery where COLMAP fails.
+- [InstantSfM (Zhong 2026)](../papers/zhong2026_instantsfm.md): depth-constrained
+  Jacobians from mono depth estimates stabilize GPU-native bundle adjustment.
+
+### As 3DGS initialization/regularization
+- [DroneSplat (Tang 2025)](../papers/tang2025_dronesplat.md): MVS-guided
+  voxel optimization uses depth for geometry, but mono depth could substitute
+  in sparse-view drone capture.
+- [Kim 2025](../papers/kim2025_multiview-geometric-gs.md): external MVS depth
+  supervision → SOTA Gaussian surface quality. Shows depth priors (multi-view
+  here, but mono depth is the single-image equivalent) consistently improve
+  Gaussian geometry.
+
+### As dynamic scene enabler
+- [MegaSaM (Li 2025)](../papers/li2025_megasam.md): [[DepthAnything]] provides
+  scale-consistent depth that enables SfM from casual dynamic videos. Mono depth
+  is the glue that makes dynamic scene SfM tractable.
+
+### In MVS pipelines
+- [Chebbi 2025](../papers/chebbi2025_multiview-dense-matching.md): extends
+  stereo similarity learning to multi-view without retraining — adjacent to
+  mono depth in that learned priors replace hand-crafted cost volumes.
 
 ## Open questions
 - Is metric monocular depth accurate enough to replace SfM depth maps for
-  casual capture (phone-scale, ~10–50 images)?
+  casual capture? MP-SfM says yes for sparse views; unclear at scale.
 - Do diffusion-based depth models (MariGold) offer real advantages over
-  discriminative ones (DPT, Depth Anything) for downstream reconstruction?
+  discriminative ones (Depth Anything) for downstream reconstruction?
+  No paper in this batch directly compares them in a reconstruction pipeline.
 - What's the right way to fuse mono depth priors into multi-view optimization
-  without over-constraining the geometry?
+  without over-constraining the geometry? InstantSfM uses depth-constrained
+  Jacobians; MP-SfM uses depth/normal as additional residuals. No consensus.
+- How does mono depth interact with feed-forward methods (DUSt3R predicts its
+  own depth — does adding mono depth priors help or conflict)?
 
 ## Related threads
-- [[feed-forward-structure-from-motion]]
-- [[radiance-field-evolution]]
+- [[feed-forward-structure-from-motion]] — mono depth as prior for SfM
+- [[radiance-field-evolution]] — mono depth for sparse-view 3DGS
+- [[gaussian-to-mesh-pipelines]] — depth supervision improves mesh quality
