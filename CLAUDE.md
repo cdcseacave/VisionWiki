@@ -343,6 +343,11 @@ When the user asks a question:
 
 ### 3.3 Lint
 
+`lint` is the single entry point for wiki health. Bare `lint` diagnoses;
+`lint <action>` fixes a specific category of issues.
+
+#### Bare `lint` — diagnose (read-only)
+
 When the user says "lint" or "health check":
 
 Scan the wiki and report (do not auto-fix — present a list for human approval):
@@ -353,7 +358,51 @@ Scan the wiki and report (do not auto-fix — present a list for human approval)
 - **Broken links**: wikilinks pointing to non-existent pages.
 - **Frontmatter drift**: missing `updated:` dates, empty `sources:`, etc.
 - **Thread debt**: threads not updated in the last N ingests that touched them.
+- **Missing papers**: wiki pages with a `url:` field but no local file at `local_paper:`.
 - **Investigation suggestions**: 3–5 follow-up questions or source hunts.
+
+#### `lint <action>` — targeted fixes
+
+After reviewing a lint report, the user can run `lint <action>` to fix a
+specific category. Each action targets exactly one diagnostic and requires
+user approval before making changes.
+
+| Command | What it fixes | Writes to |
+|---------|---------------|-----------|
+| `lint fetch` | Downloads all missing papers (wiki pages with `url:` but no local file). | `papers/` cache only (wiki-read-only) |
+| `lint frontmatter` | Fills in missing `updated:` dates, empty `sources:` arrays, and other frontmatter drift. | `wiki/` pages |
+| `lint orphans` | Proposes inbound wikilinks for orphan pages. | `wiki/` pages |
+
+New actions can be added as patterns emerge. The contract: **bare `lint` is
+always safe and read-only; `lint <action>` may write but always asks first.**
+
+#### `lint fetch` procedure
+
+1. **Scan** all wiki paper pages (`wiki/papers/**/*.md`) and extract
+   `local_paper:` and `url:` from frontmatter.
+2. **Filter** to papers where `local_paper:` is set, `url:` is set, and
+   the local file does **not** exist on disk.
+3. **Present** a numbered list to the user:
+   _"Found N papers with missing local files. Will download:
+   1. `papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf` ← arXiv 2308.14737
+   2. `papers/sfm-slam/schonberger_2016_sfm.pdf` ← arXiv 1604.03637
+   …"_
+4. On approval, **download** each paper:
+   - Create any missing subdirectories under `papers/`.
+   - arXiv URLs: `curl -fL -o <local_paper_path> https://arxiv.org/pdf/<id>`
+   - Other URLs: `curl -fL -o <local_paper_path> <url>`
+   - Use `-f` so HTTP errors fail the command instead of writing an HTML error page to disk.
+   - If a download fails, delete any partial file at `<local_paper_path>` before moving on.
+5. **Report** results: how many succeeded / failed, and list any failures
+   with their URLs so the user can investigate manually (paywalled, dead link,
+   moved, etc.).
+6. **Append to `log.md`**.
+
+**Notes on `lint fetch`**:
+- Wiki-read-only — never creates, modifies, or deletes wiki pages.
+- Papers without a `url:` field are silently skipped (listed separately in the report so the user can add URLs later).
+- If all local files already present: "All N papers present — nothing to download."
+- **Primary use case**: after a fresh `git clone`, run `lint fetch` to repopulate the `papers/` cache (which is git-ignored) from each wiki page's `url:` field.
 
 ## 4. `index.md` format
 
@@ -382,6 +431,10 @@ consistent prefix so `grep "^## \[" log.md | tail -20` works:
 ## [YYYY-MM-DD] lint
 - Contradictions: 2 · Orphans: 1 · Missing pages: 3 · Stale: 0
 - Followups suggested: see log entry body
+
+## [YYYY-MM-DD] lint fetch
+- Downloaded: N papers (M already present, K failed)
+- Failures: <list of failed URLs if any>
 ```
 
 ## 6. Hard rules
