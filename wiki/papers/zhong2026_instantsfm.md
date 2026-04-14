@@ -42,6 +42,8 @@ The entire pipeline is implemented in PyTorch using sparse-aware GPU operations,
 
 InstantSfM represents the first fully PyTorch-native global SfM system, enabling seamless integration with modern learning pipelines for [[3d-gaussian-splatting]], [[NeRF]], and robotics. The depth-constrained formulation provides a principled way to fuse metric depth into SfM optimization rather than treating it as a post-processing alignment step, which is increasingly relevant as [[monocular-depth-estimation]] models improve.
 
+See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM" story this paper anchors.
+
 ## Relation to prior work
 
 - Extends GPU-accelerated sparse [[bundle-adjustment]] from eager-mode BA (Zhan et al., 2024) into a complete global SfM system.

@@ -1,10 +1,10 @@
 # Large binary files — PDFs are cached locally, re-downloadable via url: in wiki frontmatter
-papers/
-assets/
+# Leading slash anchors the pattern to the repo root; otherwise it would also match wiki/papers/ and wiki/assets/
+/papers/
+/assets/
 
 # Obsidian workspace files
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
+.obsidian/
 
 # OS files
 .DS_Store

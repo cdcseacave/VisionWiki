@@ -33,6 +33,8 @@ quadratic attention costs.
 - [CuSfM (Yu 2025)](../papers/yu2025_cusfm.md): CUDA SfM tailored for
   autonomous driving — multi-camera rig support, extrinsic refinement. Practical
   engineering over novelty.
+- **Deep dive**: see [[gpu-native-sfm]] thread for the full Tier 1 story,
+  including the shared playbook and InstantSfM-vs-CuSfM trade-offs.
 
 ### Tier 2: Classical + learned priors
 - [MP-SfM (Pataki 2025)](../papers/pataki2025_mp-sfm.md): mono depth + normal

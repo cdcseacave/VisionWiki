@@ -1,16 +1,18 @@
 ---
-title: "Confidence-Based Mesh Extraction from 3D Gaussians"
+title: "CoMe: Confidence-Based Mesh Extraction from 3D Gaussians"
+aliases: [CoMe]
 type: paper
 tags: [gaussian-splatting, mesh-extraction, confidence-estimation, surface-reconstruction, appearance-modeling]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-13
 sources: []
 local_paper: papers/mesh-reconstruction/radl_2026_confidence-mesh-3dgs.pdf
 url: https://arxiv.org/abs/2603.24725
+project_page: https://r4dl.github.io/CoMe/
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/radl_2026_confidence-mesh-3dgs.pdf) · [arXiv](https://arxiv.org/abs/2603.24725)
+📄 [Full paper](../../papers/mesh-reconstruction/radl_2026_confidence-mesh-3dgs.pdf) · [arXiv](https://arxiv.org/abs/2603.24725) · [project page](https://r4dl.github.io/CoMe/)
 
 ## TL;DR
 
@@ -60,3 +62,8 @@ This work shows that the key to better mesh extraction from Gaussians is not mor
 ## References added to the wiki
 
 - [[radl2026_confidence-mesh-3dgs]] (this page)
+
+## Implementation
+
+- [[come-integration-nerfstudio]] — design doc for porting CoMe's confidence + variance losses into the local nerfstudio/visiofacto fork
+- [[nerfstudio]] — codebase map the design doc builds against

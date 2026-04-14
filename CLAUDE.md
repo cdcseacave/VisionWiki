@@ -31,7 +31,8 @@ VisionWiki/
     ├── concepts/          # general ideas and primitives (e.g. `bundle-adjustment.md`)
     ├── datasets/          # benchmark + training datasets
     ├── people/            # prolific authors / research groups
-    └── threads/           # evolving syntheses, open questions, comparisons
+    ├── threads/           # evolving syntheses, open questions, comparisons
+    └── designs/           # implementation design documents (concrete "how to build it" plans)
 ```
 
 ### 1.1 Inbox (`raw/`)
@@ -125,7 +126,7 @@ Every wiki page is a markdown file with YAML frontmatter:
 ```yaml
 ---
 title: <canonical title>
-type: paper | method | concept | dataset | person | thread
+type: paper | method | concept | dataset | person | thread | design
 tags: [nerf, differentiable-rendering, ...]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

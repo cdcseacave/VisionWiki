@@ -43,6 +43,8 @@ CuSfM is built around a factor graph optimization framework with several key com
 
 CuSfM addresses the practical gap between general-purpose SfM tools and industrial autonomous driving requirements. By leveraging prior trajectory estimates and multi-camera rig constraints, it provides a robust offline refinement system that bridges visual SLAM output and downstream dense reconstruction (3DGS, NeRF). The open-source PyCuSfM wrapper makes it accessible for research.
 
+See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM" story, and how CuSfM contrasts with [InstantSfM](zhong2026_instantsfm.md) on the generalization-specialization axis.
+
 ## Relation to prior work
 
 - Competes directly with [[COLMAP]] and [[GLOMAP]] but tailored for sequential driving data with prior pose information.

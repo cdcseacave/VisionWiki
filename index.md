@@ -81,10 +81,15 @@ _(empty)_
 
 ## Threads
 - [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, representations, speed/quality tradeoffs · _updated 2026-04-12_
-- [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting usable meshes from Gaussian splats, 4 competing paradigms · _updated 2026-04-12_
+- [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting usable meshes from Gaussian splats, 4 competing paradigms · _updated 2026-04-13_
 - [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — replacing iterative SfM: accelerated classical → hybrid → fully learned · _updated 2026-04-12_
+- [GPU-Native SfM (Tier 1)](wiki/threads/gpu-native-sfm.md) — accelerated classical SfM: InstantSfM vs CuSfM deep dive · _updated 2026-04-12_
 - [Monocular Depth Estimation](wiki/threads/mono-depth-estimation.md) — mono depth as load-bearing prior for SfM/3DGS/MVS · _updated 2026-04-12_
+- [Nerfstudio + gsplat Codebase](wiki/threads/nerfstudio.md) — local visiofacto fork architecture: pipelines, models, gsplat rendering internals · _updated 2026-04-13_
+
+## Designs
+- [CoMe Integration into Nerfstudio/Visiofacto](wiki/designs/come-integration-nerfstudio.md) — implementation blueprint for CoMe's confidence + variance losses · _updated 2026-04-13_
 
 ---
 
-_Last rebuilt: 2026-04-12 · 32 papers, 9 methods, 8 concepts, 4 threads_
+_Last rebuilt: 2026-04-13 · 32 papers, 9 methods, 8 concepts, 6 threads, 1 design_

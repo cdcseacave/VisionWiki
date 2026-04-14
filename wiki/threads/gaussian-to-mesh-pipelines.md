@@ -29,9 +29,10 @@ and C may win long-term (SVRaster, GeoSVR).
   + median-depth relative loss + normal/distortion regularization → SOTA explicit
   surface on DTU/TNT. Key insight: external MVS depth is more reliable than
   Gaussian self-supervision for geometry.
-- [Radl 2026](../papers/radl2026_confidence-mesh-3dgs.md): self-supervised
+- [CoMe (Radl 2026)](../papers/radl2026_confidence-mesh-3dgs.md): self-supervised
   per-Gaussian confidence scores balance photometric vs geometric loss +
-  SSIM-decoupled appearance. Avoids per-scene hyperparameter tuning.
+  SSIM-decoupled appearance model. ~20 min runtime (vs MILo 60 min), SOTA on
+  Tanks & Temples (F1 0.521) and ScanNet++.
 - [Zhu 2025](../papers/zhu2025_gs-discretized-sdf.md): per-Gaussian discretized
   SDF values with learned SDF-to-opacity mapping. Enables both relighting and
   mesh extraction from the same representation.
@@ -88,3 +89,7 @@ and C may win long-term (SVRaster, GeoSVR).
 - [[radiance-field-evolution]]
 - [[feed-forward-structure-from-motion]] — VGG-T3 connects feed-forward 3D to mesh output
 - [[mono-depth-estimation]] — mono depth priors improve Gaussian geometry
+- [[nerfstudio]] — codebase map for the local 3DGS implementation
+
+## Implementation notes
+- [[come-integration-nerfstudio]] — design doc for porting CoMe into the local visiofacto fork
