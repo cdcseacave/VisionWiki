@@ -4,8 +4,8 @@ aliases: [CoMe]
 type: paper
 tags: [gaussian-splatting, mesh-extraction, confidence-estimation, surface-reconstruction, appearance-modeling]
 created: 2026-04-12
-updated: 2026-04-13
-sources: []
+updated: 2026-04-14
+sources: [papers/lin2024_vastgaussian.md]
 local_paper: papers/mesh-reconstruction/radl_2026_confidence-mesh-3dgs.pdf
 url: https://arxiv.org/abs/2603.24725
 project_page: https://r4dl.github.io/CoMe/
@@ -30,7 +30,7 @@ The method introduces several complementary components:
 
 2. **Per-Primitive Variance Losses**: Penalize per-primitive color variance ($\mathcal{L}_{color\text{-}var}$) and normal variance ($\mathcal{L}_{normal\text{-}var}$) across views, constraining every primitive to be aligned with object surfaces and removing spurious geometry.
 
-3. **SSIM-Decoupled Appearance Model**: Decomposes the D-SSIM loss into luminance, contrast, and structure terms ($l \cdot c \cdot s$). The appearance embedding compensates only for luminance, while contrast and structure terms use the original rendered image. This prevents the appearance model from masking geometric errors.
+3. **SSIM-Decoupled Appearance Model**: Refines [VastGaussian](lin2024_vastgaussian.md)'s decoupled appearance module (per-image embedding → CNN transformation map, applied only during training). VastGaussian splits the loss so L1 uses the transformed render and D-SSIM uses the untransformed render. CoMe goes further: it decomposes the D-SSIM loss into luminance, contrast, and structure terms ($l \cdot c \cdot s$) and lets the appearance embedding compensate **only for luminance**, while contrast and structure terms use the original rendered image. This prevents the appearance model from masking geometric errors through structural/contrast adjustments.
 
 Mesh extraction follows the SOF pipeline using [[marching-cubes]] on the opacity field.
 
@@ -50,7 +50,7 @@ This work shows that the key to better mesh extraction from Gaussians is not mor
 - Directly builds on **SOF** ([[radl2025_sof]]) for the base pipeline and mesh extraction.
 - Compares against MILo ([[guedon2025_milo]]), PGSR, QGS, GOF, [[2d-gaussian-splatting]].
 - Contrasts with UA-GS and VCR-GauS which use confidence to balance pseudonormal predictions rather than photometric/geometric losses.
-- Appearance model improves upon VastGaussian's widely adopted appearance embedding.
+- Appearance model improves upon [VastGaussian](lin2024_vastgaussian.md)'s widely adopted appearance embedding — CoMe's SSIM decoupling (luminance vs contrast/structure) is a strict refinement of VastGaussian's L1/D-SSIM split.
 - Uses [[3d-gaussian-splatting]] with [[marching-cubes]] for surface extraction.
 
 ## Open questions / limitations

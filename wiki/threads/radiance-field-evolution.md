@@ -3,8 +3,8 @@ title: Radiance Field Evolution
 type: thread
 tags: [nerf, 3dgs, differentiable-rendering, novel-view-synthesis, sparse-voxels]
 created: 2026-04-11
-updated: 2026-04-12
-sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md]
+updated: 2026-04-14
+sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md]
 status: draft
 ---
 
@@ -37,10 +37,24 @@ rasterization — sidesteps Gaussians entirely while matching their speed.
   (sparse views, dynamic objects, lighting variation).
 
 ### Scaling: outdoor and large scenes
-- [EA-3DGS (Guo 2025)](../papers/guo2025_ea-3dgs.md): tetrahedral mesh init +
-  codebook quantization achieves 5.2x compression for outdoor scenes.
-- [VPGS-SLAM (Deng 2026)](../papers/deng2026_vpgs-slam.md): voxel-based
-  progressive 3DGS SLAM handles large-scale indoor/outdoor with loop closure.
+Three distinct attacks on the same problem — they are orthogonal and could be
+stacked.
+
+- **Spatial partitioning.** [VastGaussian (Lin 2024)](../papers/lin2024_vastgaussian.md)
+  — the *first* real-time 3DGS method for aerial / city-scale scenes. Ground-plane
+  `m × n` partition with airspace-aware visibility (floaters live off the
+  surface, so visibility must cover the full vertical column, not just the
+  surface convex hull). Per-cell parallel training + seamless merge matches or
+  beats Mega-NeRF/Switch-NeRF on SSIM and LPIPS *every scene*, at 170+ FPS
+  and 10× shorter training. Decoupled appearance modeling (per-image CNN
+  transforming the rendered target, not the representation) is the
+  rasterization-compatible successor to NeRF-W's GLO embeddings.
+- **Compression.** [EA-3DGS (Guo 2025)](../papers/guo2025_ea-3dgs.md):
+  tetrahedral mesh init + codebook quantization achieves 5.2x compression for
+  outdoor scenes.
+- **Incremental SLAM.** [VPGS-SLAM (Deng 2026)](../papers/deng2026_vpgs-slam.md):
+  voxel-based progressive 3DGS SLAM handles large-scale indoor/outdoor with loop
+  closure, avoiding a priori partitioning.
 
 ### Alternative representations
 - [SVRaster (Sun 2025)](../papers/sun2025_sparse-voxels-rasterization.md):
@@ -62,7 +76,15 @@ rasterization — sidesteps Gaussians entirely while matching their speed.
   → See [[gaussian-to-mesh-pipelines]] — now has 7 papers addressing this.
 - Is SVRaster's sparse voxel approach a serious competitor to Gaussians, or
   a niche alternative?
-- Can 3DGS scale to city-scale reconstruction without quantization/LOD tricks?
+- ~~Can 3DGS scale to city-scale reconstruction without quantization/LOD tricks?~~
+  Partially answered: VastGaussian scales to aerial UrbanScene3D captures via
+  spatial partitioning alone (no quantization), beating NeRF-based large-scene
+  methods on quality and speed. *Open*: true city-scale (km²) likely still needs
+  partitioning + compression layered together; no automatic cell-count
+  selection exists.
+- Can the decoupled appearance-modeling trick (train-time 2D transform,
+  discarded at inference) be ported to *other* rasterization-based renderers
+  (SVRaster, neural primitives) as a general recipe against photometric drift?
 
 ## Related threads
 - [[gaussian-to-mesh-pipelines]] — the downstream question of what to do with Gaussians

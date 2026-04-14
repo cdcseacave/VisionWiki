@@ -28,6 +28,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [SpatialLM](wiki/papers/mao2025_spatiallm.md) — LLM fine-tuned on point clouds for structured indoor modeling · _2026-04-12_
 
 ### Radiance Fields
+- [VastGaussian](wiki/papers/lin2024_vastgaussian.md) — first real-time 3DGS for aerial/city scenes via partitioning + decoupled appearance · _2026-04-14_
 - [GauSS-MI](wiki/papers/xie2025_gauss-mi.md) — real-time mutual information for active 3DGS view selection · _2026-04-12_
 - [DroneSplat](wiki/papers/tang2025_dronesplat.md) — robust 3DGS from in-the-wild drone imagery · _2026-04-12_
 - [CamP](wiki/papers/park2023_camp.md) — camera preconditioning for joint pose-NeRF optimization · _2026-04-12_
@@ -53,7 +54,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [Feed-Forward 3D Survey](wiki/papers/zhang2025_feed-forward-3d-survey.md) — comprehensive taxonomy of feed-forward 3D methods · _2026-04-12_
 
 ## Methods
-- [3D Gaussian Splatting](wiki/methods/3d-gaussian-splatting.md) — explicit radiance field via anisotropic Gaussians · _stub_
+- [3D Gaussian Splatting](wiki/methods/3d-gaussian-splatting.md) — explicit radiance field via anisotropic Gaussians · _updated 2026-04-14_
 - [2D Gaussian Splatting](wiki/methods/2d-gaussian-splatting.md) — flat-Gaussian variant for better surfaces · _stub_
 - [NeRF](wiki/methods/nerf.md) — neural radiance fields via MLP + volume rendering · _stub_
 - [COLMAP](wiki/methods/colmap.md) — the standard SfM/MVS pipeline · _stub_
@@ -80,7 +81,7 @@ _(empty)_
 _(empty)_
 
 ## Threads
-- [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, representations, speed/quality tradeoffs · _updated 2026-04-12_
+- [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, representations, speed/quality tradeoffs · _updated 2026-04-14_
 - [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting usable meshes from Gaussian splats, 4 competing paradigms · _updated 2026-04-13_
 - [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — replacing iterative SfM: accelerated classical → hybrid → fully learned · _updated 2026-04-12_
 - [GPU-Native SfM (Tier 1)](wiki/threads/gpu-native-sfm.md) — accelerated classical SfM: InstantSfM vs CuSfM deep dive · _updated 2026-04-12_
@@ -88,8 +89,8 @@ _(empty)_
 - [Nerfstudio + gsplat Codebase](wiki/threads/nerfstudio.md) — local visiofacto fork architecture: pipelines, models, gsplat rendering internals · _updated 2026-04-13_
 
 ## Designs
-- [CoMe Integration into Nerfstudio/Visiofacto](wiki/designs/come-integration-nerfstudio.md) — implementation blueprint for CoMe's confidence + variance losses · _updated 2026-04-13_
+- [CoMe Integration into Nerfstudio/Visiofacto](wiki/designs/come-integration-nerfstudio.md) — implementation blueprint for CoMe's confidence + variance losses + VastGaussian-derived appearance module with CoMe SSIM decoupling · _updated 2026-04-14_
 
 ---
 
-_Last rebuilt: 2026-04-13 · 32 papers, 9 methods, 8 concepts, 6 threads, 1 design_
+_Last rebuilt: 2026-04-14 · 33 papers, 9 methods, 8 concepts, 6 threads, 1 design_
