@@ -69,8 +69,8 @@ RoMa v2 advances the state of the art in dense feature matching by resolving the
 - Builds on [[RoMa]] (Edstedt et al., CVPR 2024) and addresses its limitations
 - Competes with [[UFM]] (Zhang et al., NeurIPS 2025) -- RoMa v2 combines UFM's speed advantages with RoMa's robustness
 - Upgrades from [[DINOv2]] to [[DINOv3]] as frozen feature backbone
-- Architecture inspired by [[DUSt3R]], [[MASt3R]], and [[VGGT]] for multi-view transformer design
-- Follows alternating attention pattern from [[VGGT]] (Wang et al.)
+- Architecture inspired by [[dust3r|DUSt3R]], [[mast3r|MASt3R]], and [[vggt|VGGT]] for multi-view transformer design
+- Follows alternating attention pattern from [[vggt|VGGT]] (Wang et al.)
 - Uses DPT head from [[DPT]] (Ranftl et al., 2021)
 - Relates to sparse matchers [[SuperGlue]], [[LightGlue]] and semi-dense [[LoFTR]]
 - Coarse matching relates to [[DKM]] (predecessor of RoMa)

@@ -18,11 +18,11 @@ This paper proposes a multiview geometric regularization strategy for [[3d-gauss
 
 ## Problem
 
-Methods like [[2D-Gaussian-Splatting]] and Gaussian Opacity Fields attempt to improve the geometric accuracy of [[3d-gaussian-splatting]], but still struggle to reconstruct smooth and reliable geometry, especially in scenes with significant color variation across viewpoints. This is due to per-point appearance modeling and single-view optimization constraints that lack multiview geometric consistency enforcement.
+Methods like [[2d-gaussian-splatting|2D-Gaussian-Splatting]] and Gaussian Opacity Fields attempt to improve the geometric accuracy of [[3d-gaussian-splatting]], but still struggle to reconstruct smooth and reliable geometry, especially in scenes with significant color variation across viewpoints. This is due to per-point appearance modeling and single-view optimization constraints that lack multiview geometric consistency enforcement.
 
 ## Method
 
-1. **MVS-guided initialization**: Dense depth maps from a multi-view stereo pipeline are used to generate initial Gaussian positions, avoiding suboptimal positions from sparse [[COLMAP]] points alone. This provides better coverage in textureless and high color-variation regions.
+1. **MVS-guided initialization**: Dense depth maps from a multi-view stereo pipeline are used to generate initial Gaussian positions, avoiding suboptimal positions from sparse [[colmap|COLMAP]] points alone. This provides better coverage in textureless and high color-variation regions.
 2. **Median depth-based relative depth loss**: Instead of using rendered mean depth (which is inaccurate for semi-transparent Gaussians), the method uses median depth. The relative depth loss compares depth ratios between neighboring pixels from MVS and rendered depths, with learned per-pixel uncertainty weights to downweight unreliable MVS estimates.
 3. **Multiview extension**: The depth, normal consistency, and depth distortion losses are extended to virtual viewpoints neighboring the training views, allowing gradients to regularize more Gaussians per iteration.
 4. **Multiview RGB loss**: Photometric consistency across views enforces appearance consistency.
@@ -45,8 +45,8 @@ This work demonstrates that the complementary strengths of classical MVS and neu
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]] (Kerbl et al., 2023) and extends it with geometric regularization.
-- Improves upon [[2D-Gaussian-Splatting]] (Huang et al., 2024) and Gaussian Opacity Fields (GOF) (Yu et al., 2024) which also target geometric accuracy.
-- Uses MVS depth priors, related to classical [[multi-view-stereo]] and [[COLMAP]] dense reconstruction.
+- Improves upon [[2d-gaussian-splatting|2D-Gaussian-Splatting]] (Huang et al., 2024) and Gaussian Opacity Fields (GOF) (Yu et al., 2024) which also target geometric accuracy.
+- Uses MVS depth priors, related to classical [[multi-view-stereo]] and [[colmap|COLMAP]] dense reconstruction.
 - Compared against implicit methods: [[NeuS]], Geo-NeuS, [[Neuralangelo]].
 - Compared against explicit methods: SuGaR, 3DGS, 2DGS, GOF.
 - Evaluated on DTU, Tanks and Temples, and [[Mip-NeRF-360]] benchmarks.
@@ -61,9 +61,9 @@ This work demonstrates that the complementary strengths of classical MVS and neu
 ## References added to the wiki
 
 - [[3d-gaussian-splatting]]
-- [[2D-Gaussian-Splatting]]
+- [[2d-gaussian-splatting|2D-Gaussian-Splatting]]
 - [[multi-view-stereo]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]
 - [[NeuS]]
 - [[Neuralangelo]]
 - [[Mip-NeRF-360]]

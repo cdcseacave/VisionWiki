@@ -14,11 +14,11 @@ status: draft
 
 ## TL;DR
 
-CamP proposes a simple yet effective preconditioning technique for joint camera and scene optimization in [[NeRF]]. By computing a whitening transform from a proxy problem that normalizes and decorrelates camera parameter effects, CamP dramatically improves the conditioning of the joint optimization, reducing rendering error (RMSE) by 67% over non-optimizing baselines and 29% over prior camera-optimizing NeRF methods.
+CamP proposes a simple yet effective preconditioning technique for joint camera and scene optimization in [[nerf|NeRF]]. By computing a whitening transform from a proxy problem that normalizes and decorrelates camera parameter effects, CamP dramatically improves the conditioning of the joint optimization, reducing rendering error (RMSE) by 67% over non-optimizing baselines and 29% over prior camera-optimizing NeRF methods.
 
 ## Problem
 
-[[NeRF]] requires accurate camera parameters, but [[structure-from-motion]] pipelines like [[COLMAP]] can produce noisy or incomplete estimates, especially for sparse or wide-baseline captures. Joint optimization of camera parameters alongside the radiance field is an ill-conditioned problem: camera parameters (position, orientation, focal length, distortion) have vastly different scales and are correlated, causing gradient-based optimizers to make slow or unstable progress.
+[[nerf|NeRF]] requires accurate camera parameters, but [[structure-from-motion]] pipelines like [[colmap|COLMAP]] can produce noisy or incomplete estimates, especially for sparse or wide-baseline captures. Joint optimization of camera parameters alongside the radiance field is an ill-conditioned problem: camera parameters (position, orientation, focal length, distortion) have vastly different scales and are correlated, causing gradient-based optimizers to make slow or unstable progress.
 
 ## Method
 
@@ -39,7 +39,7 @@ CamP proposes a simple yet effective preconditioning technique for joint camera 
 
 ## Why it matters
 
-CamP demonstrates that a principled numerical technique (preconditioning) can substantially improve joint camera-scene optimization in neural rendering, without architectural changes or additional training costs. This is broadly applicable to any [[differentiable-rendering]] pipeline and is especially important for making [[NeRF]] practical with imperfect camera poses from mobile devices or challenging capture conditions.
+CamP demonstrates that a principled numerical technique (preconditioning) can substantially improve joint camera-scene optimization in neural rendering, without architectural changes or additional training costs. This is broadly applicable to any [[differentiable-rendering]] pipeline and is especially important for making [[nerf|NeRF]] practical with imperfect camera poses from mobile devices or challenging capture conditions.
 
 ## Relation to prior work
 
@@ -58,9 +58,9 @@ CamP demonstrates that a principled numerical technique (preconditioning) can su
 
 ## References added to the wiki
 
-- [[NeRF]]
+- [[nerf|NeRF]]
 - [[Zip-NeRF]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]
 - [[structure-from-motion]]
 - [[bundle-adjustment]]
 - [[differentiable-rendering]]

@@ -14,7 +14,7 @@ status: draft
 
 ## TL;DR
 
-AniSDF is a unified [[SDF]]-based method that combines fused-granularity neural surfaces (coarse + fine hash grid branches) with anisotropic spherical Gaussian (ASG) encoding to achieve simultaneous high-quality geometry reconstruction and photorealistic novel-view synthesis, particularly excelling on reflective and complex objects.
+AniSDF is a unified [[signed-distance-field|SDF]]-based method that combines fused-granularity neural surfaces (coarse + fine hash grid branches) with anisotropic spherical Gaussian (ASG) encoding to achieve simultaneous high-quality geometry reconstruction and photorealistic novel-view synthesis, particularly excelling on reflective and complex objects.
 
 ## Problem
 
@@ -28,7 +28,7 @@ AniSDF introduces two key components:
 
 2. **Anisotropic Spherical Gaussian (ASG) Encoding**: Models the blended radiance field using physics-based ASG encoding to explicitly decompose appearance into diffuse and specular components. This disambiguates geometry from reflective appearance, following the rendering equation more faithfully than standard view-dependent color prediction.
 
-The surface is extracted via [[marching-cubes]] from the learned [[SDF]].
+The surface is extracted via [[marching-cubes]] from the learned [[signed-distance-field|SDF]].
 
 ## Results
 
@@ -47,8 +47,8 @@ AniSDF demonstrates that jointly solving geometry and appearance -- rather than 
 - Extends [[neural-implicit-surfaces]] methods: NeuS, VolSDF, Neuralangelo, NeuS2.
 - Uses multi-resolution hash encoding from Instant-NGP but with a novel dual-branch architecture.
 - ASG encoding draws from physics-based rendering and prior work on spherical Gaussians for appearance modeling (Ref-NeuS, NeRO).
-- Contrasts with [[3d-gaussian-splatting]] methods that handle appearance but lack explicit [[SDF]] geometry.
-- Surface extraction via [[marching-cubes]] on the learned [[SDF]].
+- Contrasts with [[3d-gaussian-splatting]] methods that handle appearance but lack explicit [[signed-distance-field|SDF]] geometry.
+- Surface extraction via [[marching-cubes]] on the learned [[signed-distance-field|SDF]].
 
 ## Open questions / limitations
 

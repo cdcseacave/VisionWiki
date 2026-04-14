@@ -18,7 +18,7 @@ DiffusionSfM is an end-to-end multi-view model that directly infers dense 3D geo
 
 ## Problem
 
-Traditional [[structure-from-motion]] pipelines (both classical and learning-based like [[DUSt3R]]) follow a two-stage approach: pairwise reasoning followed by global optimization. Even [[DUSt3R]] and [[MASt3R]], while predicting 3D pointmaps directly, still require expensive global alignment for more than two views. Methods like RayDiffusion predict only camera poses without scene structure. No existing approach unifies multi-view reasoning for both structure and motion in a single end-to-end framework.
+Traditional [[structure-from-motion]] pipelines (both classical and learning-based like [[dust3r|DUSt3R]]) follow a two-stage approach: pairwise reasoning followed by global optimization. Even [[dust3r|DUSt3R]] and [[mast3r|MASt3R]], while predicting 3D pointmaps directly, still require expensive global alignment for more than two views. Methods like RayDiffusion predict only camera poses without scene structure. No existing approach unifies multi-view reasoning for both structure and motion in a single end-to-end framework.
 
 ## Method
 
@@ -50,7 +50,7 @@ DiffusionSfM represents a paradigm shift from the traditional two-stage SfM pipe
 ## Relation to prior work
 
 - Extends RayDiffusion's ray-based camera representation to include endpoints (geometry), going from patch-wise to pixel-wise resolution.
-- Competes with [[DUSt3R]] and [[MASt3R]] but eliminates global alignment; processes N views in one pass rather than O(N^2) pairwise predictions.
+- Competes with [[dust3r|DUSt3R]] and [[mast3r|MASt3R]] but eliminates global alignment; processes N views in one pass rather than O(N^2) pairwise predictions.
 - Uses [[DINOv2]] backbone features, following the trend of leveraging foundation model features for 3D tasks.
 - Related to PoseDiffusion (diffusion for pose estimation only) and ACEZero/FlowMap (unified SfM approaches with incremental processing).
 - DPT decoder follows standard dense prediction transformer design.
@@ -65,12 +65,12 @@ DiffusionSfM represents a paradigm shift from the traditional two-stage SfM pipe
 ## References added to the wiki
 
 - [[structure-from-motion]]
-- [[DUSt3R]]
-- [[MASt3R]]
+- [[dust3r|DUSt3R]]
+- [[mast3r|MASt3R]]
 - [[diffusion-models]]
 - [[DINOv2]]
 - [[DPT]]
 - [[bundle-adjustment]]
 - [[RayDiffusion]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]
 - [[homogeneous-coordinates]]

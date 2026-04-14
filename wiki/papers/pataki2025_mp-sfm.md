@@ -14,11 +14,11 @@ status: draft
 
 ## TL;DR
 
-MP-SfM augments the classical incremental [[structure-from-motion]] paradigm (building on [[COLMAP]]) with monocular depth and surface normal priors from deep networks, enabling accurate multi-view reconstruction from only two-view tracks. This lifts the long-standing requirement for three-view overlap, making SfM robust under extreme viewpoint changes, low parallax, and symmetry-induced failures while maintaining performance in standard conditions.
+MP-SfM augments the classical incremental [[structure-from-motion]] paradigm (building on [[colmap|COLMAP]]) with monocular depth and surface normal priors from deep networks, enabling accurate multi-view reconstruction from only two-view tracks. This lifts the long-standing requirement for three-view overlap, making SfM robust under extreme viewpoint changes, low parallax, and symmetry-induced failures while maintaining performance in standard conditions.
 
 ## Problem
 
-State-of-the-art SfM systems fundamentally require three-view overlap with sufficient baseline and parallax to perform multi-view consistent 3D reconstruction. This requirement is difficult to satisfy in practice--especially for non-expert users capturing complex scenes--leading to frequent failures under low overlap, low parallax, or repetitive structures/symmetries. Dense matchers like [[MASt3R]] can find correspondences across extreme viewpoints, but feeding these into existing reconstruction algorithms still fails.
+State-of-the-art SfM systems fundamentally require three-view overlap with sufficient baseline and parallax to perform multi-view consistent 3D reconstruction. This requirement is difficult to satisfy in practice--especially for non-expert users capturing complex scenes--leading to frequent failures under low overlap, low parallax, or repetitive structures/symmetries. Dense matchers like [[mast3r|MASt3R]] can find correspondences across extreme viewpoints, but feeding these into existing reconstruction algorithms still fails.
 
 ## Method
 
@@ -46,11 +46,11 @@ MP-SfM demonstrates that integrating monocular priors into classical incremental
 
 ## Relation to prior work
 
-- Built on [[COLMAP]]'s incremental SfM framework with significant modifications to initialization, registration, refinement, and filtering.
-- Uses [[MASt3R]] or RoMa for dense correspondences; SuperPoint + LightGlue for sparse features.
-- Contrasts with [[MASt3R]]-SfM, which uses a global SfM paradigm and embeds some monocular priors implicitly but struggles more in low-overlap scenarios.
+- Built on [[colmap|COLMAP]]'s incremental SfM framework with significant modifications to initialization, registration, refinement, and filtering.
+- Uses [[mast3r|MASt3R]] or RoMa for dense correspondences; SuperPoint + LightGlue for sparse features.
+- Contrasts with [[mast3r|MASt3R]]-SfM, which uses a global SfM paradigm and embeds some monocular priors implicitly but struggles more in low-overlap scenarios.
 - Related to StudioSfM (low-parallax depth integration) but more general; handles unstructured image collections.
-- Extends [[DUSt3R]]/[[MASt3R]] two-view reconstruction priors into a full multi-view pipeline.
+- Extends [[dust3r|DUSt3R]]/[[mast3r|MASt3R]] two-view reconstruction priors into a full multi-view pipeline.
 - Uses [[Metric3Dv2]] for depth and normals, with [[DSINE]] as an alternative normal estimator.
 
 ## Open questions / limitations
@@ -62,10 +62,10 @@ MP-SfM demonstrates that integrating monocular priors into classical incremental
 ## References added to the wiki
 
 - [[structure-from-motion]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]
 - [[GLOMAP]]
-- [[MASt3R]]
-- [[DUSt3R]]
+- [[mast3r|MASt3R]]
+- [[dust3r|DUSt3R]]
 - [[monocular-depth-estimation]]
 - [[Metric3Dv2]]
 - [[DSINE]]

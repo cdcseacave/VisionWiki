@@ -47,16 +47,16 @@ Estimating camera poses from sparsely sampled views (<10 images) is challenging 
 
 ## Why it matters
 
-This work fundamentally rethinks camera pose representation for learning-based estimation. The ray bundle representation is naturally suited for transformers (each ray maps to a patch token), enables tight coupling with spatial image features, and can encode non-perspective cameras (e.g., catadioptric, orthographic). The idea of distributed camera representations has influenced subsequent works like [[DUSt3R]] and [[Pow3R]] which also use per-pixel geometric predictions rather than global camera parameters.
+This work fundamentally rethinks camera pose representation for learning-based estimation. The ray bundle representation is naturally suited for transformers (each ray maps to a patch token), enables tight coupling with spatial image features, and can encode non-perspective cameras (e.g., catadioptric, orthographic). The idea of distributed camera representations has influenced subsequent works like [[dust3r|DUSt3R]] and [[Pow3R]] which also use per-pixel geometric predictions rather than global camera parameters.
 
 ## Relation to prior work
 
 - Contrasts with global pose prediction in [[RelPose]], [[RelPose++]], [[SparsePose]], and [[PoseDiffusion]]
 - Uses [[DINOv2]] (ViT-B/14, frozen + registers) as the spatial feature backbone
-- Concurrent with [[DUSt3R]] which predicts pixel-aligned pointclouds (rather than rays) and uses PnP
+- Concurrent with [[dust3r|DUSt3R]] which predicts pixel-aligned pointclouds (rather than rays) and uses PnP
 - Relates to generalized camera models of Grossberg & Nayar (2001)
 - Diffusion component builds on [[DDPM]] / [[DDIM]] frameworks
-- Classical SfM methods ([[COLMAP]], [[bundle-adjustment]]) provide sub-pixel accuracy but require dense views
+- Classical SfM methods ([[colmap|COLMAP]], [[bundle-adjustment]]) provide sub-pixel accuracy but require dense views
 - [[Neural Ray Surfaces]] (Vasiljevic et al., 2020) also uses ray-based cameras but for video, not sparse views
 
 ## Open questions / limitations

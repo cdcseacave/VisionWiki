@@ -29,7 +29,7 @@ quadratic attention costs.
 ### Tier 1: GPU-accelerated classical SfM
 - [InstantSfM (Zhong 2026)](../papers/zhong2026_instantsfm.md): full global SfM
   in PyTorch. Depth-constrained Jacobians, GPU-native BA. 40x faster than
-  [[COLMAP]] on 1K+ image datasets. The "just make COLMAP fast" approach.
+  [[colmap|COLMAP]] on 1K+ image datasets. The "just make COLMAP fast" approach.
 - [CuSfM (Yu 2025)](../papers/yu2025_cusfm.md): CUDA SfM tailored for
   autonomous driving — multi-camera rig support, extrinsic refinement. Practical
   engineering over novelty.
@@ -45,12 +45,12 @@ quadratic attention costs.
   + uncertainty-aware BA enables SfM from casual dynamic videos (people walking,
   cars moving). Bridges the "static scene assumption" gap.
 - [Pow3R (Jang 2025)](../papers/jang2025_pow3r.md): lightweight conditioning
-  injects optional camera intrinsics/poses/sparse depth into [[DUSt3R]]. Shows
+  injects optional camera intrinsics/poses/sparse depth into [[dust3r|DUSt3R]]. Shows
   that the DUSt3R architecture can absorb classical priors when available.
 
 ### Tier 3: Fully feed-forward
 - [MASt3R-SLAM (Murai 2025)](../papers/murai2025_mast3r-slam.md): first
-  real-time dense SLAM on [[MASt3R]] priors. 15 FPS, no calibration needed.
+  real-time dense SLAM on [[mast3r|MASt3R]] priors. 15 FPS, no calibration needed.
   Proves the DUSt3R family can serve as a live SLAM backend.
 - [DiffusionSfM (Zhao 2025)](../papers/zhao2025_diffusionsfm.md): diffusion
   model predicts ray origins + endpoints for joint structure and motion. Novel
@@ -59,7 +59,7 @@ quadratic attention costs.
   window attention scales to 19K frames. Key innovation: [[test-time-training]]
   as a linear-time memory mechanism for long sequences.
 - [ZipMap (Jin 2026)](../papers/jin2026_zipmap.md): bidirectional TTT fast
-  weights, 20x faster than [[VGGT]]. Shows test-time-training is becoming the
+  weights, 20x faster than [[vggt|VGGT]]. Shows test-time-training is becoming the
   dominant paradigm for scaling feed-forward reconstruction.
 - [Cameras as Rays (Zhang 2024)](../papers/zhang2024_cameras-as-rays.md):
   Plucker ray-bundle camera representation + diffusion for sparse-view pose.

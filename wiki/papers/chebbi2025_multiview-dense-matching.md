@@ -54,7 +54,7 @@ This work demonstrates that powerful multi-view dense matching can be achieved b
 - Compares against [[MC-CNN]], [[PSMNet]], and [[RAFT-Stereo]]
 - Uses [[SGM]] (Semi-Global Matching) for cost volume regularization
 - Related to [[plane-sweeping]] approaches for [[multi-view-stereo]]
-- Connects to [[NeRF]] research direction for complementary occlusion handling
+- Connects to [[nerf|NeRF]] research direction for complementary occlusion handling
 
 ## Open questions / limitations
 

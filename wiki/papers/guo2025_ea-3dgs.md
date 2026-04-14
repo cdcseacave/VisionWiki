@@ -18,11 +18,11 @@ EA-3DGS is a method for high-quality, efficient [[3d-gaussian-splatting]] of out
 
 ## Problem
 
-Standard [[3d-gaussian-splatting]] struggles with outdoor large-scale scenes because: (1) point-based initialization from sparse [[COLMAP]] points lacks coverage in low-texture regions, leading to poor geometry; (2) the default densification/pruning heuristics produce millions of redundant Gaussians, causing memory constraints; and (3) the resulting models are too large for storage and deployment.
+Standard [[3d-gaussian-splatting]] struggles with outdoor large-scale scenes because: (1) point-based initialization from sparse [[colmap|COLMAP]] points lacks coverage in low-texture regions, leading to poor geometry; (2) the default densification/pruning heuristics produce millions of redundant Gaussians, causing memory constraints; and (3) the resulting models are too large for storage and deployment.
 
 ## Method
 
-1. **Adaptive tetrahedral mesh initialization**: From [[COLMAP]] sparse points, a Delaunay tetrahedralization is computed. Gaussian primitives are initialized on each triangular face of the tetrahedra, with adaptive mesh refinement based on local geometry. This provides structured coverage even in low-texture regions where sparse points are absent.
+1. **Adaptive tetrahedral mesh initialization**: From [[colmap|COLMAP]] sparse points, a Delaunay tetrahedralization is computed. Gaussian primitives are initialized on each triangular face of the tetrahedra, with adaptive mesh refinement based on local geometry. This provides structured coverage even in low-texture regions where sparse points are absent.
 2. **Contribution-aware pruning**: A GS Score is computed for each Gaussian based on its actual contribution to rendered views (using ray-Gaussian intersection counts, opacity, and blending weight). Low-contribution Gaussians are pruned.
 3. **Structure-aware densification**: Instead of densifying based purely on gradient magnitude, the method uses surface curvature (ratio of eigenvalues: rho = lambda_0 / (lambda_0 + lambda_1 + lambda_2)) to identify low-curvature regions that need more Gaussians, preserving geometric structure.
 4. **Codebook vector quantization**: Gaussian parameters (except position) are quantized using a learned codebook, achieving approximately 5.2x compression (e.g., 1.8 GB to 345 MB) with only ~0.37 dB PSNR drop.
@@ -49,7 +49,7 @@ EA-3DGS addresses the practical deployment challenges of Gaussian splatting for 
 - Compared against [[Scaffold-GS]], Mega-NeRF, Switch-NeRF, GaMes, and Compressed-3DGS (C3DGS).
 - Mesh initialization is related to GaMeS which also uses mesh structures but with a different approach.
 - Compression via [[vector-quantization]] is related to LightGaussian and C3DGS but uses codebook quantization specifically.
-- Uses [[COLMAP]] for initial sparse reconstruction and camera parameters.
+- Uses [[colmap|COLMAP]] for initial sparse reconstruction and camera parameters.
 - Evaluated on large-scale datasets: Mill 19, MatrixCity, WHU, Tanks & Temples, and self-collected SCUT-CA aerial scenes.
 
 ## Open questions / limitations
@@ -63,7 +63,7 @@ EA-3DGS addresses the practical deployment challenges of Gaussian splatting for 
 ## References added to the wiki
 
 - [[3d-gaussian-splatting]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]
 - [[Scaffold-GS]]
 - [[vector-quantization]]
 - [[Delaunay-tetrahedralization]]

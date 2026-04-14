@@ -18,7 +18,7 @@ LoGeR (Long-context Geometric Reconstruction) scales dense 3D reconstruction to 
 
 ## Problem
 
-Feedforward geometric foundation models ([[DUSt3R]], [[VGGT]], pi3) achieve strong short-window reconstruction but face a "context wall" (quadratic attention complexity) and a "data wall" (trained on short-context bubbles of dozens to ~100 frames). Naive efficiency improvements like FastVGGT mitigate memory bottlenecks but fail to generalize to large-scale scenes. Recurrent approaches like CUT3R compress all context into lossy hidden states, sacrificing precision. No single memory strategy balances local detail, adjacent-chunk alignment, and global structural integrity.
+Feedforward geometric foundation models ([[dust3r|DUSt3R]], [[vggt|VGGT]], pi3) achieve strong short-window reconstruction but face a "context wall" (quadratic attention complexity) and a "data wall" (trained on short-context bubbles of dozens to ~100 frames). Naive efficiency improvements like FastVGGT mitigate memory bottlenecks but fail to generalize to large-scale scenes. Recurrent approaches like CUT3R compress all context into lossy hidden states, sacrificing precision. No single memory strategy balances local detail, adjacent-chunk alignment, and global structural integrity.
 
 ## Method
 
@@ -51,10 +51,10 @@ LoGeR breaks both the "context wall" and "data wall" that limit feedforward 3D r
 ## Relation to prior work
 
 - Built on pi3 (Wang et al., 2026) as the bidirectional geometry backbone, initialized from pi3 weights.
-- Extends [[VGGT]] and pi3 to long sequences; directly competes with FastVGGT, InfiniteVGGT, and StreamVGGT inference-time variants.
+- Extends [[vggt|VGGT]] and pi3 to long sequences; directly competes with FastVGGT, InfiniteVGGT, and StreamVGGT inference-time variants.
 - TTT layers based on Test-Time Training (Sun et al., 2024) and LaCT (Zhang et al., 2025b), adapted for geometric reconstruction.
 - Contrasts with recurrent approaches: CUT3R (persistent state), TTT3R (confidence-based single-frame streaming), and Point3R (explicit memory).
-- Outperforms optimization-based methods: [[DROID-SLAM]], DPV-SLAM++, VGGT-Long, VGGT-SLAM.
+- Outperforms optimization-based methods: [[droid-slam|DROID-SLAM]], DPV-SLAM++, VGGT-Long, VGGT-SLAM.
 - Introduces VBR benchmark for evaluating long-context reconstruction at unprecedented scale.
 
 ## Open questions / limitations
@@ -66,9 +66,9 @@ LoGeR breaks both the "context wall" and "data wall" that limit feedforward 3D r
 
 ## References added to the wiki
 
-- [[VGGT]]
-- [[DUSt3R]]
-- [[DROID-SLAM]]
+- [[vggt|VGGT]]
+- [[dust3r|DUSt3R]]
+- [[droid-slam|DROID-SLAM]]
 - [[test-time-training]]
 - [[sliding-window-attention]]
 - [[structure-from-motion]]

@@ -3,8 +3,10 @@ title: COLMAP
 type: method
 tags: [sfm, mvs, structure-from-motion, baseline]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-14
 sources:
+  - papers/schonberger2016_colmap-mvs.md
+  - papers/pan2024_glomap.md
   - papers/guo2025_ea-3dgs.md
   - papers/jang2025_pow3r.md
   - papers/jin2026_zipmap.md
@@ -30,6 +32,8 @@ The SfM pipeline proceeds in stages: (1) feature extraction (SIFT), (2) exhausti
 
 ## Key references
 
+- [Schönberger et al. 2016](../papers/schonberger2016_colmap-mvs.md) · [pdf](../../papers/mvs-depth/schonberger_2016_colmap-mvs.pdf) — COLMAP MVS (pixelwise view selection), ECCV 2016. Companion to the CVPR 2016 SfM paper.
+- [Pan et al. 2024 (GLOMAP)](../papers/pan2024_glomap.md) · [pdf](../../papers/sfm-slam/pan_2024_glomap.pdf) — global-SfM sibling under the COLMAP umbrella.
 - [Pataki 2025](../papers/pataki2025_mp-sfm.md) · [pdf](../../papers/sfm-slam/pataki_2025_mp-sfm.pdf)
 - [Yu 2025](../papers/yu2025_cusfm.md) · [pdf](../../papers/sfm-slam/yu_2025_cusfm.pdf)
 - [Zhong 2026](../papers/zhong2026_instantsfm.md) · [pdf](../../papers/sfm-slam/zhong_2026_instantsfm.pdf)

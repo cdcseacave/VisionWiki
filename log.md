@@ -125,3 +125,33 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Added new §7.1.3 "Why the CNN operates on a 32× downsampled image (not full-res)" — two cooperating justifications (efficiency + semantic frequency bound). The semantic reason (downsample prevents M from absorbing high-frequency geometric detail) is the load-bearing design insight, not just efficiency.
 - Added Phase 6 note: Option A's closed-form (`Σw_i||c_i||² − ||C||²`) is mathematically equivalent to CoMe Eq. 13 — both compute the same loss, CoMe just uses a fused CUDA kernel for speed.
 - Notable: CoMe §A.1 footnote states "the source code for VastGaussian [35] was never released" — confirmed that CoMe's appendix is the authoritative reference implementation for the appearance module, not the VastGaussian paper alone.
+
+## [2026-04-14] lint
+- Scanned: 48 wiki pages
+- Contradictions: 0 · Orphans: 31 · Missing pages (≥3 refs): 33 · Broken wikilinks: 392 · Frontmatter drift: 32 · Missing local papers: 0 · Broken md links: 0
+- Root cause of most broken wikilinks + orphan inflation: case-sensitive Obsidian wikilinks (`[[COLMAP]]` vs. `colmap.md`).
+- Followups suggested: apply alias rewrites, create stubs for GLOMAP / DINOv2 / structure-from-motion / multi-view-stereo / Zip-NeRF / TSDF / SAM / CLIP.
+
+## [2026-04-14] lint apply
+- Rewrote case-mismatched wikilinks to alias form (`[[colmap|COLMAP]]` etc.) across 22 files for: COLMAP, DUSt3R, MASt3R, NeRF, VGGT, DROID-SLAM, SDF, 2D/3D-Gaussian-Splatting.
+- Created stubs:
+  - wiki/methods/glomap.md
+  - wiki/methods/dinov2.md
+  - wiki/methods/zip-nerf.md
+  - wiki/methods/sam.md
+  - wiki/methods/clip.md
+  - wiki/concepts/structure-from-motion.md
+  - wiki/concepts/multi-view-stereo.md
+  - wiki/concepts/tsdf.md
+- Updated: index.md (added 8 entries, rebuild counts to 14 methods / 11 concepts).
+- Notable: frontmatter drift (32 pages with empty `sources:` on paper pages) left intact — a paper is its own source, so empty arrays are semantically correct.
+
+## [2026-04-14] ingest (batch, 7 papers for needs-source stubs)
+- Downloaded: GLOMAP (2407.20219), DINOv2 (2304.07193), Zip-NeRF (2304.06706), SAM (2304.02643), CLIP (2103.00020), MVSNet (1804.02505), COLMAP-MVS (1607.08203) — all placed under the appropriate papers/ subfolders.
+- Created paper pages: pan2024_glomap, oquab2023_dinov2, barron2023_zip-nerf, kirillov2023_sam, radford2021_clip, yao2018_mvsnet, schonberger2016_colmap-mvs.
+- Expanded stubs: wiki/methods/{glomap,dinov2,zip-nerf,sam,clip}.md and wiki/concepts/{structure-from-motion,multi-view-stereo}.md — `sources:` populated, `status: draft`, `[!needs-source]` flag replaced by Key references section.
+- Updated: wiki/methods/colmap.md (added Schönberger 2016 MVS + GLOMAP citations).
+- Updated: index.md (+7 paper rows), paper count 33 → 40.
+- Notable: arXiv 1607.08203 is Schönberger's **MVS** paper, not the SfM paper; the CVPR 2016 COLMAP SfM paper has no arXiv version. wiki/concepts/structure-from-motion.md retains a `[!needs-source]` flag for that.
+- Notable: Curless & Levoy 1996 (TSDF) and KinectFusion have no arXiv — wiki/concepts/tsdf.md retains `[!needs-source]` with external references.
+- raw/ confirmed empty after ingest.

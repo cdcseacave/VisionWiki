@@ -31,8 +31,8 @@ The survey organizes the field into a five-category taxonomy:
 - **3D triplane features**: LRM, Pf-LRM, TripoSR, Instant3D -- large transformer decoders regress triplane representations
 
 ### 2. Pointmap-based Models
-- Pioneered by [[DUSt3R]]: transformer encoder-decoder directly outputs pixel-aligned pointmaps from unposed, uncalibrated image pairs
-- Extensions: [[MASt3R]] (adds local features), Fast3R (global fusion transformer), Spann3R (spatial memory), CUT3R (continuous updating), [[VGGT]] (predicts all 3D attributes in one pass)
+- Pioneered by [[dust3r|DUSt3R]]: transformer encoder-decoder directly outputs pixel-aligned pointmaps from unposed, uncalibrated image pairs
+- Extensions: [[mast3r|MASt3R]] (adds local features), Fast3R (global fusion transformer), Spann3R (spatial memory), CUT3R (continuous updating), [[vggt|VGGT]] (predicts all 3D attributes in one pass)
 - Memory-based: Spann3R, MUSt3R, Point3R -- incrementally update scene representation
 - SfM integration: Light3R-SfM, Regist3R
 - Conditioning: [[Pow3R]] (camera/depth priors), Rig3R (rig metadata), MoGe (affine-invariant pointmaps)
@@ -75,11 +75,11 @@ This survey provides the first comprehensive taxonomy of the feed-forward 3D rec
 ## Relation to prior work
 
 The survey covers a vast network of related methods:
-- Foundation works: [[NeRF]], [[3d-gaussian-splatting]], [[DUSt3R]], [[MASt3R]]
-- Pointmap family: [[Pow3R]], [[Spann3R]], [[MonST3R]], [[CUT3R]], [[VGGT]], [[Fast3R]]
+- Foundation works: [[nerf|NeRF]], [[3d-gaussian-splatting]], [[dust3r|DUSt3R]], [[mast3r|MASt3R]]
+- Pointmap family: [[Pow3R]], [[Spann3R]], [[MonST3R]], [[CUT3R]], [[vggt|VGGT]], [[Fast3R]]
 - Gaussian splatting: [[PixelSplat]], [[MVSplat]], Splatter Image
 - Large reconstruction: [[LRM]], TripoSR
-- Classical pipelines: [[COLMAP]], [[bundle-adjustment]], [[SfM]]
+- Classical pipelines: [[colmap|COLMAP]], [[bundle-adjustment]], [[SfM]]
 - Diffusion-based: Zero123, SV3D, RenderDiffusion
 - Feature matching: DUSt3R and MASt3R used for [[feature-matching]]
 - Pre-training: [[CroCo]], [[DINOv2]] as backbones
@@ -96,13 +96,13 @@ The survey covers a vast network of related methods:
 ## References added to the wiki
 
 - [[feed-forward-3d-reconstruction]]
-- [[NeRF]]
+- [[nerf|NeRF]]
 - [[3d-gaussian-splatting]]
-- [[DUSt3R]]
-- [[MASt3R]]
+- [[dust3r|DUSt3R]]
+- [[mast3r|MASt3R]]
 - [[pointmap-regression]]
-- [[VGGT]]
+- [[vggt|VGGT]]
 - [[PixelSplat]]
 - [[MVSplat]]
 - [[LRM]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]

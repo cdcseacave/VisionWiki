@@ -47,7 +47,7 @@ GeoSVR demonstrates that explicit sparse voxels -- rather than Gaussians or impl
 
 - Builds on **SVRaster** for efficient sparse voxel rasterization.
 - Competes with and outperforms [[3d-gaussian-splatting]]-based surface methods: [[2d-gaussian-splatting]], GOF, PGSR, GS2Mesh, VCR-GauS, MonoGSDF.
-- Compares favorably to [[neural-implicit-surfaces]] / [[SDF]]-based approaches: NeuS, Geo-NeuS, Neuralangelo, VolSDF.
+- Compares favorably to [[neural-implicit-surfaces]] / [[signed-distance-field|SDF]]-based approaches: NeuS, Geo-NeuS, Neuralangelo, VolSDF.
 - Contrasts with methods requiring external normal estimators or heavy MLP-based implicit fields.
 
 ## Open questions / limitations

@@ -14,11 +14,11 @@ status: draft
 
 ## TL;DR
 
-ZipMap is a stateful feed-forward 3D reconstruction model that achieves linear-time bidirectional reconstruction by replacing global self-attention with Test-Time Training (TTT) layers that compress an entire image collection into compact fast-weight MLPs. It processes over 700 frames in under 10 seconds on a single H100 GPU (75 FPS)--more than 20x faster than [[VGGT]]--while matching or surpassing the accuracy of quadratic-time state-of-the-art methods. The adapted fast weights also serve as a queryable implicit scene representation for novel-view point map synthesis.
+ZipMap is a stateful feed-forward 3D reconstruction model that achieves linear-time bidirectional reconstruction by replacing global self-attention with Test-Time Training (TTT) layers that compress an entire image collection into compact fast-weight MLPs. It processes over 700 frames in under 10 seconds on a single H100 GPU (75 FPS)--more than 20x faster than [[vggt|VGGT]]--while matching or surpassing the accuracy of quadratic-time state-of-the-art methods. The adapted fast weights also serve as a queryable implicit scene representation for novel-view point map synthesis.
 
 ## Problem
 
-State-of-the-art feed-forward 3D reconstruction models like [[VGGT]] and pi3 rely on global self-attention with quadratic computational cost in the number of input images, making them prohibitively expensive for large image collections. Sequential approaches (CUT3R, TTT3R) reduce cost to linear but sacrifice reconstruction quality due to error accumulation and lack of bidirectional context. No existing method achieves linear scaling while maintaining bidirectional reconstruction quality.
+State-of-the-art feed-forward 3D reconstruction models like [[vggt|VGGT]] and pi3 rely on global self-attention with quadratic computational cost in the number of input images, making them prohibitively expensive for large image collections. Sequential approaches (CUT3R, TTT3R) reduce cost to linear but sacrifice reconstruction quality due to error accumulation and lack of bidirectional context. No existing method achieves linear scaling while maintaining bidirectional reconstruction quality.
 
 ## Method
 
@@ -57,12 +57,12 @@ ZipMap provides the first demonstration that linear-time feed-forward reconstruc
 
 ## Relation to prior work
 
-- Architecture built on [[VGGT]]'s design (DINOv2 encoder, frame attention, prediction heads) with global attention replaced by LaCT TTT blocks.
-- Directly competes with [[VGGT]] and pi3 (quadratic) and CUT3R, TTT3R, Point3R (linear).
+- Architecture built on [[vggt|VGGT]]'s design (DINOv2 encoder, frame attention, prediction heads) with global attention replaced by LaCT TTT blocks.
+- Directly competes with [[vggt|VGGT]] and pi3 (quadratic) and CUT3R, TTT3R, Point3R (linear).
 - TTT mechanism based on LaCT (Zhang et al., 2025b) and the original TTT framework (Sun et al., 2024).
 - Fast-weight concept connects to classical Schmidhuber fast-weight systems and modern linear attention.
-- Prediction heads follow [[DUSt3R]]/pi3 conventions for pointmaps and camera parameters.
-- Novel-view synthesis capability relates to [[NeRF]] and [[3d-gaussian-splatting]] but uses TTT weights as the scene representation.
+- Prediction heads follow [[dust3r|DUSt3R]]/pi3 conventions for pointmaps and camera parameters.
+- Novel-view synthesis capability relates to [[nerf|NeRF]] and [[3d-gaussian-splatting]] but uses TTT weights as the scene representation.
 
 ## Open questions / limitations
 
@@ -74,15 +74,15 @@ ZipMap provides the first demonstration that linear-time feed-forward reconstruc
 
 ## References added to the wiki
 
-- [[VGGT]]
-- [[DUSt3R]]
+- [[vggt|VGGT]]
+- [[dust3r|DUSt3R]]
 - [[test-time-training]]
 - [[DINOv2]]
 - [[structure-from-motion]]
 - [[bundle-adjustment]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]
 - [[GLOMAP]]
 - [[CUT3R]]
 - [[pi3]]
 - [[3d-gaussian-splatting]]
-- [[NeRF]]
+- [[nerf|NeRF]]

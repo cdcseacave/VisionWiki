@@ -14,7 +14,7 @@ status: draft
 
 ## TL;DR
 
-MegaSaM is a system for accurate, fast, and robust camera pose and depth estimation from casual monocular videos of dynamic scenes. It extends the [[DROID-SLAM]] differentiable BA framework with learned motion probability maps to handle dynamic content, monocular depth initialization, and uncertainty-aware global [[bundle-adjustment]] that adapts regularization based on the observability of scene geometry and camera parameters.
+MegaSaM is a system for accurate, fast, and robust camera pose and depth estimation from casual monocular videos of dynamic scenes. It extends the [[droid-slam|DROID-SLAM]] differentiable BA framework with learned motion probability maps to handle dynamic content, monocular depth initialization, and uncertainty-aware global [[bundle-adjustment]] that adapts regularization based on the observability of scene geometry and camera parameters.
 
 ## Problem
 
@@ -22,7 +22,7 @@ Conventional SfM and SLAM assume predominantly static scenes with large parallax
 
 ## Method
 
-MegaSaM builds on [[DROID-SLAM]]'s differentiable BA layer with three key innovations:
+MegaSaM builds on [[droid-slam|DROID-SLAM]]'s differentiable BA layer with three key innovations:
 
 1. **Learned Motion Probability Maps**: A separate network $F_m$ predicts per-pixel object movement probability, trained on dynamic synthetic data in a two-stage scheme: first ego-motion pretraining on static scenes (learning flow and confidence), then dynamic finetuning with frozen flow model (learning movement maps via cross-entropy loss). This decoupling is critical for stable training of the differentiable BA.
 
@@ -46,9 +46,9 @@ MegaSaM demonstrates that a carefully modified deep visual SLAM framework can ha
 
 ## Relation to prior work
 
-- Directly extends [[DROID-SLAM]]'s differentiable BA framework with dynamic scene handling.
-- Competes with CasualSAM (test-time depth network finetuning), MonST3R (extends [[DUSt3R]] to dynamic scenes), Particle-SfM, and LEAP-VO.
-- Uses [[DepthAnything]] and UniDepth for monocular depth initialization; contrasts with MonST3R's approach of predicting 3D pointmaps from [[DUSt3R]].
+- Directly extends [[droid-slam|DROID-SLAM]]'s differentiable BA framework with dynamic scene handling.
+- Competes with CasualSAM (test-time depth network finetuning), MonST3R (extends [[dust3r|DUSt3R]] to dynamic scenes), Particle-SfM, and LEAP-VO.
+- Uses [[DepthAnything]] and UniDepth for monocular depth initialization; contrasts with MonST3R's approach of predicting 3D pointmaps from [[dust3r|DUSt3R]].
 - Consistent depth module follows CasualSAM's formulation but avoids expensive network finetuning.
 - Motion probability maps are conceptually related to Particle-SfM's motion segmentation but learned end-to-end within the BA framework.
 
@@ -61,8 +61,8 @@ MegaSaM demonstrates that a carefully modified deep visual SLAM framework can ha
 
 ## References added to the wiki
 
-- [[DROID-SLAM]]
-- [[DUSt3R]]
+- [[droid-slam|DROID-SLAM]]
+- [[dust3r|DUSt3R]]
 - [[bundle-adjustment]]
 - [[monocular-depth-estimation]]
 - [[DepthAnything]]

@@ -14,11 +14,11 @@ status: draft
 
 ## TL;DR
 
-MASt3R-SLAM is the first real-time dense monocular SLAM system built on two-view 3D reconstruction priors from [[MASt3R]]. It operates at 15 FPS, handles generic time-varying camera models (no known calibration required), and produces globally consistent poses and dense geometry through efficient pointmap matching, local fusion, loop closure, and second-order Sim(3) global optimization.
+MASt3R-SLAM is the first real-time dense monocular SLAM system built on two-view 3D reconstruction priors from [[mast3r|MASt3R]]. It operates at 15 FPS, handles generic time-varying camera models (no known calibration required), and produces globally consistent poses and dense geometry through efficient pointmap matching, local fusion, loop closure, and second-order Sim(3) global optimization.
 
 ## Problem
 
-Dense monocular SLAM that provides both accurate poses and consistent dense maps without known camera calibration does not exist as a plug-and-play solution. Existing approaches either require depth sensors, known intrinsics, or slow camera motion. Single-view priors (monocular depth) are ambiguous and inconsistent across views. Multi-view priors (optical flow) entangle pose and geometry. Two-view 3D priors like [[DUSt3R]]/[[MASt3R]] produce direct 3D measurements but their offline SfM pipelines (MASt3R-SfM) do not scale to real-time and have quadratic complexity.
+Dense monocular SLAM that provides both accurate poses and consistent dense maps without known camera calibration does not exist as a plug-and-play solution. Existing approaches either require depth sensors, known intrinsics, or slow camera motion. Single-view priors (monocular depth) are ambiguous and inconsistent across views. Multi-view priors (optical flow) entangle pose and geometry. Two-view 3D priors like [[dust3r|DUSt3R]]/[[mast3r|MASt3R]] produce direct 3D measurements but their offline SfM pipelines (MASt3R-SfM) do not scale to real-time and have quadratic complexity.
 
 ## Method
 
@@ -48,8 +48,8 @@ MASt3R-SLAM demonstrates that off-the-shelf two-view 3D reconstruction priors ca
 
 ## Relation to prior work
 
-- Built entirely on [[MASt3R]] (successor of [[DUSt3R]]) as the geometric prior, contrasting with DROID-SLAM's end-to-end learned approach.
-- Uses [[MASt3R]]-SfM's ASMK retrieval framework, adapted for incremental online operation.
+- Built entirely on [[mast3r|MASt3R]] (successor of [[dust3r|DUSt3R]]) as the geometric prior, contrasting with DROID-SLAM's end-to-end learned approach.
+- Uses [[mast3r|MASt3R]]-SfM's ASMK retrieval framework, adapted for incremental online operation.
 - Ray-based error formulation inspired by generic camera calibration methods, avoiding parametric camera model assumptions.
 - Competes with DROID-SLAM, DPV-SLAM, GO-SLAM, and NICER-SLAM.
 - Pointmap fusion is inspired by classical filtering approaches in SLAM (e.g., EKF-SLAM), applied to MASt3R predictions.
@@ -63,10 +63,10 @@ MASt3R-SLAM demonstrates that off-the-shelf two-view 3D reconstruction priors ca
 
 ## References added to the wiki
 
-- [[MASt3R]]
-- [[DUSt3R]]
+- [[mast3r|MASt3R]]
+- [[dust3r|DUSt3R]]
 - [[SLAM]]
-- [[DROID-SLAM]]
+- [[droid-slam|DROID-SLAM]]
 - [[Sim3]]
 - [[bundle-adjustment]]
 - [[loop-closure]]

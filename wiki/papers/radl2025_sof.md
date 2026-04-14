@@ -48,7 +48,7 @@ SOF makes high-quality mesh extraction from Gaussian Splatting practical for lar
 - Directly extends **Gaussian Opacity Fields (GOF)** with improved sorting and opacity formulation.
 - Builds on [[3d-gaussian-splatting]] and its surface-oriented variants: [[2d-gaussian-splatting]], PGSR, RaDe-GS.
 - Mesh extraction via [[marching-cubes]] on the opacity/level-set field.
-- Contrasts with [[SDF]]-based methods (NeuS, VolSDF, Neuralangelo) which are slower but may provide smoother surfaces.
+- Contrasts with [[signed-distance-field|SDF]]-based methods (NeuS, VolSDF, Neuralangelo) which are slower but may provide smoother surfaces.
 - Compared against 3DGS, Mip-Splatting, GOF, [[2d-gaussian-splatting]] for NVS.
 
 ## Open questions / limitations

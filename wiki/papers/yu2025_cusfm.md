@@ -14,11 +14,11 @@ status: draft
 
 ## TL;DR
 
-CuSfM is a CUDA-accelerated offline [[structure-from-motion]] system from NVIDIA designed for autonomous driving scenarios. It leverages GPU parallelization with computationally intensive yet accurate feature extractors (ALIKED via TensorRT), non-redundant data association, and a multi-stage factor graph optimization to achieve significantly improved accuracy and speed over [[COLMAP]] and [[GLOMAP]], with additional support for multi-camera rig extrinsic refinement.
+CuSfM is a CUDA-accelerated offline [[structure-from-motion]] system from NVIDIA designed for autonomous driving scenarios. It leverages GPU parallelization with computationally intensive yet accurate feature extractors (ALIKED via TensorRT), non-redundant data association, and a multi-stage factor graph optimization to achieve significantly improved accuracy and speed over [[colmap|COLMAP]] and [[GLOMAP]], with additional support for multi-camera rig extrinsic refinement.
 
 ## Problem
 
-Standard SfM systems like [[COLMAP]] and [[GLOMAP]] are designed for general monocular unstructured image collections and frequently fail or produce incomplete trajectories on autonomous driving data. They cannot leverage prior trajectory information (from SLAM or odometry), handle multi-camera vehicle rigs, or scale efficiently to the sequential structure of driving sequences. This makes them unsuitable for industrial applications requiring accurate offline pose refinement for downstream dense reconstruction.
+Standard SfM systems like [[colmap|COLMAP]] and [[GLOMAP]] are designed for general monocular unstructured image collections and frequently fail or produce incomplete trajectories on autonomous driving data. They cannot leverage prior trajectory information (from SLAM or odometry), handle multi-camera vehicle rigs, or scale efficiently to the sequential structure of driving sequences. This makes them unsuitable for industrial applications requiring accurate offline pose refinement for downstream dense reconstruction.
 
 ## Method
 
@@ -47,11 +47,11 @@ See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM
 
 ## Relation to prior work
 
-- Competes directly with [[COLMAP]] and [[GLOMAP]] but tailored for sequential driving data with prior pose information.
+- Competes directly with [[colmap|COLMAP]] and [[GLOMAP]] but tailored for sequential driving data with prior pose information.
 - Uses PyCuVSLAM or ORB-SLAM2 for initial trajectory estimates, refining them through global optimization.
 - Employs Ceres Solver for [[bundle-adjustment]], same backend as COLMAP/GLOMAP but with GPU-accelerated preprocessing.
 - ALIKED features replace SIFT-GPU for more robust matching in driving scenarios.
-- Downstream applications include [[3d-gaussian-splatting]] and [[NeRF]] dense reconstruction.
+- Downstream applications include [[3d-gaussian-splatting]] and [[nerf|NeRF]] dense reconstruction.
 
 ## Open questions / limitations
 
@@ -63,12 +63,12 @@ See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM
 ## References added to the wiki
 
 - [[structure-from-motion]]
-- [[COLMAP]]
+- [[colmap|COLMAP]]
 - [[GLOMAP]]
 - [[bundle-adjustment]]
 - [[Ceres-Solver]]
 - [[ORB-SLAM2]]
 - [[3d-gaussian-splatting]]
-- [[NeRF]]
+- [[nerf|NeRF]]
 - [[ALIKED]]
 - [[factor-graph]]

@@ -18,12 +18,12 @@ DroneSplat is a [[3d-gaussian-splatting]] framework designed for robust 3D recon
 
 ## Problem
 
-Drone-captured imagery in wild environments contains moving objects (vehicles, people) that violate the static-scene assumption of [[NeRF]] and [[3d-gaussian-splatting]], causing artifacts. Additionally, individual scene regions may only be covered by a few drone views, leading to overfitting and poor novel-view quality. Existing methods either rely on predefined semantic categories for distractor removal or apply hard thresholds that do not adapt across scenes and training stages.
+Drone-captured imagery in wild environments contains moving objects (vehicles, people) that violate the static-scene assumption of [[nerf|NeRF]] and [[3d-gaussian-splatting]], causing artifacts. Additionally, individual scene regions may only be covered by a few drone views, leading to overfitting and poor novel-view quality. Existing methods either rely on predefined semantic categories for distractor removal or apply hard thresholds that do not adapt across scenes and training stages.
 
 ## Method
 
 1. **Adaptive Local-Global Masking**: Combines residual-based statistical detection with pixel-level segmentation. The local masking threshold adapts based on real-time reconstruction residuals and segmentation results. Global masking tracks high-residual candidates across the full scene context. This avoids fixed thresholds and predefined distractor categories.
-2. **Geometric-Aware Point Sampling**: Uses a multi-view stereo model (DUSt3R-based) to predict dense 3D points, providing rich geometric priors for Gaussian initialization beyond [[COLMAP]] sparse points.
+2. **Geometric-Aware Point Sampling**: Uses a multi-view stereo model (DUSt3R-based) to predict dense 3D points, providing rich geometric priors for Gaussian initialization beyond [[colmap|COLMAP]] sparse points.
 3. **Voxel-Guided Optimization**: Constructs a voxel grid from MVS predictions and applies depth distortion loss and geometric constraints to regularize [[3d-gaussian-splatting]] optimization, preventing overfitting in sparse-view regions.
 4. **DroneSplat Dataset**: A new benchmark of 24 drone-captured sequences with dynamic and static scenes at varying dynamics levels.
 
@@ -45,7 +45,7 @@ DroneSplat is among the first methods to jointly handle dynamic distractors and 
 - Extends distractor handling ideas from RobustNeRF and NeRF On-the-go to the Gaussian splatting setting with adaptive thresholds.
 - Uses [[multi-view-stereo]] predictions (DUSt3R) for initialization, similar to InstantSplat but with added voxel-guided optimization.
 - Compared against [[Mip-Splatting]], GS-W, WildGaussians, FSGS, and [[Scaffold-GS]].
-- Related to [[COLMAP]]-free reconstruction paradigms.
+- Related to [[colmap|COLMAP]]-free reconstruction paradigms.
 
 ## Open questions / limitations
 
@@ -58,7 +58,7 @@ DroneSplat is among the first methods to jointly handle dynamic distractors and 
 
 - [[3d-gaussian-splatting]]
 - [[multi-view-stereo]]
-- [[NeRF]]
-- [[COLMAP]]
+- [[nerf|NeRF]]
+- [[colmap|COLMAP]]
 - [[Mip-Splatting]]
 - [[Scaffold-GS]]

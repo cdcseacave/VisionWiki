@@ -7,6 +7,7 @@ see [CLAUDE.md](CLAUDE.md).
 ## Papers
 
 ### SfM / SLAM
+- [GLOMAP](wiki/papers/pan2024_glomap.md) — global SfM matching COLMAP accuracy, orders of magnitude faster · _2026-04-14_
 - [InstantSfM](wiki/papers/zhong2026_instantsfm.md) — GPU-native global SfM, 40x faster than COLMAP · _2026-04-12_
 - [MP-SfM](wiki/papers/pataki2025_mp-sfm.md) — monocular depth/normal priors for robust incremental SfM · _2026-04-12_
 - [VPGS-SLAM](wiki/papers/deng2026_vpgs-slam.md) — voxel-based progressive 3DGS SLAM for large scenes · _2026-04-12_
@@ -28,6 +29,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [SpatialLM](wiki/papers/mao2025_spatiallm.md) — LLM fine-tuned on point clouds for structured indoor modeling · _2026-04-12_
 
 ### Radiance Fields
+- [Zip-NeRF](wiki/papers/barron2023_zip-nerf.md) — anti-aliased hash-grid NeRF, 8× lower error than Mip-NeRF 360 · _2026-04-14_
 - [VastGaussian](wiki/papers/lin2024_vastgaussian.md) — first real-time 3DGS for aerial/city scenes via partitioning + decoupled appearance · _2026-04-14_
 - [GauSS-MI](wiki/papers/xie2025_gauss-mi.md) — real-time mutual information for active 3DGS view selection · _2026-04-12_
 - [DroneSplat](wiki/papers/tang2025_dronesplat.md) — robust 3DGS from in-the-wild drone imagery · _2026-04-12_
@@ -38,6 +40,8 @@ see [CLAUDE.md](CLAUDE.md).
 - [EA-3DGS](wiki/papers/guo2025_ea-3dgs.md) — efficient adaptive 3DGS with 5.2x compression for outdoor · _2026-04-12_
 
 ### MVS / Depth
+- [COLMAP MVS (Schönberger 2016)](wiki/papers/schonberger2016_colmap-mvs.md) — pixelwise view selection PatchMatch MVS, canonical classical baseline · _2026-04-14_
+- [MVSNet](wiki/papers/yao2018_mvsnet.md) — first end-to-end deep MVS via plane-sweep cost volume · _2026-04-14_
 - [Multi-view Dense Matching](wiki/papers/chebbi2025_multiview-dense-matching.md) — similarity learning extended to multi-view without retraining · _2026-04-12_
 - [Pow3R](wiki/papers/jang2025_pow3r.md) — conditioning DUSt3R with camera priors for native-resolution 3D · _2026-04-12_
 
@@ -48,6 +52,9 @@ see [CLAUDE.md](CLAUDE.md).
 - [RoMa v2](wiki/papers/edstedt2025_roma-v2.md) — dense matcher with DINOv3 backbone, SOTA correspondence · _2026-04-12_
 
 ### Fundamentals
+- [CLIP](wiki/papers/radford2021_clip.md) — contrastive vision-language pretraining, zero-shot classification · _2026-04-14_
+- [DINOv2](wiki/papers/oquab2023_dinov2.md) — self-supervised ViT foundation features on 142M curated images · _2026-04-14_
+- [Segment Anything (SAM)](wiki/papers/kirillov2023_sam.md) — promptable segmentation foundation model + SA-1B dataset · _2026-04-14_
 - [SD-RPN](wiki/papers/shi2026_self-distilled-roi.md) — self-distilled RoI predictors for fine-grained MLLM perception · _2026-04-12_
 - [RADIOv2.5](wiki/papers/heinrich2025_radiov25.md) — agglomerative vision foundation model distilling CLIP+DINOv2+SAM · _2026-04-12_
 - [Trident](wiki/papers/shi2024_open-vocab-segmentation.md) — training-free open vocabulary segmentation via CLIP+DINO+SAM · _2026-04-12_
@@ -63,8 +70,16 @@ see [CLAUDE.md](CLAUDE.md).
 - [VGGT](wiki/methods/vggt.md) — Visual Geometry Grounded Transformer · _stub_
 - [DROID-SLAM](wiki/methods/droid-slam.md) — dense visual SLAM with differentiable BA · _stub_
 - [Marching Cubes](wiki/methods/marching-cubes.md) — isosurface extraction from volumetric fields · _stub_
+- [GLOMAP](wiki/methods/glomap.md) — global SfM alternative to COLMAP · _stub_
+- [DINOv2](wiki/methods/dinov2.md) — self-supervised ViT foundation features · _stub_
+- [Zip-NeRF](wiki/methods/zip-nerf.md) — anti-aliased grid-based NeRF · _stub_
+- [SAM](wiki/methods/sam.md) — promptable segmentation foundation model · _stub_
+- [CLIP](wiki/methods/clip.md) — contrastive vision-language embedding · _stub_
 
 ## Concepts
+- [Structure from Motion](wiki/concepts/structure-from-motion.md) — classical pipeline and paradigms · _stub_
+- [Multi-View Stereo](wiki/concepts/multi-view-stereo.md) — dense reconstruction from posed images · _stub_
+- [TSDF](wiki/concepts/tsdf.md) — truncated signed distance field for depth fusion · _stub_
 - [Bundle Adjustment](wiki/concepts/bundle-adjustment.md) — joint optimization of cameras + 3D points · _stub_
 - [Signed Distance Field](wiki/concepts/signed-distance-field.md) — implicit surface representation · _stub_
 - [Differentiable Rendering](wiki/concepts/differentiable-rendering.md) — gradient-based 3D optimization via rendering · _stub_
@@ -93,4 +108,4 @@ _(empty)_
 
 ---
 
-_Last rebuilt: 2026-04-14 · 33 papers, 9 methods, 8 concepts, 6 threads, 1 design_
+_Last rebuilt: 2026-04-14 · 40 papers, 14 methods, 11 concepts, 6 threads, 1 design_
