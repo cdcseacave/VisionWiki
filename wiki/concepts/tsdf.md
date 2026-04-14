@@ -4,8 +4,8 @@ type: concept
 tags: [sdf, volumetric, fusion, meshing]
 created: 2026-04-14
 updated: 2026-04-14
-sources: []
-status: stub
+sources: [wiki/papers/curless1996_tsdf.md]
+status: draft
 ---
 
 ## What it is
@@ -27,7 +27,7 @@ A **TSDF** is a voxel grid storing a signed distance to the nearest surface, *tr
 - **−** Memory scales cubically; fine detail requires hierarchical voxel structures (VDB, octrees).
 
 ## Key references
-- Curless & Levoy 1996, *A Volumetric Method for Building Complex Models from Range Images* — SIGGRAPH; the original TSDF formulation. No arXiv; [PDF (Stanford)](https://graphics.stanford.edu/papers/volrange/volrange.pdf).
-- Newcombe et al. 2011, *KinectFusion: Real-Time Dense Surface Mapping and Tracking* — ISMAR; the real-time GPU-TSDF pipeline. No arXiv.
+- [Curless & Levoy 1996](../papers/curless1996_tsdf.md) · [pdf](../../papers/mesh-reconstruction/curless_1996_tsdf.pdf) — SIGGRAPH; the original TSDF formulation.
+- Newcombe et al. 2011, *KinectFusion: Real-Time Dense Surface Mapping and Tracking* — ISMAR; the real-time GPU-TSDF pipeline. No arXiv preprint.
 
-> [!needs-source] — canonical TSDF sources not on arXiv; not yet ingested into `papers/`.
+> [!needs-source] — KinectFusion not yet ingested.

@@ -4,7 +4,7 @@ type: concept
 tags: [sfm, 3d-reconstruction, pose-estimation]
 created: 2026-04-14
 updated: 2026-04-14
-sources: [wiki/papers/pan2024_glomap.md]
+sources: [wiki/papers/schonberger2016_colmap-sfm.md, wiki/papers/pan2024_glomap.md]
 status: draft
 ---
 
@@ -36,8 +36,6 @@ Structure from Motion (SfM) is the joint estimation of **camera poses** and **sp
 - Can learned methods produce calibration-quality poses or only "good enough" for downstream tasks?
 
 ## Key references
+- [Schönberger & Frahm 2016 (COLMAP SfM)](../papers/schonberger2016_colmap-sfm.md) · [pdf](../../papers/sfm-slam/schonberger_2016_colmap-sfm.pdf) — CVPR 2016; canonical incremental SfM pipeline.
 - [Pan et al. 2024 (GLOMAP)](../papers/pan2024_glomap.md) · [pdf](../../papers/sfm-slam/pan_2024_glomap.pdf) — global SfM, orders of magnitude faster than COLMAP.
-- Schönberger & Frahm 2016 (COLMAP SfM) — CVPR 2016, no arXiv version; see [SfM revisited](https://openaccess.thecvf.com/content_cvpr_2016/papers/Schonberger_Structure-From-Motion_Revisited_CVPR_2016_paper.pdf).
 - Hartley & Zisserman, *Multiple View Geometry in Computer Vision* (2003) — the textbook reference.
-
-> [!needs-source] — canonical COLMAP SfM paper (CVPR 2016) not yet ingested; no arXiv preprint available.

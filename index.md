@@ -7,6 +7,7 @@ see [CLAUDE.md](CLAUDE.md).
 ## Papers
 
 ### SfM / SLAM
+- [COLMAP SfM (Schönberger 2016)](wiki/papers/schonberger2016_colmap-sfm.md) — canonical incremental SfM, CVPR 2016 · _2026-04-14_
 - [GLOMAP](wiki/papers/pan2024_glomap.md) — global SfM matching COLMAP accuracy, orders of magnitude faster · _2026-04-14_
 - [InstantSfM](wiki/papers/zhong2026_instantsfm.md) — GPU-native global SfM, 40x faster than COLMAP · _2026-04-12_
 - [MP-SfM](wiki/papers/pataki2025_mp-sfm.md) — monocular depth/normal priors for robust incremental SfM · _2026-04-12_
@@ -19,6 +20,8 @@ see [CLAUDE.md](CLAUDE.md).
 - [ZipMap](wiki/papers/jin2026_zipmap.md) — linear-time bidirectional reconstruction, 20x faster than VGGT · _2026-04-12_
 
 ### Mesh Reconstruction
+- [TSDF (Curless & Levoy 1996)](wiki/papers/curless1996_tsdf.md) — canonical volumetric fusion from range images · _2026-04-14_
+- [SAM 3D](wiki/papers/chen2025_sam-3d.md) — single-image 3D reconstruction via latent flow matching (Meta) · _2026-04-14_
 - [GeoSVR](wiki/papers/li2025_geosvr.md) — sparse voxels with uncertainty depth for SOTA surface reconstruction · _2026-04-12_
 - [VA-GS](wiki/papers/li2025_va-gs.md) — multi-faceted view alignment for 3DGS surface quality · _2026-04-12_
 - [AniSDF](wiki/papers/gao2025_anisdf.md) — fused-granularity SDF with anisotropic encoding for reflective objects · _2026-04-12_
@@ -54,7 +57,9 @@ see [CLAUDE.md](CLAUDE.md).
 ### Fundamentals
 - [CLIP](wiki/papers/radford2021_clip.md) — contrastive vision-language pretraining, zero-shot classification · _2026-04-14_
 - [DINOv2](wiki/papers/oquab2023_dinov2.md) — self-supervised ViT foundation features on 142M curated images · _2026-04-14_
+- [DINOv3](wiki/papers/simeoni2025_dinov3.md) — scaled DINOv2 with Gram anchoring + post-hoc text alignment · _2026-04-14_
 - [Segment Anything (SAM)](wiki/papers/kirillov2023_sam.md) — promptable segmentation foundation model + SA-1B dataset · _2026-04-14_
+- [SAM 3](wiki/papers/carion2026_sam-3.md) — Promptable Concept Segmentation (text + exemplars), 2× prior SOTA · _2026-04-14_
 - [SD-RPN](wiki/papers/shi2026_self-distilled-roi.md) — self-distilled RoI predictors for fine-grained MLLM perception · _2026-04-12_
 - [RADIOv2.5](wiki/papers/heinrich2025_radiov25.md) — agglomerative vision foundation model distilling CLIP+DINOv2+SAM · _2026-04-12_
 - [Trident](wiki/papers/shi2024_open-vocab-segmentation.md) — training-free open vocabulary segmentation via CLIP+DINO+SAM · _2026-04-12_
@@ -108,4 +113,4 @@ _(empty)_
 
 ---
 
-_Last rebuilt: 2026-04-14 · 40 papers, 14 methods, 11 concepts, 6 threads, 1 design_
+_Last rebuilt: 2026-04-14 · 45 papers, 14 methods, 11 concepts, 6 threads, 1 design_

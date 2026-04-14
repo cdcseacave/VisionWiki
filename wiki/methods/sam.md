@@ -23,7 +23,9 @@ SAM (Kirillov et al. 2023, Meta AI) is a **promptable segmentation foundation mo
 - Backbone for the "segmented Gaussian Splatting" line of work.
 
 ## Variants & lineage
-- SAM → SAM 2 (video, 2024) → Grounded-SAM (language-driven prompting).
+- SAM (2023) → SAM 2 (video, 2024) → [SAM 3](../papers/carion2026_sam-3.md) (2026) — Promptable Concept Segmentation with text + image exemplars.
+- Sibling: [SAM 3D](../papers/chen2025_sam-3d.md) (2025) — single-image 3D reconstruction under the Segment Anything umbrella.
+- Also: Grounded-SAM (language-driven prompting, CLIP + SAM composition).
 
 ## Key references
 - [Kirillov et al. 2023](../papers/kirillov2023_sam.md) · [pdf](../../papers/fundamentals/kirillov_2023_sam.pdf) — canonical SAM paper, ICCV 2023.

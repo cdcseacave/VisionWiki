@@ -25,7 +25,7 @@ DINOv2 is a **self-supervised vision foundation model** (Meta, 2023) producing d
 - Establishes the "frozen foundation backbone + task head" pattern now standard in 2025–2026 3D vision.
 
 ## Variants & lineage
-- DINO (2021) → DINOv2 (2023) → DINOv3 (2024).
+- DINO (2021) → DINOv2 (2023) → [DINOv3](../papers/simeoni2025_dinov3.md) (2025) — Gram anchoring + post-hoc resolution/text alignment.
 
 ## Key references
 - [Oquab et al. 2023](../papers/oquab2023_dinov2.md) · [pdf](../../papers/fundamentals/oquab_2023_dinov2.pdf) — canonical DINOv2 paper.

@@ -155,3 +155,18 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Notable: arXiv 1607.08203 is Schönberger's **MVS** paper, not the SfM paper; the CVPR 2016 COLMAP SfM paper has no arXiv version. wiki/concepts/structure-from-motion.md retains a `[!needs-source]` flag for that.
 - Notable: Curless & Levoy 1996 (TSDF) and KinectFusion have no arXiv — wiki/concepts/tsdf.md retains `[!needs-source]` with external references.
 - raw/ confirmed empty after ingest.
+
+## [2026-04-14] ingest (batch, 5 papers + 2 duplicates)
+- raw/ scan: 7 files. Deleted duplicates (2103.00020v1 = CLIP, 2304.07193v2 = DINOv2; both already ingested).
+- Ingested:
+  - schoenberger2016sfm.pdf → papers/sfm-slam/schonberger_2016_colmap-sfm.pdf (**fills structure-from-motion needs-source**)
+  - volrange.pdf → papers/mesh-reconstruction/curless_1996_tsdf.pdf (**fills tsdf needs-source**)
+  - 2508.10104v1.pdf → papers/fundamentals/simeoni_2025_dinov3.pdf (DINOv3)
+  - 2511.16719v2.pdf → papers/fundamentals/carion_2026_sam-3.pdf (SAM 3)
+  - 586242263_*.pdf → papers/mesh-reconstruction/chen_2025_sam-3d.pdf (SAM 3D; no arXiv)
+- Created paper pages: schonberger2016_colmap-sfm, curless1996_tsdf, simeoni2025_dinov3, carion2026_sam-3, chen2025_sam-3d.
+- Updated: wiki/concepts/structure-from-motion.md (sources + needs-source removed), wiki/concepts/tsdf.md (sources + primary needs-source removed; KinectFusion still flagged), wiki/methods/colmap.md (SfM paper citation added), wiki/methods/dinov2.md (DINOv3 lineage), wiki/methods/sam.md (SAM 3 + SAM 3D lineage).
+- Updated: index.md (+5 paper rows), paper count 40 → 45.
+- Notable: SAM 3D has no arXiv preprint — distributed via Meta AI blog + code release. Used Meta project URL in frontmatter.
+- Notable: The CVPR-only SfM paper gap in the wiki is now closed; all core classical pipeline references (SfM + MVS + TSDF + marching cubes origins) are present.
+- raw/ confirmed empty.
