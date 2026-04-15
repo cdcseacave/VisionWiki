@@ -271,3 +271,9 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Pipeline impact: gpu-native-sfm: baseline formalized + 3 bets · gaussian-to-mesh-pipelines: 3 pipelines formalized + 3 bets · Pass B on all 5 papers.
 - Synthesis bets proposed: CoMe-confidence as TSDF fusion weight · PGSR+VA-GS+CoMe stacked regularization · MILo + CoMe hybrid · differentiable joint SfM+3DGS training · MVSNet learned-MVS inside CoMe pipeline.
 - Notable: explicit "external vs. self-supervised depth" contradiction flagged in gaussian-to-mesh-pipelines — unresolved; candidate for a future thread-level resolution.
+
+## [2026-04-15] reingest-batch | Batch 3 — Feature matching & dense matching (2 papers)
+- Re-ingested: edstedt2025_roma-v2, chebbi2025_multiview-dense-matching
+- Added `## Pipeline contribution` to both.
+- Pipeline impact: foundation-features-for-geometry task-head slot formalized around RoMa v2; covariance output identified as the missing input for [[gpu-native-sfm]]'s multi-prior-Jacobian synthesis bet. Chebbi adds an aerial/satellite MVS lane as a candidate depth source for VastGaussian/DroneSplat preprocessing.
+- Synthesis bet proposed: RoMa v2 covariance → InstantSfM Jacobian weighting (mixes [edstedt2025_roma-v2] + [zhong2026_instantsfm]).

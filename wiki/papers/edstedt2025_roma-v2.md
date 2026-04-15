@@ -64,6 +64,14 @@ Curated mixture of wide-baseline (MegaDepth, AerialMegaDepth, TartanAir V2, MapF
 
 RoMa v2 advances the state of the art in dense feature matching by resolving the tension between robustness (frozen foundation features), accuracy (sub-pixel precision with covariance), and efficiency (decoupled training, CUDA kernels). Dense matching is foundational for visual localization, 3D reconstruction, and SLAM, so improvements here propagate to many downstream tasks. The predictive covariance output is particularly valuable for robust geometry estimation.
 
+## Pipeline contribution
+
+- **Frozen DINOv3 features + ViT-B multi-view transformer coarse matcher (N1)** — alternating frame-wise / global attention; replaces RoMa's Gaussian Process. candidate thread: [[foundation-features-for-geometry]] · stage: *task head: dense correspondence* · replaces/augments: *LoFTR/SuperGlue/RoMa* · expected gain: SOTA pose-AUC on MegaDepth-1500 + ScanNet-1500 + WxBS + new SatAst benchmark; directly slot-in to the thread's "task head" stage on top of DINOv3.
+- **Per-pixel Cholesky-parameterized 2×2 precision matrix prediction (N2)** — outputs per-pixel covariance of the match. candidate thread: [[gpu-native-sfm]] · stage: *RANSAC / Sampson-error weighting in BA* · replaces/augments: *uniform match weights* · expected gain: improved downstream geometry estimation when used as weights in Sampson optimization (paper demonstrates this).
+- **EMA for sub-pixel-bias removal (N3)** — 0.999-decay moving average during training. candidate thread: *general* · stage: *matcher training* · expected gain: eliminates ~0.1-px training-dependent bias; generalizable to any pixel-regression head.
+- **Custom CUDA local-correlation kernel + stride-4 coarse matching (N4)** — memory + speed win. candidate thread: [[foundation-features-for-geometry]] · stage: *inference-time efficiency* · expected gain: significant speedup over RoMa enabling real-time / batched matching.
+- **Synthesis-bet-adjacent**: RoMa v2's covariance output is the missing input for the "multi-prior Jacobian fusion" bet in [[gpu-native-sfm]] — its covariance can replace uniform-weight matches in InstantSfM's BA residuals.
+
 ## Relation to prior work
 
 - Builds on [[RoMa]] (Edstedt et al., CVPR 2024) and addresses its limitations

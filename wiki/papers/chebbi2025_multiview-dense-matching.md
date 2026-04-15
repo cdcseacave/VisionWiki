@@ -47,6 +47,13 @@ The core idea is to decouple training (on epipolar stereo pairs) from multi-view
 
 This work demonstrates that powerful multi-view dense matching can be achieved by training only on stereo pairs and leveraging geometric priors at inference time. This dramatically reduces training data requirements and enables deployment on large-scale aerial and satellite photogrammetry projects where multi-view training datasets are scarce. The integration into [[MicMac]] makes it immediately practical for operational photogrammetry pipelines.
 
+## Pipeline contribution
+
+- **Train-stereo-test-multiview via inference-time geometric priors (N1)** — features trained on epipolar pairs, at inference warped to rotation-aligned geometries (epipolar or homographic) then plane-swept for arbitrary N views. candidate thread: [[mono-depth-estimation]] / *multi-view depth for aerial / satellite* · stage: *multi-view depth from only-stereo-trained features* · replaces/augments: *end-to-end MVSNet requiring multi-view GT* · expected gain: matches in-distribution; generalizes OOD where PSMNet / end-to-end MVS collapse; 8–10× lighter than U-Net variants (MS-AFF).
+- **Lightweight MS-AFF backbone (N2)** — custom CNN architecture. candidate thread: *aerial / satellite MVS frontend* · expected gain: accuracy parity with U-Net at a fraction of the cost; candidate for the depth-source slot in [[gaussian-to-mesh-pipelines]]' Pipeline A when aerial capture is the target.
+- **Multi-resolution handcrafted-to-learned cascade (N3)** — NCC at coarse levels, learned features only at higher resolutions. candidate thread: *MVS* · stage: *cost-volume initialization* · expected gain: robustness on low-GSD imagery where learned features don't yet work.
+- **Role in the wiki**: adds a distinct *aerial/satellite MVS lane* to the threads — candidate depth source for [[lin2024_vastgaussian|VastGaussian]] and [[tang2025_dronesplat|DroneSplat]]'s preprocessing, both of which are aerial 3DGS methods that currently rely on classical MVS.
+
 ## Relation to prior work
 
 - Extends [[DeepSimNets]] (Chebbi et al., 2023) from stereo to multi-view

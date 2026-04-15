@@ -50,8 +50,8 @@ Primary threads: `gpu-native-sfm`, `gaussian-to-mesh-pipelines`, and all benchma
 
 Primary thread: `foundation-features-for-geometry`
 
-- ☐ edstedt_2025_roma-v2
-- ☐ chebbi_2025_multiview-dense-matching
+- ✓ edstedt_2025_roma-v2
+- ✓ chebbi_2025_multiview-dense-matching
 
 ## Batch 4 — SfM / SLAM / feed-forward 3D
 
