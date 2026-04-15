@@ -45,6 +45,14 @@ Mesh extraction follows the SOF pipeline using [[marching-cubes]] on the opacity
 
 This work shows that the key to better mesh extraction from Gaussians is not more complex architectures but smarter loss balancing. The confidence framework is simple, efficient, and self-supervised -- it does not require pre-trained models or multi-view consistency checks at test time. The SSIM decoupling insight is particularly elegant: standard appearance embeddings inadvertently hide geometric errors by compensating for structure/contrast differences.
 
+## Pipeline contribution
+
+- **Self-supervised per-Gaussian confidence loss $\mathcal{L}_{conf}$ (N1)** — learnable scalar per primitive dynamically balances photometric vs geometric supervision; high-confidence → more geometric, low-confidence (view-dependent) → more photometric. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm A · stage: *loss balancing* · replaces/augments: *hand-tuned photometric/geometric weights* · expected gain: T&T F1 0.521 (SOTA) in 20 min; 26% primitive-count reduction at 0.02 dB NVS cost.
+- **Per-primitive color + normal variance losses (N2)** — $\mathcal{L}_{color\text{-}var}$ + $\mathcal{L}_{normal\text{-}var}$ constrain every primitive to align with surfaces. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *primitive-level geometric regularization* · replaces/augments: *global reprojection consistency alone* · expected gain: surface-adherent primitives; removes spurious geometry.
+- **SSIM-decoupled appearance embedding (N3)** — decomposes D-SSIM into $l \cdot c \cdot s$; appearance embedding compensates only luminance. candidate thread: [[radiance-field-evolution]] · stage: *appearance drift compensation* · replaces/augments: *VastGaussian's L1/D-SSIM split* · expected gain: prevents appearance model from masking geometric errors; strict refinement of VastGaussian.
+- **Confidence weight as TSDF fusion weight (cross-pipeline synthesis)** — CoMe's per-Gaussian confidence can serve as [curless1996_tsdf]'s incremental weighting term; the mechanism existed since 1996 with no per-sample source until now.
+- **Role**: CoMe is the **current SOTA of Pipeline A** in [[gaussian-to-mesh-pipelines]]. The contradiction with [kim2025_multiview-geometric-gs] (external MVS > self-supervised depth) is the thread's open tension. Integration design for nerfstudio/visiofacto lives at [[come-integration-nerfstudio]].
+
 ## Relation to prior work
 
 - Directly builds on **SOF** ([[radl2025_sof]]) for the base pipeline and mesh extraction.

@@ -38,6 +38,13 @@ Vanilla 3DGS excels at rendering but produces **noisy, inconsistent surfaces**: 
 
 Strong evidence that the 3DGS ↔ surface gap is a **regularization problem, not a representation problem** — explicit planar constraints + unbiased depth close most of the distance to neural-SDF quality while preserving 3DGS's speed. Natural fit for the [[gaussian-to-mesh-pipelines]] thread.
 
+## Pipeline contribution
+
+- **Flattened-Gaussian constraint + unbiased depth rendering (N1)** — smallest-eigenvalue penalty → oriented disks; depth = (dist-to-plane)/(view-dir · normal). candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm A · stage: *primitive geometry constraint* · replaces/augments: *α-composited depth (biased)* · expected gain: closes most of the gap to neural-SDF methods without external priors; SOTA on DTU/T&T/Mip-360 among 3DGS surface methods.
+- **Single-view geometric regularization (N2)** — rendered normals + depth co-planarity of neighbors. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *per-view loss* · expected gain: local surface smoothness.
+- **Multi-view photometric + geometric consistency (N3)** — PatchMatch-style cross-view consistency. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *multi-view loss* · replaces/augments: *external MVS depth supervision (Kim 2025)* · expected gain: works without external priors.
+- **Synthesis-bet contribution**: *PGSR's planar constraint + CoMe's confidence-weighted fusion + Kim 2025's MVS depth supervision* all apply to different sub-problems of the same pipeline. Stacked, they should surpass any individual component — this is the Pipeline-A composition bet formalized in [[gaussian-to-mesh-pipelines]].
+
 ## Relation to prior work
 
 - Extends [[3d-gaussian-splatting]] with planarity + unbiased depth.

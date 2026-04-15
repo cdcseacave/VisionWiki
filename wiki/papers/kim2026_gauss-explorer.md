@@ -40,6 +40,12 @@ GaussExplorer bridges these by using 3DGS's continuous novel-view synthesis as a
 
 Represents a **consumer-side** use of lifted 3D representations: embodied agents treating 3DGS as a queryable spatial database on which a VLM performs structured reasoning. Moves beyond "segment / edit the scene" (Gaussian Grouping, LangSplat, Seg-Wild) into "reason about the scene". Adjacent to the [[lifting-foundation-models-to-3d]] thread but on the reasoning/output end rather than the training/encoding end.
 
+## Pipeline contribution
+
+- **Query-driven novel-view synthesis for VLM evidence (N1)** — 3DGS used as a queryable scene database; VLM requests views, 3DGS renders. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *inference-time VLM reasoning on 3DGS* · replaces/augments: *fixed-pre-captured-view reasoning (3D-Mem)* and *per-Gaussian feature distillation (LangSplat)* · expected gain: compositional-reasoning benchmark wins where single-view or feature-lifted methods fail.
+- **Pre-captured view retrieval + novel-view adjustment iterative loop (N2)** — top-K retrieval, neighborhood exploration, information-gain scoring. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *view selection policy* · replaces/augments: *static retrieval* · expected gain: covers queries where no training view is sufficient.
+- **Role**: GaussExplorer is the **consumer side** of lifted 3D — doesn't train per-Gaussian features, but consumes them. Sits opposite the per-scene-distillation papers (LangSplat, Gaussian Grouping) as the inference-time-reasoning alternative in the thread's axis-2 classification.
+
 ## Relation to prior work
 
 - Builds on language-embedded 3DGS ([[qin2024_langsplat|LangSplat]], [[jiao2025_clip-gs|CLIP-GS]], Feature-3DGS).

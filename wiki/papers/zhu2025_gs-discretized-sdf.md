@@ -42,6 +42,14 @@ Evaluated on Glossy Blender, NeRO, Ref-NeRF, and NeILF++ datasets for relighting
 
 This work provides an elegant solution to the geometry regularization problem in Gaussian-based inverse rendering. By encoding the SDF directly within each Gaussian primitive rather than maintaining a separate continuous field, it achieves the benefits of SDF-based geometry priors (robust decomposition) without the memory and complexity overhead. This advances the goal of creating relightable 3D assets from multi-view images using efficient Gaussian representations.
 
+## Pipeline contribution
+
+- **Per-Gaussian discretized SDF value (N1)** — each Gaussian stores a scalar SDF sample, no separate continuous SDF network. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm A + inverse-rendering · stage: *per-primitive geometry representation* · replaces/augments: *dual continuous SDF + Gaussian networks (GS2Mesh, 3DGSR)* · expected gain: half the memory, simpler training loop, SOTA relighting on Glossy Blender.
+- **SDF-to-opacity transformation with median loss (N2)** — differentiable mapping linking discrete SDF samples to Gaussian opacity; median loss pulls Gaussians onto the zero level set. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *SDF-to-opacity bridge* · replaces/augments: *ad-hoc opacity penalties* · expected gain: Gaussians converge on opaque surface; mesh + appearance from same representation.
+- **Projection-based consistency loss (N3)** — projects Gaussians to zero-level-set, enforces alignment between splat surface and SDF surface. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *SDF-Gaussian consistency* · replaces/augments: *Eikonal loss (not applicable to discrete samples)* · expected gain: discrete-SDF analog of Eikonal, works at splat resolution.
+- **Synthesis-bet**: *CoMe confidence as Zhu 2025's discrete-SDF confidence* — the two self-supervised signals (confidence + SDF) provide complementary geometry/appearance disentanglement.
+- **Role**: adds the **relightable/inverse-rendering** lane to the thread — no pure-mesh-extraction paper does relighting; this is where Gaussian-to-mesh meets physical-rendering.
+
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]] (Kerbl et al., 2023) as the rendering primitive.

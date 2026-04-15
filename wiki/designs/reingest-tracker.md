@@ -94,16 +94,16 @@ Primary thread: `radiance-field-evolution`
 
 Primary thread: `gaussian-to-mesh-pipelines`
 
-- ☐ chen_2024_pgsr
-- ☐ gao_2025_anisdf
-- ☐ guedon_2025_milo
-- ☐ li_2025_geosvr
-- ☐ li_2025_va-gs
-- ☐ radl_2025_sof
-- ☐ radl_2026_confidence-mesh-3dgs
-- ☐ zhu_2025_gs-discretized-sdf
-- ☐ kim_2026_gauss-explorer
-- ☐ xie_2025_gauss-mi
+- ✓ chen_2024_pgsr
+- ✓ gao_2025_anisdf
+- ✓ guedon_2025_milo
+- ✓ li_2025_geosvr
+- ✓ li_2025_va-gs
+- ✓ radl_2025_sof
+- ✓ radl_2026_confidence-mesh-3dgs
+- ✓ zhu_2025_gs-discretized-sdf
+- ✓ kim_2026_gauss-explorer
+- ✓ xie_2025_gauss-mi
 
 ## Batch 8 — Semantic / open-vocab 3D
 

@@ -39,6 +39,14 @@ Evaluated on three simulation scenes (Oil Drum, Drilling Machine, Potted Plant) 
 
 This work bridges information theory and Gaussian splatting for robotics applications. By providing a closed-form, real-time uncertainty metric for [[3d-gaussian-splatting]], it enables autonomous systems to make intelligent decisions about where to look next, which is critical for robotic exploration, inspection, and digital twin creation.
 
+## Pipeline contribution
+
+- **Probabilistic per-Gaussian color variance model (N1)** — SH coefficients as random variables with learned mean + variance. candidate thread: [[radiance-field-evolution]] active-reconstruction lane · stage: *per-primitive uncertainty representation* · replaces/augments: *deterministic SH colors* · expected gain: enables information-theoretic planning without sampling.
+- **Closed-form GauSS-MI criterion (N2)** — analytical expected information gain per novel viewpoint via Shannon MI, propagated through differentiable rendering. candidate thread: [[radiance-field-evolution]] · stage: *next-best-view scoring* · replaces/augments: *FisherRF (not real-time) / FUEL (no visual quality)* · expected gain: real-time NBV at closed-form cost.
+- **End-to-end active reconstruction system (N3)** — criterion + motion planner. candidate thread: *robotics active reconstruction* · expected gain: PSNR 34.35 on Oil Drum in 141 frames vs FUEL's 22.82 in 165.
+- **Synthesis-bet candidate**: *GauSS-MI's color-variance model as CoMe's confidence source* — both are per-Gaussian uncertainty measures; CoMe derives confidence for loss balancing, GauSS-MI derives it for NBV. Unified uncertainty model would serve both.
+- **Role**: the active-reconstruction point in [[radiance-field-evolution]] — evidence that 3DGS is mature enough to serve as a *live* backend, not only offline.
+
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]] (Kerbl et al., 2023) as the underlying scene representation.

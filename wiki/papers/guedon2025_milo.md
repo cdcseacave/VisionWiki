@@ -44,6 +44,13 @@ The method works with any Gaussian splatting backend (demonstrated with RaDe-GS 
 
 MILo is a conceptual advance: instead of extracting meshes as a post-processing afterthought, it makes mesh quality a first-class optimization objective during training. The resulting meshes are dramatically lighter (10x fewer vertices) while being more accurate, making them practical for downstream applications like physics simulation, animation, and real-time rendering. This bridges the gap between volumetric and surface representations.
 
+## Pipeline contribution
+
+- **Delaunay triangulation with Gaussians as differentiable pivots (N1)** — mesh reconstructed at every training step from Gaussian parameters. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm B · stage: *mesh-in-the-loop* · replaces/augments: *post-hoc TSDF + marching cubes* · expected gain: 10× fewer vertices at comparable/better accuracy; directly optimizes final mesh rather than a volumetric proxy.
+- **Bidirectional consistency framework (N2)** — mesh losses backprop to Gaussian parameters. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *loss coupling* · expected gain: ensures Gaussians and mesh encode the same surface; no drift between the two representations.
+- **SDF-from-Gaussians computation (N3)** — signed distance from 3D Gaussians for precise extraction without erosion. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *SDF derivation* · expected gain: geometric precision without a separate SDF network.
+- **Synthesis-bet candidate**: *MILo's Delaunay-in-loop with CoMe's per-Gaussian confidence as vertex weights* — the bet flagged in [[gaussian-to-mesh-pipelines]]. Mechanisms compatible; no paper does this.
+
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]], specifically using the RaDe-GS codebase.

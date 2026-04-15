@@ -291,3 +291,9 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Thread augmented: radiance-field-evolution now carries Goal / 4 parallel Current SOTA pipelines (object-scale / city-scale / NeRF-family / neural-free) / lineage / candidate components / 3 synthesis bets / contradictions.
 - Pipeline impact: radiance-field-evolution stack formalized in 4 regimes; city-scale three-way stack identified (VastGaussian partitioning / EA-3DGS compression / VPGS-SLAM incremental) as open synthesis bet.
 - Synthesis bets proposed: port Mip-NeRF-360 distortion regularizer to 3DGS/SVRaster · stack VastGaussian+EA-3DGS+VPGS-SLAM at city scale · port CamP preconditioner to 3DGS pose-refinement · SVRaster primitives + CoMe confidence + MVS supervision.
+
+## [2026-04-15] reingest-batch | Batch 7 — Gaussian → Mesh & SDF hybrids (10 papers)
+- Re-ingested: chen2024_pgsr, gao2025_anisdf, guedon2025_milo, li2025_geosvr, li2025_va-gs, radl2025_sof, radl2026_confidence-mesh-3dgs, zhu2025_gs-discretized-sdf, kim2026_gauss-explorer, xie2025_gauss-mi
+- Added Pipeline contribution sections to all 10.
+- Pipeline impact: [[gaussian-to-mesh-pipelines]] Paradigm A stack fully enumerated (PGSR planar + VA-GS four-constraint + Kim 2025 MVS supervision + CoMe confidence + SOF meshing backend); Paradigm B = MILo; Paradigm C = GeoSVR / SVRaster; Paradigm D = VGG-T3. Inverse-rendering lane added (Zhu 2025 GS-SDF, AniSDF). Active-reconstruction (GauSS-MI) and VLM-reasoning (GaussExplorer) lanes added.
+- Synthesis bets proposed: MILo Delaunay + CoMe confidence vertex-weighting · VA-GS $\mathcal{L}_f$ swapped to DINOv3 dense features · CoMe confidence as TSDF fusion weight · Zhu 2025 discrete-SDF + CoMe confidence unified uncertainty · GauSS-MI color-variance + CoMe confidence unified uncertainty model.

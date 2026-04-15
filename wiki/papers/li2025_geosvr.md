@@ -43,6 +43,13 @@ Surface extraction uses the opacity field of the sparse voxels, enabling dense m
 
 GeoSVR demonstrates that explicit sparse voxels -- rather than Gaussians or implicit neural fields -- can achieve top-tier surface reconstruction quality with high efficiency. It revives interest in voxel-based representations as a viable alternative to the dominant [[3d-gaussian-splatting]] paradigm, particularly for geometry-focused tasks where Gaussians' unstructured nature is a limitation.
 
+## Pipeline contribution
+
+- **Voxel-uncertainty depth constraint (N1)** — per-voxel uncertainty gates external depth supervision, accepting noisy priors only where confidence is high. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm C · stage: *external depth fusion* · replaces/augments: *uniform MVS depth supervision* · expected gain: robust to noisy priors; SOTA Chamfer on DTU.
+- **Sparse voxel surface regularization (N2)** — global geometry consistency across voxels encourages sharp surfaces and removes redundant voxels. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm C · stage: *voxel-field regularization* · replaces/augments: *3DGS surface-flattening regularizers (PGSR, VA-GS)* · expected gain: explicit-voxel counterpart to 3DGS surface regularization, cleaner because voxels have well-defined volume.
+- **Multi-view regularization for tiny voxels (N3)** — extends consistency across views to preserve small structures. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *multi-view loss on voxels* · expected gain: completeness in fine-detail regions.
+- **Role**: GeoSVR is the **Paradigm-C exemplar** — natively mesh-extractable, Gaussian-free, SOTA DTU. The synthesis bet *GeoSVR + CoMe + MVS supervision* flagged in the thread combines this paper's N1 with the confidence-weighting from [radl2026_confidence-mesh-3dgs].
+
 ## Relation to prior work
 
 - Builds on **SVRaster** for efficient sparse voxel rasterization.

@@ -42,6 +42,12 @@ The surface is extracted via [[marching-cubes]] from the learned [[signed-distan
 
 AniSDF demonstrates that jointly solving geometry and appearance -- rather than treating them separately -- leads to better results in both tasks. The fused-granularity design is a practical architectural insight: parallel coarse and fine branches outperform sequential coarse-to-fine training by preserving fine structures from the start. The physics-based appearance model further shows the value of inductive biases from rendering theory.
 
+## Pipeline contribution
+
+- **Fused-granularity parallel coarse+fine hash-grid branches (N1)** — coarse levels 4–10 + fine levels 10–16, trained jointly rather than coarse-to-fine. candidate thread: [[gaussian-to-mesh-pipelines]] implicit-SDF lane · stage: *feature-grid architecture* · replaces/augments: *single-grid coarse-to-fine (Neuralangelo, NeuS)* · expected gain: preserves thin structures lost in sequential coarse-to-fine training.
+- **Anisotropic spherical Gaussian (ASG) radiance decomposition (N2)** — explicit diffuse + specular branch following rendering equation. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *appearance model separating geometry from specularity* · replaces/augments: *view-dependent color MLP that bakes specular into geometry* · expected gain: best Shiny Blender / luminous-object reconstruction; physics-based inductive bias wins on reflective scenes.
+- **Role**: AniSDF is the *implicit-SDF alternative lane* for the thread. Most synthesis bets phrased around 3DGS have AniSDF/NeuS-style counterparts — the thread's contradictions ("external MVS vs self-supervised") apply here too.
+
 ## Relation to prior work
 
 - Extends [[neural-implicit-surfaces]] methods: NeuS, VolSDF, Neuralangelo, NeuS2.
