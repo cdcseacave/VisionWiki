@@ -66,4 +66,4 @@ MILo is a conceptual advance: instead of extracting meshes as a post-processing 
 
 ## References added to the wiki
 
-- [[guedon2025_milo]] (this page)
+- [[[guedon2025_milo]]] (this page)

@@ -52,7 +52,7 @@ VA-GS shows that carefully designed multi-view geometric constraints can substan
 - **Visibility-aware photometric alignment $\mathcal{L}_p$ (N1)** — reprojection-error-weighted multi-view photometric loss, downweighting occluded/misaligned pixels. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm A · stage: *multi-view photometric loss* · replaces/augments: *per-image photometric loss* · expected gain: removes shadow/specular artifacts; SOTA DTU Chamfer + T&T F1.
 - **Edge-aware image loss (N2)** — image-edge cues in the rendering loss. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *boundary supervision* · expected gain: sharp surface boundaries.
 - **Normal orientation + smoothing constraints $\mathcal{L}_{nc}/\mathcal{L}_{ns}$ (N3)** — refines Gaussian spatial orientation. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *surface orientation regularization* · expected gain: robust to lighting ambiguity.
-- **Multi-view deep-feature alignment $\mathcal{L}_f$ (N4)** — cross-view feature consistency via deep embeddings. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *photometrically-robust cross-view loss* · synthesis-bet: *swap VA-GS's generic deep features for DINOv3 dense features* (from [simeoni2025_dinov3]) — should make $\mathcal{L}_f$ more robust on aerial/drone captures with appearance drift.
+- **Multi-view deep-feature alignment $\mathcal{L}_f$ (N4)** — cross-view feature consistency via deep embeddings. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *photometrically-robust cross-view loss* · synthesis-bet: *swap VA-GS's generic deep features for DINOv3 dense features* (from [[simeoni2025_dinov3]]) — should make $\mathcal{L}_f$ more robust on aerial/drone captures with appearance drift.
 - **Role**: VA-GS is the **four-constraint Paradigm-A SOTA** as of 2025; together with PGSR's planar constraint + Kim 2025's MVS supervision + CoMe's confidence, forms the stacked-regularization synthesis bet in the thread.
 
 ## Relation to prior work
@@ -70,4 +70,4 @@ VA-GS shows that carefully designed multi-view geometric constraints can substan
 
 ## References added to the wiki
 
-- [[li2025_va-gs]] (this page)
+- [[[li2025_va-gs]]] (this page)

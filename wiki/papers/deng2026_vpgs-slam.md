@@ -47,7 +47,7 @@ VPGS-SLAM is one of the first 3DGS-based SLAM systems to scale from room-level t
 - **Multi-resolution voxel-grid anchors + learned per-anchor neural Gaussians (N1)** — attributes decoded from anchor features via MLPs; dynamic submap allocation keeps online memory O(N) per submap. candidate thread: [[radiance-field-evolution]] · stage: *large-scale 3DGS representation* · replaces/augments: *global 3DGS with unbounded memory* · expected gain: 6× lower map memory, 2–3× lower GPU usage than SplaTAM.
 - **2D-3D fusion camera tracking (N2)** — coarse 2D photometric + fine 3D voxel ICP with adaptive fallback. candidate thread: *3DGS SLAM* · stage: *per-frame tracking* · replaces/augments: *rendering-only tracking* · expected gain: robust in challenging conditions (motion blur, exposure) where rendering-only tracking drifts.
 - **2D-3D Gaussian loop closure + online-distillation submap fusion (N3)** — NetVLAD loop detection; pose graph with rendering+ICP constraints; submap fusion aligns rendered RGB/depth. candidate thread: *3DGS SLAM* · stage: *global consistency* · replaces/augments: *no loop closure in SplaTAM/MonoGS* · expected gain: globally-consistent city-scale 3DGS SLAM.
-- **Role**: with [lin2024_vastgaussian] (offline city-scale) and [murai2025_mast3r-slam] (calibration-free monocular), VPGS-SLAM completes the "3DGS can go large-scale" story in [[radiance-field-evolution]]'s scaling subtree.
+- **Role**: with [[lin2024_vastgaussian]] (offline city-scale) and [[murai2025_mast3r-slam]] (calibration-free monocular), VPGS-SLAM completes the "3DGS can go large-scale" story in [[radiance-field-evolution]]'s scaling subtree.
 
 ## Relation to prior work
 

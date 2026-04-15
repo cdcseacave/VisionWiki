@@ -16,19 +16,19 @@ Produce the **feature backbone + task head** pattern that serves as the frontend
 
 Stage-by-stage, for a generic geometry task ("given images, extract features used by a downstream geometric head"):
 
-1. **Image tokenization / patch embedding** — ViT patch embed, 14-px patches. Component: DINOv3 ViT-L/14 (default) or ViT-g/14 when compute allows. Paper: [simeoni2025_dinov3]. Gain over DINOv2: Gram anchoring improves patch-level consistency at high resolution; measured on dense-matching and segmentation downstream tasks. Failure mode: 14-px patches lose fine structure; silent failure on low-texture regions.
-2. **Frozen backbone forward pass** — extract per-patch features at the chosen layer. Component: DINOv3 (default) for pure geometry; [heinrich2025_radiov25] RADIOv2.5 when the task *also* needs semantic alignment (i.e., multi-task downstream). Failure mode: DINOv3 features are *not* text-aligned — projects that need language queries must route through a different backbone.
+1. **Image tokenization / patch embedding** — ViT patch embed, 14-px patches. Component: DINOv3 ViT-L/14 (default) or ViT-g/14 when compute allows. Paper: [[simeoni2025_dinov3]]. Gain over DINOv2: Gram anchoring improves patch-level consistency at high resolution; measured on dense-matching and segmentation downstream tasks. Failure mode: 14-px patches lose fine structure; silent failure on low-texture regions.
+2. **Frozen backbone forward pass** — extract per-patch features at the chosen layer. Component: DINOv3 (default) for pure geometry; [[heinrich2025_radiov25]] RADIOv2.5 when the task *also* needs semantic alignment (i.e., multi-task downstream). Failure mode: DINOv3 features are *not* text-aligned — projects that need language queries must route through a different backbone.
 3. **Task head** — small transformer / regression head on frozen features. Examples: RoMa v2 dense-match head, Pow3R pointmap head, DUSt3R/MASt3R/VGGT pointmap heads, Metric3Dv2 depth head. Training cost: hours to 1–2 days on 1–8 GPUs.
 4. **Geometric refinement (optional)** — feed-forward output fed into classical BA / factor graph. See [[feed-forward-structure-from-motion]] Tier 2 for the hybrid pattern.
 
 ## Pipeline lineage
 
-- 2021 · backbone: SIFT / learned-from-scratch descriptors → CLIP image-features (for semantics only; not geometry) · driver: [radford2021_clip] — *excluded* from geometry pipeline; CLIP is text-aligned but spatially weak.
-- 2023 · backbone: hand-crafted / task-trained → DINOv2 · driver: [oquab2023_dinov2]. Gain: first self-supervised ViT that beat task-specific descriptors on multiple downstream geometry heads without fine-tuning.
-- 2025 · backbone: DINOv2 → DINOv3 · driver: [simeoni2025_dinov3]. Gram anchoring for dense patch consistency.
-- 2025 · multi-task frontend: single-teacher DINOv2 → RADIOv2.5 distillation of DINOv2 + CLIP + SigLIP + SAM · driver: [heinrich2025_radiov25]. Used where geometry + semantics share a frontend.
-- 2025 · dense-matching head: LoFTR / SuperGlue → RoMa v2 on DINOv3 · driver: [edstedt2025_roma-v2].
-- 2026 · repurposing the frozen backbone as training-dynamics source: TTT3R uses DINO attention alignment as a closed-form learning rate · driver: [chen2026_ttt3r]. This is a *new stage* in the taxonomy — the frozen features are not just inputs.
+- 2021 · backbone: SIFT / learned-from-scratch descriptors → CLIP image-features (for semantics only; not geometry) · driver: [[radford2021_clip]] — *excluded* from geometry pipeline; CLIP is text-aligned but spatially weak.
+- 2023 · backbone: hand-crafted / task-trained → DINOv2 · driver: [[oquab2023_dinov2]]. Gain: first self-supervised ViT that beat task-specific descriptors on multiple downstream geometry heads without fine-tuning.
+- 2025 · backbone: DINOv2 → DINOv3 · driver: [[simeoni2025_dinov3]]. Gram anchoring for dense patch consistency.
+- 2025 · multi-task frontend: single-teacher DINOv2 → RADIOv2.5 distillation of DINOv2 + CLIP + SigLIP + SAM · driver: [[heinrich2025_radiov25]]. Used where geometry + semantics share a frontend.
+- 2025 · dense-matching head: LoFTR / SuperGlue → RoMa v2 on DINOv3 · driver: [[edstedt2025_roma-v2]].
+- 2026 · repurposing the frozen backbone as training-dynamics source: TTT3R uses DINO attention alignment as a closed-form learning rate · driver: [[chen2026_ttt3r]]. This is a *new stage* in the taxonomy — the frozen features are not just inputs.
 
 ## Candidate components / not yet integrated
 
@@ -40,7 +40,7 @@ Stage-by-stage, for a generic geometry task ("given images, extract features use
 
 - Calibration-grade poses: feed-forward methods still lag [[colmap]] / GLOMAP on metric accuracy. **Open**: is the gap closable by scaling the frozen backbone, or is classical BA refinement always load-bearing? Current lineage evidence says the latter — every Tier 2 paper in [[feed-forward-structure-from-motion]] keeps BA at the end.
 - **Silent failure modes**: DINO-based geometry fails silently with plausible-but-wrong outputs where SIFT failed loudly. **Synthesis bet**: *combine DINOv3 features with a classical geometric consistency check as a rejection head — use the inconsistency as a self-supervised signal to fine-tune the head.* No paper does this; bridges the backbone-confidence gap that TTT3R opens and uses the "frozen-attention as signal" pattern RoMa v2 + TTT3R both exploit.
-- **Composable frozen signals**: TTT3R shows frozen attention is a training signal, not just features. **Synthesis bet**: *extend TTT3R's closed-form confidence-guided learning rate to RoMa v2's dense matching head — per-match learning rate derived from backbone cross-attention alignment, no retraining.* Mixes [chen2026_ttt3r] + [edstedt2025_roma-v2].
+- **Composable frozen signals**: TTT3R shows frozen attention is a training signal, not just features. **Synthesis bet**: *extend TTT3R's closed-form confidence-guided learning rate to RoMa v2's dense matching head — per-match learning rate derived from backbone cross-attention alignment, no retraining.* Mixes [[chen2026_ttt3r]] + [[edstedt2025_roma-v2]].
 - **Multi-task frontend collapse**: RADIOv2.5 distills 4 teachers; geometry downstream consumes features + depth + semantics. **Open**: will geometry-specific downstream heads start distilling DINOv3 + a geometry-specific teacher (e.g. Metric3Dv2 depth head features) into one backbone, repeating the RADIO pattern inside the geometry lane?
 
 ## Contradictions & tensions

@@ -49,7 +49,7 @@ EA-3DGS addresses the practical deployment challenges of Gaussian splatting for 
 - **Contribution-aware pruning via GS Score (N2)** — per-Gaussian score from ray-intersection counts + opacity + blending weight; low-contribution pruned. candidate thread: [[radiance-field-evolution]] · stage: *densification control* · replaces/augments: *gradient-magnitude pruning* · expected gain: kills redundant Gaussians while preserving rendered contribution.
 - **Structure-aware densification via curvature (N3)** — eigenvalue-ratio $\rho = \lambda_0/(\lambda_0+\lambda_1+\lambda_2)$ identifies low-curvature regions needing more Gaussians. candidate thread: [[radiance-field-evolution]] · stage: *densification target selection* · replaces/augments: *gradient-magnitude-only densification* · expected gain: preserves geometric structure under bulk densification.
 - **Codebook vector quantization on non-position attributes (N4)** — learned codebook, 5.2× compression. candidate thread: [[radiance-field-evolution]] city-scale · stage: *storage/deployment* · replaces/augments: *LightGaussian / C3DGS approaches* · expected gain: 1.8 GB → 345 MB at 0.37 dB cost.
-- **Role**: EA-3DGS is the **compression leg** of the three-way city-scale stack (partition [[lin2024_vastgaussian]] / incremental [[deng2026_vpgs-slam]] / compress EA-3DGS). Orthogonal to the other two; layering them is the open synthesis bet.
+- **Role**: EA-3DGS is the **compression leg** of the three-way city-scale stack (partition [[[lin2024_vastgaussian]]] / incremental [[[deng2026_vpgs-slam]]] / compress EA-3DGS). Orthogonal to the other two; layering them is the open synthesis bet.
 
 ## Relation to prior work
 

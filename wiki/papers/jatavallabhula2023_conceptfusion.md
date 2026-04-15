@@ -50,7 +50,7 @@ Key differentiators vs. the 3DGS lane:
 - **Per-pixel open-set feature generation via SAM-mask crops + CLIP/DINO/AudioCLIP (N1)** — mask region → crop → FM encode → project per-pixel. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline IV · stage: *2D feature extraction for online fusion* · replaces/augments: *closed-set label maps* · expected gain: open-set + multimodal queries from a single fusion pipeline.
 - **Voxel-hashed TSDF fusion extended with per-voxel running feature average (N2)** — classical KinectFusion weighting applied to FM features. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline IV · stage: *online geometry + feature fusion* · replaces/augments: *two-pass (geometry, then features)* · expected gain: one-pass online mapping; robotics-grade latency.
 - **Modality-unified querying (text/image/audio/click) (N3)** — CLIP/AudioCLIP shared embedding space → single cosine query routes all modalities. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *query-time multimodal retrieval* · expected gain: the only lifting pipeline that handles audio queries natively.
-- **Synthesis-bet contribution**: ConceptFusion's voxel-fusion recipe + [heinrich2025_radiov25] RADIOv2.5 as the unified teacher + [deng2026_vpgs-slam]'s progressive submaps yields an online city-scale multimodal lifted 3D — the "Pipeline IV++" bet flagged in the thread.
+- **Synthesis-bet contribution**: ConceptFusion's voxel-fusion recipe + [[heinrich2025_radiov25]] RADIOv2.5 as the unified teacher + [[deng2026_vpgs-slam]]'s progressive submaps yields an online city-scale multimodal lifted 3D — the "Pipeline IV++" bet flagged in the thread.
 
 ## Relation to prior work
 

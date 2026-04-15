@@ -68,4 +68,4 @@ VGG-T3 addresses the fundamental scalability bottleneck of modern feed-forward 3
 
 ## References added to the wiki
 
-- [[elflein2026_vgg-t3]] (this page)
+- [[[elflein2026_vgg-t3]]] (this page)

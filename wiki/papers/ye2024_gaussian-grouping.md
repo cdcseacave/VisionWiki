@@ -44,7 +44,7 @@ Canonical demonstration of the **"lift 2D foundation-model output to per-Gaussia
 ## Pipeline contribution
 
 - **Per-Gaussian Identity Encoding supervised by SAM masks (N1)** — compact learnable vector per Gaussian, rendered via 3DGS and matched to SAM mask IDs via cross-entropy. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline II · stage: *per-primitive identity storage* · replaces/augments: *no per-Gaussian identity* · expected gain: enables instance-aware editing of 3DGS scenes.
-- **Cross-view mask association via IoU + feature similarity (N2)** — same instance gets consistent ID across views. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline II · stage: *temporal/cross-view ID consistency* · fragile stage: heuristic, occlusion-sensitive · **synthesis-bet: SAM 3 ([carion2026_sam-3]) emits instance IDs natively → delete this module entirely**.
+- **Cross-view mask association via IoU + feature similarity (N2)** — same instance gets consistent ID across views. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline II · stage: *temporal/cross-view ID consistency* · fragile stage: heuristic, occlusion-sensitive · **synthesis-bet: SAM 3 ([[carion2026_sam-3]]) emits instance IDs natively → delete this module entirely**.
 - **3D spatial-consistency regularizer (N3)** — local neighborhoods should share identity unless depth/normal boundary. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *3D identity regularization* · expected gain: removes floaty, inconsistent identities.
 - **Role**: Gaussian Grouping is the Pipeline-II canonical recipe; pairs with LangSplat (Pipeline I) as the "identity vs. language" two-axis default choice.
 

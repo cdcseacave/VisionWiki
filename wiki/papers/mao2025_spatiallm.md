@@ -69,4 +69,4 @@ SpatialLM demonstrates a feasible path for using general-purpose LLMs in 3D spat
 
 ## References added to the wiki
 
-- [[mao2025_spatiallm]] (this page)
+- [[[mao2025_spatiallm]]] (this page)

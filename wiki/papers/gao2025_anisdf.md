@@ -64,4 +64,4 @@ AniSDF demonstrates that jointly solving geometry and appearance -- rather than 
 
 ## References added to the wiki
 
-- [[gao2025_anisdf]] (this page)
+- [[[gao2025_anisdf]]] (this page)

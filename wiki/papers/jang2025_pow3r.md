@@ -55,7 +55,7 @@ Pow3R demonstrates that feed-forward 3D reconstruction models can be made signif
 - **Random modality dropout training (N2)** — enables arbitrary combinations at inference. candidate thread: *feed-forward prior injection* · stage: *training recipe* · expected gain: one model for all prior combinations; no per-setup fine-tuning.
 - **Third pointmap output $X^{2,2}$ (N3)** — Procrustes alignment recovers both cameras in single pass. candidate thread: [[feed-forward-structure-from-motion]] Tier 2/3 · stage: *pose recovery* · replaces/augments: *PnP on single pointmap* · expected gain: orders of magnitude faster pose recovery than DUSt3R's PnP loop.
 - **Sliding-window high-res inference via crop-position encoding (N4)** — intrinsics input conveys crop location. candidate thread: *feed-forward inference* · stage: *resolution handling* · expected gain: native-resolution outputs without retraining.
-- **Synthesis-bet candidate**: *inject RoMa v2 covariance-weighted sparse depth* from [edstedt2025_roma-v2] *as Pow3R's depth prior* — no paper does this; the matcher+pointmap combination should strictly improve DTU numbers.
+- **Synthesis-bet candidate**: *inject RoMa v2 covariance-weighted sparse depth* from [[edstedt2025_roma-v2]] *as Pow3R's depth prior* — no paper does this; the matcher+pointmap combination should strictly improve DTU numbers.
 
 ## Relation to prior work
 

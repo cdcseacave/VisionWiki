@@ -48,7 +48,7 @@ SOF makes high-quality mesh extraction from Gaussian Splatting practical for lar
 - **Hierarchical per-ray resorting (N1)** — replaces GOF's global sort with per-ray hierarchical order. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm A · stage: *opacity-field construction* · replaces/augments: *GOF global sort heuristic* · expected gain: correct primitive ordering, fewer meshing artifacts.
 - **Robust opacity-field formulation (N2)** — reformulation that handles volumetric-to-surface transition for precise level-set extraction. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm A · stage: *opacity → surface conversion* · replaces/augments: *GOF's opacity field* · expected gain: cleaner marching-cubes extraction.
 - **Efficient meshing pipeline (N3)** — consequence of N1+N2. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *mesh extraction runtime* · expected gain: 3× faster training, up to 10× faster mesh extraction (30 min → 3–5 min).
-- **Role**: SOF is the **meshing-pipeline backend** used by [radl2026_confidence-mesh-3dgs] (CoMe). CoMe's contributions sit on top; SOF provides the fast level-set extraction.
+- **Role**: SOF is the **meshing-pipeline backend** used by [[radl2026_confidence-mesh-3dgs]] (CoMe). CoMe's contributions sit on top; SOF provides the fast level-set extraction.
 
 ## Relation to prior work
 
@@ -66,4 +66,4 @@ SOF makes high-quality mesh extraction from Gaussian Splatting practical for lar
 
 ## References added to the wiki
 
-- [[radl2025_sof]] (this page)
+- [[[radl2025_sof]]] (this page)

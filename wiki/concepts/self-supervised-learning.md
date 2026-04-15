@@ -28,7 +28,7 @@ SSL produces the strongest frozen **dense** features in 2025–2026 — better t
 
 - **Data**: curated 142M image dataset (LVD-142M) for DINOv2 → larger curated + aerial augmentation for DINOv3.
 - **Model**: ViT-g/14 for DINOv2 → distilled smaller variants (S/B/L) preserve quality. DINOv3 extends both axes.
-- **Training dynamics**: DINOv3 discovered that **dense features degrade** during long training runs even as image-level features keep improving. Fixed via **Gram anchoring** — regularize the patch-feature Gram matrix toward a reference snapshot. See [[simeoni2025_dinov3]].
+- **Training dynamics**: DINOv3 discovered that **dense features degrade** during long training runs even as image-level features keep improving. Fixed via **Gram anchoring** — regularize the patch-feature Gram matrix toward a reference snapshot. See [[[simeoni2025_dinov3]]].
 - **Post-hoc adaptations**: variable resolution, text-encoder retrofit (CLIP-style alignment on frozen backbone) — the "foundation model" becomes more flexible without retraining.
 
 ## Relation to other pretraining paradigms
