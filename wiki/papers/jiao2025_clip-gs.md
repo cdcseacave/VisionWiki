@@ -38,6 +38,14 @@ Jiao et al. (ICCV 2025) propose **CLIP-GS**, a multimodal representation that ma
 
 Establishes **3DGS as a first-class citizen in 3D foundation-model learning**, displacing point clouds as the canonical multimodal 3D input. Enables downstream zero-shot 3D tasks without training a scene-specific language field (contrast with [[qin2024_langsplat|LangSplat]]'s per-scene autoencoder).
 
+## Pipeline contribution
+
+- **GS Tokenizer: 3DGS → token stream via FPS + k-NN patches (N1)** — serializes Gaussian patches capturing position, color, scale, rotation, opacity. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline III · stage: *3DGS → embedding* · replaces/augments: *point-cloud tokenizers (ULIP, Uni3D)* · expected gain: 3DGS as a first-class multimodal 3D input; SOTA retrieval + zero-shot + few-shot over point-cloud methods.
+- **Transformer init from point-cloud FM (Uni3D/OpenShape) (N2)** — warm-starts geometric priors for the 3DGS encoder. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline III · stage: *transfer learning* · expected gain: cheaper training; leverages decades of point-cloud pretraining.
+- **Scene-level contrastive with CLIP image+text (N3)** — triplets (3DGS, rendered images, text); symmetric InfoNCE. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline III · stage: *alignment objective* · replaces/augments: *per-scene distillation (LangSplat)* · expected gain: zero-shot cross-scene queries.
+- **Image-voting loss (N4)** — multi-view rendered images vote on gradient direction; rotation/pose invariance. candidate thread: *contrastive 3D training* · stage: *invariance regularization* · expected gain: pose-invariant embeddings.
+- **Role**: CLIP-GS is the **generalizable lane** of the thread — opposite axis-2 choice from LangSplat's per-scene distillation. The open tension "per-scene quality vs. zero-shot transfer" lives between these two papers.
+
 ## Relation to prior work
 
 - Sibling philosophy: [[qin2024_langsplat|LangSplat]] distills CLIP **into** a per-scene 3DGS field (scene-specific); CLIP-GS aligns 3DGS **with** CLIP at the scene/object level (generalizable).

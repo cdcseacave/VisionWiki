@@ -41,6 +41,13 @@ Pushes single-image 3D from "isolated synthetic object" territory into **natural
 - Priors for sparse-view or uncalibrated reconstruction.
 - Complementing SfM/MVS where coverage is insufficient (single-image gaps can be hallucinated in).
 
+## Pipeline contribution
+
+- **Two-stage latent flow-matching for single-image 3D scene (N1)** — shape generator produces latent → geometry + texture; layout module predicts placement. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline VII · stage: *single-image generative 3D* · replaces/augments: *isolated-object 3D generators* · expected gain: ≥5:1 human preference win rate vs prior SOTA on real-world objects + scenes.
+- **Human/model-in-the-loop data engine for real-image 3D annotation (N2)** — breaks the "3D data barrier" by combining synthetic pretraining with real-image alignment. candidate thread: *3D generative foundations* · stage: *training data pipeline* · expected gain: generalizes from isolated objects to cluttered natural images where prior methods fail.
+- **Per-object geometry + texture + scene layout as unified output (N3)** — composable 3D scene, not just isolated object. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *scene composition* · expected gain: downstream use in asset creation + sparse-view-reconstruction priors.
+- **Role**: SAM 3D is the **single-image generative lane** of the thread — Pipeline VII; orthogonal to every per-scene-distillation method (I–V). Naming suggests future integration with SAM 3 ([carion2026_sam-3]) masks as input conditioning — untried synthesis bet.
+
 ## Relation to prior work
 
 - Builds on two-stage latent flow-matching (Xiang et al. 2025) — extends from isolated objects to scene-level layout.

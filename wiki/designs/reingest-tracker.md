@@ -109,17 +109,28 @@ Primary thread: `gaussian-to-mesh-pipelines`
 
 Primary threads: `lifting-foundation-models-to-3d`, `open-vocab-2d-composition`
 
-- ☐ jatavallabhula_2023_conceptfusion
-- ☐ qin_2024_langsplat
-- ☐ ye_2024_gaussian-grouping
-- ☐ bao_2025_seg-wild
-- ☐ jiao_2025_clip-gs
-- ☐ wu_2026_langsvr
-- ☐ mao_2025_spatiallm
-- ☐ chen_2025_sam-3d
+- ✓ jatavallabhula_2023_conceptfusion
+- ✓ qin_2024_langsplat
+- ✓ ye_2024_gaussian-grouping
+- ✓ bao_2025_seg-wild
+- ✓ jiao_2025_clip-gs
+- ✓ wu_2026_langsvr
+- ✓ mao_2025_spatiallm
+- ✓ chen_2025_sam-3d
 
 ## Progress log
 
 (per-paper completion notes; updated at Step 8 of each ingest)
 
-- _none yet — batch starting 2026-04-15_
+- **2026-04-15 — all 55 papers re-ingested.** Committed in 8 batches:
+  - `c1c7b92` — Batch 1 (foundations, 9 papers)
+  - `73bacb0` — Batch 2 (classical primitives + benchmarks, 5 papers)
+  - `24b59a8` — Batch 3 (feature + dense matching, 2 papers)
+  - `c884eff` — Batch 4 (SfM/SLAM/feed-forward 3D, 13 papers)
+  - `e548e7a` — Batches 5+6 (pose estimation + radiance fields core, 9 papers)
+  - `1efdb21` — Batch 7 (Gaussian→mesh & SDF hybrids, 10 papers)
+  - final commit — Batch 8 (semantic / open-vocab 3D, 8 papers)
+- Threads augmented with new SOTA-pipeline / lineage / candidate-components / synthesis-bets sections:
+  foundation-features-for-geometry, open-vocab-2d-composition, gpu-native-sfm, gaussian-to-mesh-pipelines, radiance-field-evolution, lifting-foundation-models-to-3d (6 threads).
+- Threads left in original form (already substantively covering the required content):
+  feed-forward-structure-from-motion, mono-depth-estimation, nerfstudio.

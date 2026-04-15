@@ -297,3 +297,29 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Added Pipeline contribution sections to all 10.
 - Pipeline impact: [[gaussian-to-mesh-pipelines]] Paradigm A stack fully enumerated (PGSR planar + VA-GS four-constraint + Kim 2025 MVS supervision + CoMe confidence + SOF meshing backend); Paradigm B = MILo; Paradigm C = GeoSVR / SVRaster; Paradigm D = VGG-T3. Inverse-rendering lane added (Zhu 2025 GS-SDF, AniSDF). Active-reconstruction (GauSS-MI) and VLM-reasoning (GaussExplorer) lanes added.
 - Synthesis bets proposed: MILo Delaunay + CoMe confidence vertex-weighting · VA-GS $\mathcal{L}_f$ swapped to DINOv3 dense features · CoMe confidence as TSDF fusion weight · Zhu 2025 discrete-SDF + CoMe confidence unified uncertainty · GauSS-MI color-variance + CoMe confidence unified uncertainty model.
+
+## [2026-04-15] reingest-batch | Batch 8 — Semantic / open-vocab 3D (8 papers, FINAL)
+- Re-ingested: jatavallabhula2023_conceptfusion, qin2024_langsplat, ye2024_gaussian-grouping, bao2025_seg-wild, jiao2025_clip-gs, wu2026_langsvr, mao2025_spatiallm, chen2025_sam-3d
+- Added Pipeline contribution to all 8.
+- Thread augmented: lifting-foundation-models-to-3d now carries 8 parallel Current SOTA pipelines (Pipeline I–VIII: per-scene CLIP distillation / SAM identity / scene-level contrastive / voxel TSDF / one-stage sparse-voxel unified / VLM-reasoning / single-image generative / LLM-native structured), lineage, candidate components, four explicit synthesis bets, contradictions.
+- Pipeline impact: the full open-vocab 3D landscape now mapped with axis-1 (what is lifted) and axis-2 (how it generalizes) concrete. Pipeline-II + SAM 3 native IDs flagged as highest-priority synthesis bet (delete Gaussian Grouping's association module).
+- Synthesis bets proposed: Gaussian Grouping + SAM 3 identity IDs (kill cross-view association) · LangSplat + RADIOv2.5 + CoMe confidence · LangSVR + SAM 3 + DINOv3 + RADIOv2.5 full-upgrade · ConceptFusion + RADIOv2.5 + VPGS-SLAM online city-scale multimodal lifted 3D.
+
+## [2026-04-15] reingest-complete | All 55 papers re-ingested
+- 8 batches committed sequentially; zero papers remaining.
+- Total Pipeline contribution sections written: 55.
+- Threads retrofit with new SOTA-pipeline / lineage / candidate-components / synthesis-bets sections: 6 (foundation-features-for-geometry, open-vocab-2d-composition, gpu-native-sfm, gaussian-to-mesh-pipelines, radiance-field-evolution, lifting-foundation-models-to-3d).
+- Threads left in original form (substantively cover the new template already): feed-forward-structure-from-motion, mono-depth-estimation, nerfstudio.
+- Headline synthesis bets surfaced across the batch, flagged for experimental follow-up:
+  1. Gaussian Grouping + SAM 3 native instance IDs → delete cross-view association module.
+  2. CoMe confidence as TSDF fusion weight.
+  3. City-scale three-way stack: VastGaussian partition + EA-3DGS codebook + VPGS-SLAM incremental submaps.
+  4. TTT3R closed-form learning rate applied to RoMa v2 dense-match head.
+  5. CamP preconditioner ported to 3DGS pose-refinement.
+  6. RoMa v2 per-pixel covariance as InstantSfM Jacobian weighting.
+  7. SVRaster primitives + CoMe confidence + MVS depth supervision as next-gen mesh pipeline.
+  8. LoGeR SWA + TTT3R training-free learning rate hybrid for linear-time long-context feed-forward 3D.
+  9. Unified per-primitive uncertainty model: CoMe confidence + GauSS-MI color-variance + Zhu-2025 discrete-SDF.
+  10. LangSVR one-stage recipe with SAM 3 + DINOv3 + RADIOv2.5 — every 2024 component upgraded to 2026.
+- Notable: "external-MVS-depth vs self-supervised-Gaussian-depth" contradiction flagged across both gaussian-to-mesh-pipelines and radiance-field-evolution remains the highest-leverage unresolved tension — principled switch is an open research direction, not yet addressed by any paper.
+- Next operational step suggested: `lint frontmatter` to sweep `updated:` dates on the 55 touched paper pages + 6 threads.

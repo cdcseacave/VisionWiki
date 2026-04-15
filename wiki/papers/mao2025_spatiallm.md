@@ -45,6 +45,13 @@ The auto-regressive nature allows generating plausible layouts even from partial
 
 SpatialLM demonstrates a feasible path for using general-purpose LLMs in 3D spatial understanding tasks, replacing task-specific architectures with a single unified model. The Python-script output format is a clever design choice that leverages LLM coding capabilities while being human-readable and extensible. This work is a step toward foundation models that can understand, reason about, and interact with structured 3D scenes.
 
+## Pipeline contribution
+
+- **Sonata point-cloud tokenizer + Qwen2.5-0.5B LLM fine-tune (N1)** — 2.5cm voxel tokens → LLM input. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline VIII · stage: *3D → LLM frontend* · replaces/augments: *specialist architectures (RoomFormer, V-DETR)* · expected gain: SOTA Structured3D layout (IoU2D@0.5 93.5 vs RoomFormer 81.4); leverages LLM coding capability.
+- **Structured output as Python-like scene scripts (N2)** — walls/doors/windows/oriented-boxes as executable-looking code. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline VIII · stage: *output representation* · replaces/augments: *opaque tensor outputs* · expected gain: human-interpretable, extensible to new categories without retraining the parser.
+- **Large-scale synthetic dataset (12,328 scenes / 54,778 rooms) (N3)** — data-side contribution. candidate thread: *3D dataset* · expected gain: pre-training on this unlocks downstream performance; fine-tune-on-small-dataset-only fails.
+- **Role**: SpatialLM adds a **structured-LLM-output** lane to the thread — orthogonal to feature-lifting (Pipelines I–V) and to VLM-reasoning (Pipeline VI). Its zero-shot compatibility with MASt3R-SLAM reconstructions is notable — bridge between feed-forward SfM and structured understanding.
+
 ## Relation to prior work
 
 - Builds on the multimodal LLM paradigm, using **Qwen2.5-0.5B** as the base model and **Sonata** as the point cloud encoder.

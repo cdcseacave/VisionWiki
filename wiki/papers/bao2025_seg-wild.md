@@ -37,6 +37,13 @@ Prior 3D segmentation methods (including [[ye2024_gaussian-grouping|Gaussian Gro
 
 Pushes foundation-model-lifted 3DGS segmentation out of the "controlled-lab" regime into the messy real-world input domain where internet photo collections live. Complementary constraint to [[lin2024_vastgaussian|VastGaussian]]'s city-scale aerial setting: both need to handle varying conditions across captures, but Seg-Wild adds instance-level segmentation.
 
+## Pipeline contribution
+
+- **Multi-dimensional per-Gaussian embeddings (N1)** — appearance + identity + lighting-invariance as separate channels. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline II · stage: *per-primitive feature structure* · replaces/augments: *Gaussian Grouping's single identity vector* · expected gain: explicit separation disambiguates transient-occluded pixels.
+- **Spiky 3D Gaussian Cutter (SGC) (N2)** — projects 3D Gaussians to SAM mask; cuts those crossing boundaries above threshold. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline II · stage: *primitive refinement* · replaces/augments: *none (new mechanism)* · expected gain: clean boundaries despite inconsistent SAM masks across views.
+- **Transient-aware appearance embedding (N3)** — NeRF-W-style per-image embedding decouples geometry from photometric variation. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *in-the-wild training* · replaces/augments: *assumption of consistent lighting (Gaussian Grouping)* · expected gain: works on internet collections.
+- **Role**: Seg-Wild is the **in-the-wild extension** of Pipeline II; handles the Gaussian-Grouping failure mode on uncontrolled captures. Could compose with [lin2024_vastgaussian]'s decoupled appearance for city-scale in-the-wild instance segmentation — untried.
+
 ## Relation to prior work
 
 - Direct successor to [[ye2024_gaussian-grouping|Gaussian Grouping]] (adds transient robustness + SGC refinement).

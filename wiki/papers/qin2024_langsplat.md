@@ -40,6 +40,13 @@ LangSplat **is the canonical CLIP-lifted-to-3DGS method** and the immediate base
 2. Compress language embeddings via a latent autoencoder.
 3. Use SAM's mask hierarchy as a free structural prior.
 
+## Pipeline contribution
+
+- **CLIP distillation into per-Gaussian latents via scene-specific autoencoder (N1)** — 512-D CLIP → low-D latent per Gaussian; decoded at query time. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline I · stage: *per-primitive feature storage* · replaces/augments: *raw 512-D per Gaussian (memory explosion) / LERF's multi-scale MLP* · expected gain: 199× speedup at 1440×1080 + sharper boundaries.
+- **SAM-mask-hierarchy supervision (N2)** — whole/part/subpart CLIP embeddings distilled at corresponding scales; removes LERF's multi-scale query sweeps. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline I · stage: *multi-scale semantic supervision* · replaces/augments: *image-scale sweeps at query time* · expected gain: hierarchy information baked in at training; free at query time.
+- **Dropped DINO regularization (N3)** — 3DGS geometry + SAM hierarchy together supply the spatial coherence DINO provided in LERF. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *regularization* · reverse-engineering note: the thread's synthesis bet *"re-add DINOv3 regularization to LangSplat"* tests whether this drop was warranted at DINOv2 or only at DINOv3.
+- **Role**: LangSplat is the Pipeline-I SOTA recipe and the immediate baseline for every subsequent CLIP-lifting paper.
+
 ## Relation to prior work
 
 - NeRF predecessor: LERF (2023).

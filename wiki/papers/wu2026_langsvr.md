@@ -51,6 +51,14 @@ First work to **unify** open-vocabulary scene understanding with high-quality re
 
 Key architectural claim: **geometry matters for semantics**. Depth/normal priors from a geometric foundation model measurably improve CLIP-feature quality in 3D, because they disambiguate where semantic boundaries should live.
 
+## Pipeline contribution
+
+- **Four co-trained fields per voxel: appearance + density + feature + confidence (N1)** — single representation for photometry, occupancy, semantics, and reliability. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline V · stage: *unified per-primitive state* · replaces/augments: *two-stage (3DGS pretraining → feature field on top)* · expected gain: joint optimization avoids the decoupling penalty that haunts LangSplat / Feature-GAGS.
+- **Feature-modulation module coupling appearance+density+feature (N2)** — semantically similar regions share photometric structure. candidate thread: [[lifting-foundation-models-to-3d]] Pipeline V · stage: *cross-field coupling* · expected gain: semantics regularize geometry and vice versa.
+- **Dual distillation (CLIP language + mono-depth geometry FM) (N3)** — depth-correlation + pattern-consistency regularization on rendered depth/normal. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *multi-teacher distillation* · replaces/augments: *CLIP-only distillation* · expected thread claim: "geometry matters for semantics" — depth priors measurably improve CLIP feature quality in 3D.
+- **Confidence-aware training (N4)** — rendered confidence gates view contribution. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *view reliability gating* · reuses the "confidence as gating signal" pattern from [radl2026_confidence-mesh-3dgs] (CoMe) in a different downstream task.
+- **Role**: LangSVR is Pipeline V — first paper to stack a geometric-FM distillation on top of a CLIP-distillation on a sparse-voxel substrate. The synthesis bet *"LangSVR with SAM 3 + DINOv3 + RADIOv2.5"* upgrades every 2024 component to 2026 equivalents.
+
 ## Relation to prior work
 
 - Representation substrate: [[sun2025_sparse-voxels-rasterization|SVRaster (Sun 2025)]].
