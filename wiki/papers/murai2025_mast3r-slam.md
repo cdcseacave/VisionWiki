@@ -46,6 +46,14 @@ The system's only assumption is a generic central camera model (unique camera ce
 
 MASt3R-SLAM demonstrates that off-the-shelf two-view 3D reconstruction priors can serve as a universal foundation for real-time dense SLAM, challenging the DROID-SLAM paradigm that has dominated recent SLAM research. The ability to operate without known camera calibration opens SLAM to truly in-the-wild applications with arbitrary camera hardware.
 
+## Pipeline contribution
+
+- **Iterative pointmap projection matching via generic-camera rays (N1)** — converges 10 iterations/pixel in 2ms via custom CUDA, replaces feature matching / k-d tree search. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *frame-to-frame matching on pointmaps* · replaces/augments: *MASt3R decoder match @ 2s/pair* · expected gain: 1000× matching speedup; enables real-time SLAM.
+- **Directional ray-error pose estimation (N2)** — Sim(3) pose minimizing ray-direction residual instead of 3D point residual. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *pose estimation from pointmap pairs* · replaces/augments: *3D-point-distance minimization* · expected gain: robust to MASt3R depth-prediction errors (scale / bias).
+- **Running weighted-average pointmap fusion (N3)** — online filter over MASt3R predictions per keyframe. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *temporal geometry fusion* · replaces/augments: *single-frame MASt3R output* · expected gain: noise averaging, consistent camera model over time.
+- **Gauss-Newton Sim(3) global optimization with analytic CUDA Jacobians (N4)** — sparse Cholesky over pose graph. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *global optimization* · replaces/augments: *DROID-SLAM's differentiable BA* · expected gain: faster, calibration-free; 15 FPS end-to-end.
+- **Role**: first real-time feed-forward SLAM on DUSt3R/MASt3R priors; establishes that two-view 3D priors + ray-based optimization can replace DROID-SLAM.
+
 ## Relation to prior work
 
 - Built entirely on [[mast3r|MASt3R]] (successor of [[dust3r|DUSt3R]]) as the geometric prior, contrasting with DROID-SLAM's end-to-end learned approach.

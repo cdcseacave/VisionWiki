@@ -47,6 +47,13 @@ Multi-view reasoning happens through self-attention across all image patches wit
 
 DiffusionSfM represents a paradigm shift from the traditional two-stage SfM pipeline (pairwise + global optimization) to a single-pass multi-view inference model. The diffusion formulation provides built-in uncertainty modeling, which is valuable when inputs are ambiguous. The ray origin/endpoint parameterization elegantly unifies camera and geometry prediction in a distributed representation compatible with modern vision backbones.
 
+## Pipeline contribution
+
+- **Ray origin + endpoint pixel-wise parameterization (N1)** — each pixel gets $(O_{ij}, E_{ij})$ in world frame; origins can be inverted to camera extrinsics/intrinsics. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *camera + geometry unified output head* · replaces/augments: *separate pose-regression + pointmap* · expected gain: single-pass N-view reasoning without pairwise → global-alignment cascade.
+- **Denoising diffusion process (N2)** — reverse diffusion on ray-origin+endpoint fields conditioned on DINOv2 features. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *posterior inference with uncertainty* · replaces/augments: *deterministic regression* · expected gain: built-in uncertainty via sample diversity; multi-modal pose distributions under ambiguity.
+- **Homogeneous-coordinate normalization + GT-mask conditioning (N3)** — bounds unbounded geometry for stable diffusion; masks inform about missing depth. candidate thread: *diffusion-based geometry* · stage: *data representation* · expected gain: stable training on unbounded scene depths.
+- **Synthesis-bet candidate**: *use DiffusionSfM's uncertainty samples as input to MP-SfM's depth-consistency validation* — the diffusion variance tells MP-SfM where to trust the single-view depth. Mixes [zhao2025_diffusionsfm] + [pataki2025_mp-sfm].
+
 ## Relation to prior work
 
 - Extends RayDiffusion's ray-based camera representation to include endpoints (geometry), going from patch-wise to pixel-wise resolution.

@@ -277,3 +277,10 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Added `## Pipeline contribution` to both.
 - Pipeline impact: foundation-features-for-geometry task-head slot formalized around RoMa v2; covariance output identified as the missing input for [[gpu-native-sfm]]'s multi-prior-Jacobian synthesis bet. Chebbi adds an aerial/satellite MVS lane as a candidate depth source for VastGaussian/DroneSplat preprocessing.
 - Synthesis bet proposed: RoMa v2 covariance → InstantSfM Jacobian weighting (mixes [edstedt2025_roma-v2] + [zhong2026_instantsfm]).
+
+## [2026-04-15] reingest-batch | Batch 4 — SfM / SLAM / feed-forward 3D (13 papers)
+- Re-ingested: pan2024_glomap, zhong2026_instantsfm, yu2025_cusfm, pataki2025_mp-sfm, zhang2025_loger, zhao2025_diffusionsfm, li2025_megasam, murai2025_mast3r-slam, chen2026_ttt3r, jin2026_zipmap, deng2026_vpgs-slam, jang2025_pow3r, elflein2026_vgg-t3
+- Added `## Pipeline contribution` sections to all 13; threads [[feed-forward-structure-from-motion]] and [[gpu-native-sfm]] already carry the Current-SOTA-pipeline / lineage / synthesis-bet sections from Batches 1–3.
+- Pipeline impact: Tier-1 SOTA pipeline (GPU-native SfM) formalized with GLOMAP→InstantSfM/CuSfM; Tier-3 TTT-family formalized (TTT3R/LoGeR/ZipMap trade triangle: training-free / training-with-SWA / training-with-TTT-attention-replacement); Tier-2 hybrid formalized with MP-SfM / MegaSaM / Pow3R.
+- Synthesis bets proposed: LoGeR SWA + TTT3R training-free LR hybrid · DiffusionSfM uncertainty → MP-SfM depth-consistency gating · MegaSaM motion maps → MP-SfM BA pixel gating · RoMa v2 covariance → Pow3R depth prior.
+- Notable: VGG-T3 identified as the natural bridge between feed-forward Tier-3 and Paradigm-D (mesh-in-one-pass) of [[gaussian-to-mesh-pipelines]].

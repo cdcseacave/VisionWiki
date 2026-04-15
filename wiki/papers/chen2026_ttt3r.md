@@ -57,6 +57,13 @@ TTT3R is the cleanest articulation so far of the **TTT-as-long-context-trick** t
 
 It also sharpens the emerging narrative in the [[feed-forward-structure-from-motion]] thread: the tier-3 split is no longer just "full attention vs. RNN" — it's "full attention, RNN, or RNN + TTT state rule." TTT is becoming the recipe for turning a finite-context recurrent model into a long-context one.
 
+## Pipeline contribution
+
+- **Closed-form confidence-guided per-token learning rate (N1)** — $\beta_t = \sigma(\sum_m Q_{S_{t-1}} K_{X_t}^\top)$ derived from existing frozen-backbone attention. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *recurrent-state update rule* · replaces/augments: *CUT3R's fixed update* · expected gain: 2× pose improvement on long sequences, no retraining, no new weights. This is the cheapest long-context patch in the TTT family (LoGeR / ZipMap require training new models).
+- **Unified Tokenize → Update → Read → De-tokenize formulation (N2)** — framework that partitions full-attention (VGGT, Fast3R) from RNN (CUT3R, Point3R) pointmap models. candidate thread: [[feed-forward-structure-from-motion]] · stage: *taxonomy* · expected gain: conceptual clarity; the thread's Tier-3 split inherits this vocabulary.
+- **Optional State Reset + SE(3) chunk alignment (N3)** — periodic state resets for >1K frames to prevent fast-weight saturation. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *long-sequence OOD handling* · expected gain: thousands-of-frames scale at 20 FPS / 6 GB.
+- **Synthesis-bet enabler**: TTT3R's closed-form LR is the missing ingredient for the [[foundation-features-for-geometry]] synthesis bet *"extend TTT3R's LR to RoMa v2's dense matching head"* — per-match learning rate from backbone cross-attention.
+
 ## Relation to prior work
 
 - Directly reformulates [[CUT3R]] (Wang et al. 2025); baseline and target of the patch.

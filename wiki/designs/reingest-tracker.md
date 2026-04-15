@@ -57,19 +57,19 @@ Primary thread: `foundation-features-for-geometry`
 
 Primary threads: `feed-forward-structure-from-motion`, `gpu-native-sfm`, `mono-depth-estimation`
 
-- ☐ pan_2024_glomap
-- ☐ zhong_2026_instantsfm
-- ☐ yu_2025_cusfm
-- ☐ pataki_2025_mp-sfm
-- ☐ zhang_2025_loger
-- ☐ zhao_2025_diffusionsfm
-- ☐ li_2025_megasam
-- ☐ murai_2025_mast3r-slam
-- ☐ chen_2026_ttt3r
-- ☐ jin_2026_zipmap
-- ☐ deng_2026_vpgs-slam
-- ☐ jang_2025_pow3r
-- ☐ elflein_2026_vgg-t3
+- ✓ pan_2024_glomap
+- ✓ zhong_2026_instantsfm
+- ✓ yu_2025_cusfm
+- ✓ pataki_2025_mp-sfm
+- ✓ zhang_2025_loger
+- ✓ zhao_2025_diffusionsfm
+- ✓ li_2025_megasam
+- ✓ murai_2025_mast3r-slam
+- ✓ chen_2026_ttt3r
+- ✓ jin_2026_zipmap
+- ✓ deng_2026_vpgs-slam
+- ✓ jang_2025_pow3r
+- ✓ elflein_2026_vgg-t3
 
 ## Batch 5 — Pose estimation
 

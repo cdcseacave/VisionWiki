@@ -45,6 +45,14 @@ CuSfM addresses the practical gap between general-purpose SfM tools and industri
 
 See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM" story, and how CuSfM contrasts with [InstantSfM](zhong2026_instantsfm.md) on the generalization-specialization axis.
 
+## Pipeline contribution
+
+- **Non-redundant data association from SLAM prior trajectory (N1)** — minimal view graph via radius search + sequential + loop-closure retrieval. candidate thread: [[gpu-native-sfm]] · stage: *view-graph construction* · replaces/augments: *all-pairs matching* · expected gain: 20× mapping speedup when a prior trajectory exists.
+- **TensorRT-accelerated ALIKED feature frontend (N2)** — learned features on GPU. candidate thread: [[gpu-native-sfm]] · stage: *feature extraction* · replaces/augments: *SIFT-GPU* · expected gain: better recall under driving-scene illumination/viewpoint changes.
+- **Two-stage factor graph (robust-loss warmup → stringent final) (N3)** — Ceres with SPARSE_NORMAL_CHOLESKY, decoupled robust/stringent phases. candidate thread: [[gpu-native-sfm]] · stage: *optimization schedule* · replaces/augments: *single-loss BA* · expected gain: avoids local-minimum traps from stringent outlier thresholds on noisy init.
+- **Multi-camera rig extrinsic refinement (N4)** — joint vehicle pose + camera-to-vehicle transform optimization. candidate thread: [[gpu-native-sfm]] · stage: *rig calibration inside SfM* · expected gain: first open-source SfM that handles the autonomous-driving rig pattern; bet: *this pattern generalizes to stereo-phone / drone rigs*.
+- **Role**: CuSfM and InstantSfM are the two 2025–2026 Tier-1 GPU-SfM exemplars in [[gpu-native-sfm]]'s Current SOTA pipeline — InstantSfM for general use, CuSfM for sequential-with-prior-trajectory workloads.
+
 ## Relation to prior work
 
 - Competes directly with [[colmap|COLMAP]] and [[glomap|GLOMAP]] but tailored for sequential driving data with prior pose information.

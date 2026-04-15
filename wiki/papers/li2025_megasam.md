@@ -44,6 +44,14 @@ An optional consistent depth optimization module refines video depths at full re
 
 MegaSaM demonstrates that a carefully modified deep visual SLAM framework can handle the full complexity of in-the-wild dynamic videos without requiring scene-specific optimization or radiance field fitting. The uncertainty-aware BA provides principled handling of degenerate camera motions (rotation-dominant, forward-only) that commonly occur in casual capture, making SfM accessible to non-expert users.
 
+## Pipeline contribution
+
+- **Learned motion probability maps (N1)** — per-pixel moving-object probability from a separate network, trained in two stages (ego-motion pretraining → dynamic fine-tuning with frozen flow). candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *dynamic-content masking for BA* · replaces/augments: *static-scene assumption* · expected gain: casual dynamic videos become tractable; ATE 0.018 on Sintel vs 0.036 next-best.
+- **Monocular depth initialization (N2)** — DepthAnything + UniDepth aligned disparity replaces DROID-SLAM's constant init. candidate thread: [[mono-depth-estimation]] · stage: *SLAM disparity init* · replaces/augments: *constant / learned-from-scratch disparity* · expected gain: convergence on near-rotational / low-parallax captures.
+- **Uncertainty-aware global BA (N3)** — Hessian-diagonal-driven adaptive regularization; focal-length optimization gated by Hessian entry. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *BA regularization schedule* · replaces/augments: *fixed hyperparameters* · expected gain: disables unobservable parameters (focal on near-rotational motion) cleanly.
+- **Consistent depth optimization module (N4)** — optical-flow reprojection + temporal consistency + normal loss at full res, no network fine-tune. candidate thread: [[mono-depth-estimation]] · stage: *video depth refinement* · expected gain: CasualSAM quality at 100× speed.
+- **Synthesis-bet enablement**: MegaSaM's motion-probability maps could gate which pixels enter MP-SfM's depth-constrained BA — dynamic regions excluded from depth priors, static regions keep them.
+
 ## Relation to prior work
 
 - Directly extends [[droid-slam|DROID-SLAM]]'s differentiable BA framework with dynamic scene handling.

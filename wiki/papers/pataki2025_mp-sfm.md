@@ -44,6 +44,13 @@ The objective decomposes into three terms: standard reprojection ($C_{BA}$), dep
 
 MP-SfM demonstrates that integrating monocular priors into classical incremental SfM can address its most fundamental limitation (three-view overlap requirement) while retaining scalability and generality. As [[monocular-depth-estimation]] models continue to improve, this approach will automatically benefit with little tuning. It represents a pragmatic middle ground between fully classical and fully learned SfM.
 
+## Pipeline contribution
+
+- **Single-view 3D point lifting via mono depth (N1)** — lifts features with depth, enables next-view registration from only two-view tracks. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *next-view registration (incremental)* · replaces/augments: *3-view overlap requirement in classical incremental SfM* · expected gain: works on low-overlap / low-parallax captures where COLMAP fails (AUC@1 34.9 vs GLOMAP 8.4 on ETH3D 0% overlap).
+- **Depth-constrained BA with normal integration (N2)** — alternating depth refinement (normal integration with uncertainty weighting) + joint BA over poses, points, refined depths. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *BA* · replaces/augments: *reprojection-only BA* · expected gain: principled uncertainty propagation from mono priors; robust to prediction errors.
+- **Forward-backward depth consistency check (N3)** — identifies symmetry/duplicate-registration failures via reprojected-depth agreement. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *registration validation* · replaces/augments: *track-count heuristics* · expected gain: resolves the symmetry-induced ghost camera problem that COLMAP is famously fragile to.
+- **Synthesis-bet candidate**: MP-SfM uses Metric3Dv2 depth+normals; the forthcoming thread bet is *combine MP-SfM's depth-constrained BA with InstantSfM's PyTorch-native GPU BA* to get depth+normal+depth-constrained SfM that runs on GPU — neither paper does this, mechanisms are compatible.
+
 ## Relation to prior work
 
 - Built on [[colmap|COLMAP]]'s incremental SfM framework with significant modifications to initialization, registration, refinement, and filtering.

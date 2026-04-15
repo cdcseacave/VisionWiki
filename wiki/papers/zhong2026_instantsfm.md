@@ -44,6 +44,13 @@ InstantSfM represents the first fully PyTorch-native global SfM system, enabling
 
 See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM" story this paper anchors.
 
+## Pipeline contribution
+
+- **Depth-constrained Jacobian structure (N1)** — mono-depth priors enter both global positioning and BA through shared camera-center Jacobian columns, not as post-hoc alignment. candidate thread: [[gpu-native-sfm]] · stage: *global positioning + BA* · replaces/augments: *reprojection-only Jacobians* · expected gain: metric scale preserved end-to-end; depth priors as first-class residuals alongside reprojection.
+- **Dynamic parameter extraction (N2)** — per-LM-iteration identification of geometrically valid cameras/points, compact reparameterization to guarantee full-rank normal equations. candidate thread: [[gpu-native-sfm]] · stage: *LM solver* · replaces/augments: *damping hacks for rank deficiency* · expected gain: no solver failures when large outlier fractions temporarily invalidate points.
+- **Fully PyTorch-native pipeline (N3)** — sparse-aware GPU operations for both GP and BA. candidate thread: [[gpu-native-sfm]] · stage: *implementation* · expected gain: 1.5×–40× over COLMAP; 12× over GLOMAP; first SfM system that lives inside a deep-learning graph.
+- **Synthesis-bet enablement**: PyTorch-native design is the prerequisite for the [[gpu-native-sfm]] synthesis bet *"backprop rendering loss through SfM poses"* — differentiable joint SfM + 3DGS training is trivially implementable on this stack; no prior SfM allowed it.
+
 ## Relation to prior work
 
 - Extends GPU-accelerated sparse [[bundle-adjustment]] from eager-mode BA (Zhan et al., 2024) into a complete global SfM system.

@@ -49,6 +49,14 @@ Built on the [[dust3r|DUSt3R]] architecture (shared ViT encoder + two cross-atte
 
 Pow3R demonstrates that feed-forward 3D reconstruction models can be made significantly more practical by accepting optional auxiliary information in a single unified architecture. This bridges the gap between "use what you have" practical scenarios and the RGB-only paradigm of [[dust3r|DUSt3R]]/[[mast3r|MASt3R]]. The approach is complementary to all DUSt3R-derived works (Spann3R, MonST3R, Splatt3R, etc.) and could improve them all.
 
+## Pipeline contribution
+
+- **Versatile conditioning (intrinsics / poses / depth) via per-block MLP injection (N1)** — any subset of auxiliary priors fed into DUSt3R's ViT encoder/decoder. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *prior injection into feed-forward backbone* · replaces/augments: *RGB-only DUSt3R / MASt3R* · expected gain: substantially beats DUSt3R when priors exist (MVS DTU); parity when they don't.
+- **Random modality dropout training (N2)** — enables arbitrary combinations at inference. candidate thread: *feed-forward prior injection* · stage: *training recipe* · expected gain: one model for all prior combinations; no per-setup fine-tuning.
+- **Third pointmap output $X^{2,2}$ (N3)** — Procrustes alignment recovers both cameras in single pass. candidate thread: [[feed-forward-structure-from-motion]] Tier 2/3 · stage: *pose recovery* · replaces/augments: *PnP on single pointmap* · expected gain: orders of magnitude faster pose recovery than DUSt3R's PnP loop.
+- **Sliding-window high-res inference via crop-position encoding (N4)** — intrinsics input conveys crop location. candidate thread: *feed-forward inference* · stage: *resolution handling* · expected gain: native-resolution outputs without retraining.
+- **Synthesis-bet candidate**: *inject RoMa v2 covariance-weighted sparse depth* from [edstedt2025_roma-v2] *as Pow3R's depth prior* — no paper does this; the matcher+pointmap combination should strictly improve DTU numbers.
+
 ## Relation to prior work
 
 - Builds directly on [[dust3r|DUSt3R]] and is complementary to [[mast3r|MASt3R]]

@@ -48,6 +48,13 @@ LoGeR processes input video in chunks with four operations per network block:
 
 LoGeR breaks both the "context wall" and "data wall" that limit feedforward 3D reconstruction to bounded scenes. By demonstrating city-scale dense reconstruction without any optimization backend, it represents a significant step toward replacing classical SfM/SLAM pipelines with purely feedforward models. The hybrid memory architecture provides a principled framework for balancing local precision and global consistency at linear computational cost.
 
+## Pipeline contribution
+
+- **Hybrid memory (parametric TTT + non-parametric SWA) (N1)** — fast weights $W^m$ store compressed global context; sliding-window attention carries lossless local context across adjacent chunks. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *long-context memory for feed-forward reconstruction* · replaces/augments: *full self-attention (quadratic) or pure RNN state (lossy)* · expected gain: 19K-frame / 11.5km reconstruction without post-optimization; ATE reduction 32.5% over VGGT-Long.
+- **Chunk-wise TTT with gradient-descent state update (N2)** — muon-style fast-weight updates per chunk. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *global-context compression* · replaces/augments: *CUT3R-style recurrent hidden state* · expected gain: anchors global coordinate frame, prevents scale drift on thousands of frames.
+- **Curriculum training (48 → 128 frames) with TartanAirV2 heavy weight (N3)** — data-side complement to the memory architecture. candidate thread: [[feed-forward-structure-from-motion]] · stage: *training recipe* · expected gain: addresses the "data wall" alongside the "context wall".
+- **Synthesis-bet adjacency**: [chen2026_ttt3r] achieves similar scaling *without training* by deriving the per-token learning rate from attention confidence. **Synthesis bet**: *combine LoGeR's SWA leg with TTT3R's training-free closed-form learning rate* — lossless local context + training-free global compression. Neither paper does this.
+
 ## Relation to prior work
 
 - Built on pi3 (Wang et al., 2026) as the bidirectional geometry backbone, initialized from pi3 weights.

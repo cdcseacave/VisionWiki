@@ -55,6 +55,14 @@ Training uses scale-invariant point loss, depth loss with learned confidence, ca
 
 ZipMap provides the first demonstration that linear-time feed-forward reconstruction can match quadratic-time methods in quality. The TTT fast-weight mechanism creates a natural implicit scene representation as a byproduct of reconstruction, opening possibilities for real-time scene querying without explicit 3D representations. This positions TTT-based architectures as a viable replacement for global attention in large-scale 3D vision.
 
+## Pipeline contribution
+
+- **Large-chunk TTT fast-weight MLP replacing global self-attention (N1)** — SwiGLU fast weights updated via single Muon-optimized gradient step per layer; queries applied to frozen updated weights as cross-attention analog. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *attention mechanism* · replaces/augments: *VGGT's quadratic global attention* · expected gain: O(N) linear scaling, 700 frames in <10s on H100, 20× faster than VGGT; matches quadratic accuracy on DTU/ETH3D.
+- **Local window attention + TTT layer interleaving (N2)** — 24-block architecture alternating both. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *block design* · expected gain: preserves intra-frame spatial reasoning while scaling inter-frame memory linearly.
+- **Fast weights as implicit scene representation (N3)** — updated MLPs queryable with novel ray tokens for feed-forward NVS. candidate thread: *feed-forward NVS* · stage: *output-time scene representation* · expected gain: point-map synthesis from novel views without explicit 3D representation; opens real-time queryable pipelines.
+- **Streaming extension (N4)** — sequential TTT updates. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *online inference* · expected gain: same architecture serves offline + online.
+- **Role**: ZipMap + TTT3R + LoGeR form the 2025–2026 "TTT family" — current Tier-3 SOTA pipeline in [[feed-forward-structure-from-motion]] when long context matters. Trade: ZipMap trains new weights, TTT3R is training-free, LoGeR adds explicit SWA.
+
 ## Relation to prior work
 
 - Architecture built on [[vggt|VGGT]]'s design (DINOv2 encoder, frame attention, prediction heads) with global attention replaced by LaCT TTT blocks.

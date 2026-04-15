@@ -37,6 +37,13 @@ Incremental SfM (COLMAP) is the de facto accuracy/robustness leader but scales p
 
 Validates that global SfM, when the joint-position stage is formulated correctly, is no longer an accuracy-for-speed trade but a strict Pareto improvement on incremental SfM for most workloads. Downstream implications for [[gpu-native-sfm]] and any system that uses SfM as a preprocessing step (NeRF, 3DGS, MVS).
 
+## Pipeline contribution
+
+- **Joint global positioning (camera centers + 3D points in one solve)** — replaces translation-averaging → BA with a single robust joint optimization. candidate thread: [[gpu-native-sfm]] · stage: *global-SfM initialization* · replaces/augments: *classical translation averaging* · expected gain: matches COLMAP accuracy at 2–3 orders of magnitude faster on large collections; raises the classical baseline that feed-forward methods must beat.
+- **Outlier-aware rotation averaging** — robust weighting on the rotation-only subproblem. candidate thread: [[gpu-native-sfm]] · stage: *rotation averaging* · replaces/augments: *L2 rotation averaging* · expected gain: robustness on noisy view graphs.
+- **Drop-in COLMAP backend compatibility** — same frontend, same file format. candidate thread: [[gpu-native-sfm]] · stage: *systems integration* · expected gain: trivial adoption in downstream pipelines.
+- **Role in the wiki**: GLOMAP is the **current accuracy/speed Pareto point** for global SfM on CPU; InstantSfM ([zhong2026_instantsfm]) extends this to GPU, 12× faster than GLOMAP. In the [[gpu-native-sfm]] lineage it is the 2024 step between COLMAP and InstantSfM.
+
 ## Relation to prior work
 
 - Builds on [[colmap|COLMAP]]'s feature/matching frontend.

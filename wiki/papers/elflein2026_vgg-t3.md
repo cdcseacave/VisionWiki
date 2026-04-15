@@ -43,6 +43,13 @@ The method outputs per-image depth maps, camera poses, and intrinsics. For visua
 
 VGG-T3 addresses the fundamental scalability bottleneck of modern feed-forward 3D reconstruction. By showing that the KV scene representation can be compressed into fixed-size MLPs without significant quality loss, it opens the door to reconstructing large-scale scenes (landmarks, cities) from thousands of images in practical time. The unification of reconstruction and localization in a single model is also noteworthy.
 
+## Pipeline contribution
+
+- **KV compression via test-time-trained fixed-size MLP (N1)** — at each global-attention layer, Q/K/V projected, KV compressed into a fixed MLP via gradient-step TTT update, Qs passed through frozen MLP for retrieval. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *global attention* · replaces/augments: *VGGT's quadratic softmax attention* · expected gain: 11.6× speedup on 1K images; matches VGGT quality on DTU/ETH3D; 2–2.5× Chamfer reduction over TTT3R.
+- **Post-training linearization from pre-trained VGGT (N2)** — L2 normalization replaces LayerNorm; fine-tune only the attention replacement. candidate thread: *feed-forward post-training* · stage: *architectural surgery on trained transformers* · expected gain: no from-scratch training needed.
+- **Feed-forward visual localization via frozen updated MLP (N3)** — localize novel views by querying the scene MLP. candidate thread: *feed-forward localization* · stage: *output-time scene query* · expected gain: unified reconstruction + localization in one model.
+- **Connection to [[gaussian-to-mesh-pipelines]] Paradigm D**: VGG-T3 outputs mesh/occupancy directly without per-scene optimization — natural bridge between feed-forward reconstruction and mesh extraction without a TSDF/marching-cubes post-pass.
+
 ## Relation to prior work
 
 - Built on top of **VGGT** (Visual Geometry Grounded Transformer) as the base architecture.
