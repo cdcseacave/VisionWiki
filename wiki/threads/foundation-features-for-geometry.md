@@ -15,7 +15,8 @@ Between ~2023 and 2026, **frozen self-supervised ViT features** ([[dinov2|DINOv2
 ## Evidence
 
 ### Feed-forward 3D reconstruction
-- [[dust3r|DUSt3R]], [[mast3r|MASt3R]], [[vggt|VGGT]], [[jang2025_pow3r|Pow3R]], CUT3R — all use DINOv2 as a frozen backbone and attach a pointmap / pose / matching head on top. See [[feed-forward-structure-from-motion]] for the sister thread focused on the pipeline side.
+- [[dust3r|DUSt3R]], [[mast3r|MASt3R]], [[vggt|VGGT]], [[jang2025_pow3r|Pow3R]], [[CUT3R]] — all use DINOv2 as a frozen backbone and attach a pointmap / pose / matching head on top. See [[feed-forward-structure-from-motion]] for the sister thread focused on the pipeline side.
+- [TTT3R (Chen 2026)](../papers/chen2026_ttt3r.md) is a noteworthy extension of the frozen-backbone pattern: it repurposes the **alignment confidence between frozen features** (state queries vs. observation keys from the DINO/CroCo-tokenized ViT) as a closed-form per-token learning rate for a test-time state update. The frozen backbone isn't just a feature extractor — its attention signal *is* the meta-learner. Evidence that the "composable frozen backbone" pattern extends beyond features into training dynamics.
 
 ### Dense matching
 - [[edstedt2025_roma-v2|RoMa v2]] — frozen DINOv3 features drive dense correspondence. Beats hand-crafted SIFT, learned SuperGlue/LoFTR on a wide benchmark sweep. The paper explicitly argues DINOv3 features make specialized matching losses largely unnecessary.

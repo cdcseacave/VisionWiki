@@ -4,7 +4,7 @@ type: thread
 tags: [nerf, 3dgs, differentiable-rendering, novel-view-synthesis, sparse-voxels]
 created: 2026-04-11
 updated: 2026-04-14
-sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md]
+sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md]
 status: draft
 ---
 
@@ -19,12 +19,21 @@ rasterization — sidesteps Gaussians entirely while matching their speed.
 ## Evidence
 
 ### The NeRF → 3DGS transition
+- [Mip-NeRF 360 (Barron 2022)](../papers/barron2022_mip-nerf-360.md) is the
+  last implicit-NeRF paper to materially move the frontier. Three coordinated
+  tricks — a non-linear scene contraction for unbounded captures, a
+  proposal-network-as-online-distillation for cheap importance sampling,
+  and a first-principles **distortion regularizer** against floaters and
+  background collapse — produce 57% lower MSE than Mip-NeRF, and the
+  dataset it introduced became the canonical outdoor-NVS benchmark for
+  every subsequent radiance-field paper.
 - [Zip-NeRF (Barron 2023)](../papers/barron2023_zip-nerf.md) was the
   high-water-mark of implicit radiance fields: fuses Mip-NeRF 360's
-  anti-aliased cone-casting with Instant-NGP's hash-grid speed, achieving
-  **8× lower error than Mip-NeRF 360** at ~1h training. Its existence
-  made the NeRF→3DGS hand-off a fair fight — 3DGS won not on raw quality
-  but on *edit-ability* and real-time rendering, not on a weak NeRF baseline.
+  contraction + proposal network with Instant-NGP's hash-grid speed,
+  achieving **8× lower error than Mip-NeRF 360** at ~1h training. Its
+  existence made the NeRF→3DGS hand-off a fair fight — 3DGS won not on
+  raw quality but on *edit-ability* and real-time rendering, not on a
+  weak NeRF baseline.
 - [CamP (Park 2023)](../papers/park2023_camp.md) showed that NeRF's joint
   pose-radiance optimization is brittle due to ill-conditioned camera
   parameterization. Camera preconditioning via whitening reduced RMSE by 67%

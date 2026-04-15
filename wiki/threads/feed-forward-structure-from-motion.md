@@ -4,7 +4,7 @@ type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
 updated: 2026-04-12
-sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md]
+sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md]
 status: draft
 ---
 
@@ -61,6 +61,16 @@ quadratic attention costs.
 - [ZipMap (Jin 2026)](../papers/jin2026_zipmap.md): bidirectional TTT fast
   weights, 20x faster than [[vggt|VGGT]]. Shows test-time-training is becoming the
   dominant paradigm for scaling feed-forward reconstruction.
+- [TTT3R (Chen 2026)](../papers/chen2026_ttt3r.md): the *training-free*
+  variant of the same idea. Reinterprets [[CUT3R]]'s recurrent state as a
+  fast weight and derives a **closed-form confidence-guided learning rate**
+  from the existing attention alignment — no retraining, no architecture
+  change. 2× pose improvement over CUT3R on long sequences at 20 FPS / 6 GB
+  for thousands of images. Distinguishes itself from LoGeR/ZipMap by being
+  a plug-and-play patch to the recurrence rather than a new trained model,
+  and articulates the unified `Tokenize → Update → Read → De-tokenize`
+  formulation that separates full-attention (VGGT, Fast3R) from RNN
+  (CUT3R, Point3R) pointmap models cleanly.
 - [Cameras as Rays (Zhang 2024)](../papers/zhang2024_cameras-as-rays.md):
   Plucker ray-bundle camera representation + diffusion for sparse-view pose.
   Earlier work that planted the "cameras are just rays" idea.
@@ -75,8 +85,11 @@ quadratic attention costs.
 
 ## Emerging patterns
 
-- **Test-time training** (LoGeR, ZipMap) is the scaling trick for feed-forward
+- **Test-time training** (LoGeR, ZipMap, TTT3R) is the scaling trick for feed-forward
   reconstruction: linear time, no quadratic KV cache, handles thousands of frames.
+  Frontier question: does TTT need retraining (LoGeR, ZipMap) or can it be
+  derived from the frozen model's own attention (TTT3R)? TTT3R's training-free
+  closed-form learning rate is the cheapest answer yet.
 - **DUSt3R/MASt3R** is the gravitational center — Pow3R extends it, MASt3R-SLAM
   runs it in real-time, DiffusionSfM rethinks it.
 - **Monocular depth priors** are the bridge between classical and learned: MP-SfM

@@ -3,8 +3,8 @@ title: "Zip-NeRF: Anti-Aliased Grid-Based Neural Radiance Fields"
 type: paper
 tags: [nerf, anti-aliasing, radiance-fields, hash-grid]
 created: 2026-04-14
-updated: 2026-04-14
-sources: []
+updated: 2026-04-15
+sources: [papers/barron2022_mip-nerf-360.md]
 local_paper: papers/radiance-fields/barron_2023_zip-nerf.pdf
 url: https://arxiv.org/abs/2304.06706
 status: stable
@@ -38,7 +38,7 @@ Establishes the quality ceiling for *NeRF-family* methods pre-3DGS. Widely used 
 
 ## Relation to prior work
 
-- Builds on Mip-NeRF 360 (scene contraction, proposal sampling, distortion loss) and Instant-NGP (multi-resolution hash grid).
+- Builds on [Mip-NeRF 360 (Barron 2022)](barron2022_mip-nerf-360.md) (scene contraction, proposal sampling, distortion loss) and Instant-NGP (multi-resolution hash grid).
 - Contrasts with [[3d-gaussian-splatting]]: Zip-NeRF wins on quality on reflective/unbounded scenes; 3DGS wins on rendering speed by orders of magnitude.
 
 ## Open questions / limitations

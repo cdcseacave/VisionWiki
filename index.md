@@ -18,6 +18,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [DiffusionSfM](wiki/papers/zhao2025_diffusionsfm.md) — diffusion model for joint structure and motion prediction · _2026-04-12_
 - [LoGeR](wiki/papers/zhang2025_loger.md) — long-context (19K frames) feedforward reconstruction via TTT · _2026-04-12_
 - [ZipMap](wiki/papers/jin2026_zipmap.md) — linear-time bidirectional reconstruction, 20x faster than VGGT · _2026-04-12_
+- [TTT3R](wiki/papers/chen2026_ttt3r.md) — training-free TTT patch to CUT3R, 2× pose improvement on long sequences · _2026-04-15_
 
 ### Mesh Reconstruction
 - [PGSR](wiki/papers/chen2024_pgsr.md) — planar-constrained 3DGS with unbiased depth for high-fidelity meshes · _2026-04-15_
@@ -40,6 +41,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [CLIP-GS](wiki/papers/jiao2025_clip-gs.md) — 3DGS-CLIP alignment for zero-shot 3D retrieval/classification · _2026-04-15_
 - [Seg-Wild](wiki/papers/bao2025_seg-wild.md) — interactive 3DGS segmentation for in-the-wild photo collections · _2026-04-15_
 - [GaussExplorer](wiki/papers/kim2026_gauss-explorer.md) — VLM + 3DGS for compositional embodied reasoning · _2026-04-15_
+- [Mip-NeRF 360](wiki/papers/barron2022_mip-nerf-360.md) — unbounded NeRF via scene contraction + proposal network + distortion loss · _2026-04-15_
 - [Zip-NeRF](wiki/papers/barron2023_zip-nerf.md) — anti-aliased hash-grid NeRF, 8× lower error than Mip-NeRF 360 · _2026-04-14_
 - [VastGaussian](wiki/papers/lin2024_vastgaussian.md) — first real-time 3DGS for aerial/city scenes via partitioning + decoupled appearance · _2026-04-14_
 - [GauSS-MI](wiki/papers/xie2025_gauss-mi.md) — real-time mutual information for active 3DGS view selection · _2026-04-12_
@@ -122,7 +124,10 @@ see [CLAUDE.md](CLAUDE.md).
 - [Vision Transformer](wiki/concepts/vision-transformer.md) — transformer architecture for visual tasks · _stub_
 
 ## Datasets
-_(empty)_
+- [Tanks and Temples](wiki/datasets/tanks-and-temples.md) — laser-scanned large-scene reconstruction benchmark with F-score metric · _2026-04-15_
+
+### Dataset papers
+- [Tanks and Temples (Knapitsch 2017)](wiki/papers/knapitsch2017_tanks-and-temples.md) — the benchmark paper · _2026-04-15_
 
 ## People
 _(empty)_

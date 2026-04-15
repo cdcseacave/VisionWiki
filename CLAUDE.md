@@ -362,7 +362,7 @@ Scan the wiki and report (do not auto-fix — present a list for human approval)
 - **Missing pages**: concepts/methods referenced ≥3 times with no own page.
 - **Broken links**: wikilinks pointing to non-existent pages.
 - **Frontmatter drift**: missing `updated:` dates, empty `sources:`, etc.
-- **Thread debt**: threads not updated in the last N ingests that touched them.
+- **Stale threads**: threads whose `updated:` predates the `updated:` date of at least one paper page in their own `sources:` list — the narrative hasn't absorbed what its own citations now say. See `lint stale-threads` for the remediation action.
 - **Missing papers**: wiki pages with a `url:` field but no local file at `local_paper:`.
 - **Investigation suggestions**: 3–5 follow-up questions or source hunts.
 
@@ -377,6 +377,7 @@ user approval before making changes.
 | `lint fetch` | Downloads all missing papers (wiki pages with `url:` but no local file). | `papers/` cache only (wiki-read-only) |
 | `lint frontmatter` | Fills in missing `updated:` dates, empty `sources:` arrays, and other frontmatter drift. | `wiki/` pages |
 | `lint orphans` | Proposes inbound wikilinks for orphan pages. | `wiki/` pages |
+| `lint stale-threads` | Identifies threads whose narrative has fallen behind their own cited sources; proposes a targeted re-cascade. | `wiki/threads/*.md` (after per-thread approval) |
 
 New actions can be added as patterns emerge. The contract: **bare `lint` is
 always safe and read-only; `lint <action>` may write but always asks first.**
@@ -408,6 +409,31 @@ always safe and read-only; `lint <action>` may write but always asks first.**
 - Papers without a `url:` field are silently skipped (listed separately in the report so the user can add URLs later).
 - If all local files already present: "All N papers present — nothing to download."
 - **Primary use case**: after a fresh `git clone`, run `lint fetch` to repopulate the `papers/` cache (which is git-ignored) from each wiki page's `url:` field.
+
+#### `lint stale-threads` procedure
+
+A thread is **stale** when its narrative hasn't kept up with its own cited sources. The check is deterministic: compare a thread's `updated:` date against the most recent `updated:` date among the paper pages it lists in `sources:`. If a thread predates any of its sources, the thread body has not absorbed whatever those papers contributed.
+
+1. **Scan** all `wiki/threads/*.md`. For each thread, parse the `updated:` date and the `sources:` list from frontmatter.
+2. **Compute staleness** for each thread:
+   - `thread_updated` = thread's `updated:` date.
+   - `source_newest` = `max(source.updated:)` across every paper page listed in the thread's `sources:` (resolve relative paths; skip sources that don't exist on disk and flag them separately).
+   - Thread is **stale** if `thread_updated < source_newest`, with lag = `source_newest − thread_updated` days.
+3. **Present** a table per stale thread:
+   _"Thread `[[foundation-features-for-geometry]]` last updated 2026-04-15, lag 4 days.
+   Newer sources not yet reflected:
+   - `papers/chen2026_ttt3r.md` (updated 2026-04-19, added [TL;DR in 1 line])
+   - `papers/zhang2025_loger.md` (updated 2026-04-18, added [TL;DR in 1 line])
+   Suggest: reread these two papers and update the `### Feed-forward 3D reconstruction` and `## Outstanding hypotheses` sections."_
+4. On per-thread approval, **do a targeted re-cascade** (mirroring Step 5 of §3.1 ingest): reread each newer source, update the thread body where those papers advance, contradict, or extend the existing narrative, bump `updated:`. Do **not** auto-rewrite without approval — the whole point of the stale signal is that only a human-in-the-loop synthesis is trustworthy.
+5. **Report** per-thread: which sections changed, and any contradictions surfaced that warrant updates to other threads.
+6. **Append to `log.md`**.
+
+**Notes on `lint stale-threads`**:
+- **Only flags real staleness, not bureaucratic staleness**: a thread whose last `updated:` is old but whose sources are also old is not stale — its narrative is caught up with what's in the wiki.
+- **False negatives possible**: if a paper was ingested but never added to any thread's `sources:`, stale-threads won't catch it. That's what `lint orphans` is for.
+- **Ingest hygiene complement**: after a batch ingest that touches many threads, run `lint stale-threads` to find the cascade updates you missed. Step 5 of §3.1 says to update threads during ingest — this is the safety net for when that step gets rushed.
+- **Lag threshold tuning**: by default every non-zero lag counts. If that's too noisy on a large wiki, filter to threads with lag ≥ N days (user-specified) — but err on reporting more.
 
 ## 4. `index.md` format
 

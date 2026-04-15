@@ -233,3 +233,15 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 
 ## [2026-04-15] schema-change
 - CLAUDE.md §3.3: clarified that `lint` orphan detection must count BOTH wikilinks (`[[slug]]`) and relative markdown wiki-page links (`[text](../papers/slug.md)`). Earlier detector only counted wikilinks, falsely flagging 19 correctly-cited paper pages as orphans.
+
+## [2026-04-15] ingest | TTT3R, Mip-NeRF 360, Tanks and Temples
+- Batch ingest from raw/ (3 files).
+- Created: wiki/papers/chen2026_ttt3r.md, wiki/papers/barron2022_mip-nerf-360.md, wiki/papers/knapitsch2017_tanks-and-temples.md, wiki/datasets/tanks-and-temples.md (first entry in wiki/datasets/)
+- Promoted: wiki/methods/mip-nerf-360.md from stub → stable (full method narrative)
+- Updated: wiki/threads/feed-forward-structure-from-motion.md (TTT3R added to Tier-3 alongside LoGeR/ZipMap; emerging-patterns updated to frame TTT3R as the training-free point in the TTT design space), wiki/threads/foundation-features-for-geometry.md (TTT3R cited as evidence that frozen-backbone composability extends to training dynamics), wiki/threads/radiance-field-evolution.md (Mip-NeRF 360 added as the last implicit-NeRF frontier mover, anchoring the NeRF→3DGS transition), wiki/papers/barron2023_zip-nerf.md (sources: populated with Mip-NeRF 360 predecessor; citation link added), index.md (new paper entries + first Datasets entry).
+- Files moved: raw/2509.26645v4.pdf → papers/sfm-slam/chen_2026_ttt3r.pdf; raw/2111.12077v3.pdf → papers/radiance-fields/barron_2022_mip-nerf-360.pdf; raw/tanks-and-temples.pdf → papers/datasets-benchmarks/knapitsch_2017_tanks-and-temples.pdf.
+- Notable: TTT3R is the cleanest training-free point in the TTT-for-long-context design space (LoGeR/ZipMap required new training); its 2× CUT3R pose improvement is a free lunch that any deployed CUT3R should apply. Mip-NeRF 360 paper's distortion regularizer is a rare first-principles ambiguity fix — worth a revisit when designing regularizers for 3DGS/sparse-voxel mesh extraction. T&T is the 9-year-old benchmark still unsaturated on its Advanced split.
+- raw/ empty after ingest.
+
+## [2026-04-15] schema-change
+- CLAUDE.md §3.3: added `lint stale-threads` sub-action. Definition: a thread is stale when `thread.updated < max(source.updated)` for sources listed in its frontmatter. Diagnostic in bare `lint`; targeted re-cascade procedure (with per-thread approval) as `lint stale-threads`. Replaces the vaguer "thread debt: not updated in last N ingests" bullet with a deterministic, computable check.
