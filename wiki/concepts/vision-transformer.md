@@ -22,7 +22,7 @@ The Vision Transformer (ViT), introduced by Dosovitskiy et al. (ICLR 2021), appl
 
 ## How it works
 
-An image is divided into non-overlapping patches (typically 16x16 or 14x14 pixels). Each patch is flattened and linearly projected to a token embedding. Positional embeddings are added, and the sequence is processed through L layers of multi-head self-attention and feed-forward blocks. The output tokens carry rich, spatially-aware features. For dense prediction tasks, decoder heads or feature pyramid networks process these tokens into per-pixel outputs. Pretrained ViT backbones (especially DINOv2) provide strong geometric priors that transfer well to 3D vision tasks.
+An image is divided into non-overlapping patches (typically 16x16 or 14x14 pixels). Each patch is flattened and linearly projected to a token embedding. Positional embeddings are added, and the sequence is processed through L layers of multi-head self-attention and feed-forward blocks. The output tokens carry rich, spatially-aware features. For dense prediction tasks, decoder heads or feature pyramid networks process these tokens into per-pixel outputs. Pretrained ViT backbones (especially DINOv2) provide strong geometric priors that transfer well to 3D vision tasks. ViT is the architectural substrate for most current [[foundation-model|vision foundation models]]; scaling it via [[self-supervised-learning|self-supervised learning]] (DINO lineage) produces the frozen features that power [[foundation-features-for-geometry|feed-forward geometry pipelines]].
 
 ## Key references
 

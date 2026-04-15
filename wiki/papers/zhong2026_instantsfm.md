@@ -14,11 +14,11 @@ status: draft
 
 ## TL;DR
 
-InstantSfM is a fully GPU-based, PyTorch-compatible global [[structure-from-motion]] system that embeds metric depth priors directly into both global positioning and [[bundle-adjustment]] through a depth-constrained Jacobian structure, and introduces dynamic parameter extraction for robust outlier handling. It achieves up to 40x speedup over [[colmap|COLMAP]] and 12x over [[GLOMAP]] while maintaining competitive reconstruction accuracy.
+InstantSfM is a fully GPU-based, PyTorch-compatible global [[structure-from-motion]] system that embeds metric depth priors directly into both global positioning and [[bundle-adjustment]] through a depth-constrained Jacobian structure, and introduces dynamic parameter extraction for robust outlier handling. It achieves up to 40x speedup over [[colmap|COLMAP]] and 12x over [[glomap|GLOMAP]] while maintaining competitive reconstruction accuracy.
 
 ## Problem
 
-Mature SfM systems like [[colmap|COLMAP]] and [[GLOMAP]] remain CPU-centric and built on traditional C++ optimization toolchains, creating a growing mismatch with modern GPU-based, learning-driven pipelines (e.g., [[3d-gaussian-splatting]], [[nerf|NeRF]]). Existing GPU-accelerated [[bundle-adjustment]] frameworks are limited to reprojection-only objectives and cannot incorporate heterogeneous constraints like metric depth. Additionally, aggressive outlier filtering can leave cameras or 3D points under-constrained, causing rank-deficient normal equations and solver failure.
+Mature SfM systems like [[colmap|COLMAP]] and [[glomap|GLOMAP]] remain CPU-centric and built on traditional C++ optimization toolchains, creating a growing mismatch with modern GPU-based, learning-driven pipelines (e.g., [[3d-gaussian-splatting]], [[nerf|NeRF]]). Existing GPU-accelerated [[bundle-adjustment]] frameworks are limited to reprojection-only objectives and cannot incorporate heterogeneous constraints like metric depth. Additionally, aggressive outlier filtering can leave cameras or 3D points under-constrained, causing rank-deficient normal equations and solver failure.
 
 ## Method
 
@@ -32,7 +32,7 @@ The entire pipeline is implemented in PyTorch using sparse-aware GPU operations,
 
 ## Results
 
-- **MipNeRF360**: Best average NVS metrics (PSNR 28.43, SSIM 0.856, LPIPS 0.113) across 7 scenes compared to [[colmap|COLMAP]], [[GLOMAP]], and [[VGGSfM]].
+- **MipNeRF360**: Best average NVS metrics (PSNR 28.43, SSIM 0.856, LPIPS 0.113) across 7 scenes compared to [[colmap|COLMAP]], [[glomap|GLOMAP]], and [[VGGSfM]].
 - **DTU**: Average PSNR 24.57 vs GLOMAP's 17.98 (GLOMAP fails on multiple scenes).
 - **ScanNet**: Both COLMAP and GLOMAP fail on most scenes; InstantSfM succeeds on all, achieving Chamfer distance 0.658 with depth priors.
 - **ScanNet++**: Average Chamfer distance 2.61 vs GLOMAP's 3.80.
@@ -47,7 +47,7 @@ See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM
 ## Relation to prior work
 
 - Extends GPU-accelerated sparse [[bundle-adjustment]] from eager-mode BA (Zhan et al., 2024) into a complete global SfM system.
-- Directly competes with [[colmap|COLMAP]] (incremental SfM) and [[GLOMAP]] (global SfM), offering a GPU-native alternative.
+- Directly competes with [[colmap|COLMAP]] (incremental SfM) and [[glomap|GLOMAP]] (global SfM), offering a GPU-native alternative.
 - Builds on [[rotation-averaging]] and global positioning formulations from GLOMAP.
 - Contrasts with learning-based SfM like [[VGGSfM]] and feed-forward methods like [[dust3r|DUSt3R]], which are limited in scale or generalization.
 
@@ -62,7 +62,7 @@ See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM
 - [[structure-from-motion]]
 - [[bundle-adjustment]]
 - [[colmap|COLMAP]]
-- [[GLOMAP]]
+- [[glomap|GLOMAP]]
 - [[VGGSfM]]
 - [[monocular-depth-estimation]]
 - [[3d-gaussian-splatting]]

@@ -43,7 +43,7 @@ Despite very different designs, both papers follow the same four-step recipe:
   both global positioning and BA through shared Jacobian columns, not as a
   post-hoc alignment); dynamic parameter extraction to prevent rank-deficient
   normal equations when outliers temporarily invalidate points/cameras.
-- **Scope**: general-purpose, designed to *replace* [[colmap|COLMAP]]/[[GLOMAP]]
+- **Scope**: general-purpose, designed to *replace* [[colmap|COLMAP]]/[[glomap|GLOMAP]]
   for anyone building a learning pipeline (3DGS/NeRF/robotics).
 - **Benchmarks won**: MipNeRF360 NVS, ScanNet/ScanNet++ Chamfer distance.
 - **Speedup**: 1.5×–40× over COLMAP, up to 12× over GLOMAP (100–5000 images).

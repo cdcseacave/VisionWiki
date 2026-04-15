@@ -20,6 +20,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [ZipMap](wiki/papers/jin2026_zipmap.md) — linear-time bidirectional reconstruction, 20x faster than VGGT · _2026-04-12_
 
 ### Mesh Reconstruction
+- [PGSR](wiki/papers/chen2024_pgsr.md) — planar-constrained 3DGS with unbiased depth for high-fidelity meshes · _2026-04-15_
 - [TSDF (Curless & Levoy 1996)](wiki/papers/curless1996_tsdf.md) — canonical volumetric fusion from range images · _2026-04-14_
 - [SAM 3D](wiki/papers/chen2025_sam-3d.md) — single-image 3D reconstruction via latent flow matching (Meta) · _2026-04-14_
 - [GeoSVR](wiki/papers/li2025_geosvr.md) — sparse voxels with uncertainty depth for SOTA surface reconstruction · _2026-04-12_
@@ -32,6 +33,13 @@ see [CLAUDE.md](CLAUDE.md).
 - [SpatialLM](wiki/papers/mao2025_spatiallm.md) — LLM fine-tuned on point clouds for structured indoor modeling · _2026-04-12_
 
 ### Radiance Fields
+- [ConceptFusion](wiki/papers/jatavallabhula2023_conceptfusion.md) — voxel-TSDF fusion of CLIP/DINO/AudioCLIP for open-set multimodal 3D mapping · _2026-04-15_
+- [LangSVR](wiki/papers/wu2026_langsvr.md) — sparse-voxel representation with language + geometry dual distillation, one-stage · _2026-04-15_
+- [Gaussian Grouping](wiki/papers/ye2024_gaussian-grouping.md) — per-Gaussian SAM-supervised identities for 3D segment + edit · _2026-04-15_
+- [LangSplat](wiki/papers/qin2024_langsplat.md) — CLIP distilled into 3DGS with SAM-hierarchy supervision, 199× faster than LERF · _2026-04-15_
+- [CLIP-GS](wiki/papers/jiao2025_clip-gs.md) — 3DGS-CLIP alignment for zero-shot 3D retrieval/classification · _2026-04-15_
+- [Seg-Wild](wiki/papers/bao2025_seg-wild.md) — interactive 3DGS segmentation for in-the-wild photo collections · _2026-04-15_
+- [GaussExplorer](wiki/papers/kim2026_gauss-explorer.md) — VLM + 3DGS for compositional embodied reasoning · _2026-04-15_
 - [Zip-NeRF](wiki/papers/barron2023_zip-nerf.md) — anti-aliased hash-grid NeRF, 8× lower error than Mip-NeRF 360 · _2026-04-14_
 - [VastGaussian](wiki/papers/lin2024_vastgaussian.md) — first real-time 3DGS for aerial/city scenes via partitioning + decoupled appearance · _2026-04-14_
 - [GauSS-MI](wiki/papers/xie2025_gauss-mi.md) — real-time mutual information for active 3DGS view selection · _2026-04-12_
@@ -82,6 +90,10 @@ see [CLAUDE.md](CLAUDE.md).
 - [CLIP](wiki/methods/clip.md) — contrastive vision-language embedding · _stub_
 
 ## Concepts
+- [Foundation Model](wiki/concepts/foundation-model.md) — unified concept: CLIP, DINO, SAM, RADIO families + the frozen-backbone pattern · _2026-04-15_
+- [Self-Supervised Learning](wiki/concepts/self-supervised-learning.md) — DINO→DINOv2→DINOv3 lineage, Gram anchoring, SSL vs. CLIP · _2026-04-15_
+- [Segmentation (taxonomy)](wiki/concepts/segmentation.md) — semantic / instance / panoptic / promptable / open-vocabulary · _2026-04-15_
+- [Open-Vocabulary Segmentation](wiki/concepts/open-vocabulary-segmentation.md) — Trident pattern and 3D lifting · _2026-04-15_
 - [Structure from Motion](wiki/concepts/structure-from-motion.md) — classical pipeline and paradigms · _stub_
 - [Multi-View Stereo](wiki/concepts/multi-view-stereo.md) — dense reconstruction from posed images · _stub_
 - [TSDF](wiki/concepts/tsdf.md) — truncated signed distance field for depth fusion · _stub_
@@ -101,6 +113,9 @@ _(empty)_
 _(empty)_
 
 ## Threads
+- [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS (Gaussian Grouping, LangSplat, CLIP-GS, Seg-Wild, SAM 3D) · _2026-04-15_
+- [Foundation Features for Geometry](wiki/threads/foundation-features-for-geometry.md) — frozen DINO backbones replacing SIFT across SfM / matching / depth · _2026-04-15_
+- [Open-Vocab 2D Composition](wiki/threads/open-vocab-2d-composition.md) — CLIP + DINO + SAM as complementary backbones (Trident, SAM 3, RADIO) · _2026-04-15_
 - [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, representations, speed/quality tradeoffs · _updated 2026-04-14_
 - [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting usable meshes from Gaussian splats, 4 competing paradigms · _updated 2026-04-13_
 - [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — replacing iterative SfM: accelerated classical → hybrid → fully learned · _updated 2026-04-12_
@@ -113,4 +128,4 @@ _(empty)_
 
 ---
 
-_Last rebuilt: 2026-04-14 · 45 papers, 14 methods, 11 concepts, 6 threads, 1 design_
+_Last rebuilt: 2026-04-15 · 53 papers, 14 methods, 15 concepts, 9 threads, 1 design_

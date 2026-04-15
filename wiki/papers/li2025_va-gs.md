@@ -34,7 +34,7 @@ VA-GS introduces four complementary geometric constraints on top of standard [[3
 
 The final loss is: $\mathcal{L} = \mathcal{L}_I + \lambda_1 \mathcal{L}_{nc} + \lambda_2 \mathcal{L}_{ns} + \lambda_3 \mathcal{L}_p + \lambda_4 \mathcal{L}_f$.
 
-Mesh extraction uses [[TSDF]] fusion from rendered depth maps across training views.
+Mesh extraction uses [[tsdf|TSDF]] fusion from rendered depth maps across training views.
 
 ## Results
 
@@ -52,7 +52,7 @@ VA-GS shows that carefully designed multi-view geometric constraints can substan
 - Builds on [[3d-gaussian-splatting]] and follows the pipeline of methods like [[2d-gaussian-splatting]], GOF, PGSR, RaDe-GS.
 - Contrasts with GS-Pull (which only reconstructs foreground) and SuGaR.
 - Compared to [[neural-implicit-surfaces]] methods: NeuS, Neuralangelo, VolSDF.
-- Uses [[TSDF]] for mesh extraction, following standard practice from prior Gaussian surface methods.
+- Uses [[tsdf|TSDF]] for mesh extraction, following standard practice from prior Gaussian surface methods.
 
 ## Open questions / limitations
 

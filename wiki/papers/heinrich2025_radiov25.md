@@ -51,7 +51,7 @@ RADIOv2.5 addresses the practical challenge of building a single vision encoder 
 ## Relation to prior work
 
 - Builds on AM-RADIO [Ranzinger et al.] as the baseline agglomerative model
-- Distills from [[DINOv2]], [[SAM]], [[CLIP]] (DFN CLIP and [[SigLIP]])
+- Distills from [[dinov2|DINOv2]], [[sam|SAM]], [[clip|CLIP]] (DFN CLIP and [[SigLIP]])
 - Relates to SAM-CLIP, UNIC, Theia, and PHI-S in the agglomerative VFM space
 - Token merging technique from ToMeSD [Bolya et al.]
 - Evaluated with [[VILA]] for VLM benchmarks
@@ -73,7 +73,12 @@ RADIOv2.5 addresses the practical challenge of building a single vision encoder 
 - [[AM-RADIO]]
 - [[agglomerative-VFM]]
 - [[token-merging]]
-- [[DINOv2]]
-- [[SAM]]
+- [[dinov2|DINOv2]]
+- [[sam|SAM]]
 - [[SigLIP]]
 - [[vision-transformer]]
+
+
+## In the wiki
+- Part of the [[foundation-model]] family (agglomerative distillation).
+- Referenced by [[open-vocab-2d-composition]] as a distillation alternative to Trident-style composition.

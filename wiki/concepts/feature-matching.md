@@ -22,6 +22,8 @@ Feature matching is the process of establishing pixel-level correspondences betw
 
 The classical pipeline involves: (1) keypoint detection, (2) descriptor extraction, (3) nearest-neighbor matching, and (4) geometric verification (RANSAC with epipolar geometry). Learned matchers replace some or all stages with neural networks. Dense matchers like RoMa v2 predict a full warp field between image pairs, bypassing keypoint detection entirely. The quality of feature matches directly determines the accuracy of downstream pose estimation and triangulation.
 
+Since ~2023 the frontier has shifted to **frozen [[foundation-model|foundation-model]] features** — DINOv2/DINOv3 backbones drive RoMa v2 and the DUSt3R/MASt3R/VGGT matching heads. See [[foundation-features-for-geometry]] for the synthesis.
+
 ## Key references
 
 - [Edstedt 2025](../papers/edstedt2025_roma-v2.md) · [pdf](../../papers/feature-matching/edstedt_2025_roma-v2.pdf)

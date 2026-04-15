@@ -51,7 +51,7 @@ DiffusionSfM represents a paradigm shift from the traditional two-stage SfM pipe
 
 - Extends RayDiffusion's ray-based camera representation to include endpoints (geometry), going from patch-wise to pixel-wise resolution.
 - Competes with [[dust3r|DUSt3R]] and [[mast3r|MASt3R]] but eliminates global alignment; processes N views in one pass rather than O(N^2) pairwise predictions.
-- Uses [[DINOv2]] backbone features, following the trend of leveraging foundation model features for 3D tasks.
+- Uses [[dinov2|DINOv2]] backbone features, following the trend of leveraging foundation model features for 3D tasks.
 - Related to PoseDiffusion (diffusion for pose estimation only) and ACEZero/FlowMap (unified SfM approaches with incremental processing).
 - DPT decoder follows standard dense prediction transformer design.
 
@@ -68,7 +68,7 @@ DiffusionSfM represents a paradigm shift from the traditional two-stage SfM pipe
 - [[dust3r|DUSt3R]]
 - [[mast3r|MASt3R]]
 - [[diffusion-models]]
-- [[DINOv2]]
+- [[dinov2|DINOv2]]
 - [[DPT]]
 - [[bundle-adjustment]]
 - [[RayDiffusion]]

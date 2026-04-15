@@ -55,3 +55,8 @@ Consolidates three previously-separate capabilities (open-vocab detection, insta
 ## References added to the wiki
 
 - [[sam]] method page — lineage updated.
+
+
+## In the wiki
+- Unifies [[open-vocabulary-segmentation|OVS]] and promptable segmentation via Promptable Concept Segmentation.
+- See [[open-vocab-2d-composition]] for the pattern it subsumes.

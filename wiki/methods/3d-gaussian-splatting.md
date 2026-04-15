@@ -3,8 +3,14 @@ title: 3D Gaussian Splatting
 type: method
 tags: [radiance-fields, real-time-rendering, point-based, differentiable]
 created: 2026-04-12
-updated: 2026-04-14
+updated: 2026-04-15
 sources:
+  - papers/ye2024_gaussian-grouping.md
+  - papers/qin2024_langsplat.md
+  - papers/chen2024_pgsr.md
+  - papers/jiao2025_clip-gs.md
+  - papers/bao2025_seg-wild.md
+  - papers/kim2026_gauss-explorer.md
   - papers/deng2026_vpgs-slam.md
   - papers/guo2025_ea-3dgs.md
   - papers/kim2025_multiview-geometric-gs.md
@@ -39,6 +45,22 @@ Vanilla 3DGS breaks on city/aerial-scale captures: a single GPU OOMs with the re
 - **Incremental SLAM** — [VPGS-SLAM (Deng 2026)](../papers/deng2026_vpgs-slam.md) voxel-based progressive training with loop closure, avoiding a priori scene partitioning.
 
 These are orthogonal and combinable.
+
+## Foundation-model lifting onto 3DGS
+
+A parallel 2024–2026 direction augments each Gaussian with features distilled or supervised from 2D foundation models, enabling concept-level querying, segmentation, and editing:
+
+- **SAM-lifted identities** — [Gaussian Grouping (Ye 2024)](../papers/ye2024_gaussian-grouping.md) adds a per-Gaussian Identity Encoding supervised by SAM masks; enables object removal/inpainting/recomposition.
+- **SAM-lifted, in-the-wild** — [Seg-Wild (Bao 2025)](../papers/bao2025_seg-wild.md) extends identity embeddings + adds the Spiky Gaussian Cutter for internet photo collections with transient occluders.
+- **CLIP-lifted language fields** — [LangSplat (Qin 2024)](../papers/qin2024_langsplat.md) distills CLIP into per-Gaussian latents with SAM-hierarchy supervision; 199× faster than LERF at 1440×1080.
+- **CLIP-aligned 3DGS encoder** — [CLIP-GS (Jiao 2025)](../papers/jiao2025_clip-gs.md) tokenizes 3DGS and contrastively aligns it with CLIP at the scene level for zero-shot 3D retrieval/classification.
+- **VLM reasoning on 3DGS** — [GaussExplorer (Kim 2026)](../papers/kim2026_gauss-explorer.md) treats 3DGS as a queryable spatial database for compositional embodied reasoning.
+
+See the [[lifting-foundation-models-to-3d]] thread for the synthesis.
+
+## Planar/surface-oriented 3DGS
+
+- [PGSR (Chen 2024)](../papers/chen2024_pgsr.md) — flatten Gaussians into planes + unbiased depth rendering + multi-view geometric regularization; SOTA 3DGS mesh quality without external priors. See [[gaussian-to-mesh-pipelines]].
 
 ## Key references
 

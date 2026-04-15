@@ -63,7 +63,7 @@ MP-SfM demonstrates that integrating monocular priors into classical incremental
 
 - [[structure-from-motion]]
 - [[colmap|COLMAP]]
-- [[GLOMAP]]
+- [[glomap|GLOMAP]]
 - [[mast3r|MASt3R]]
 - [[dust3r|DUSt3R]]
 - [[monocular-depth-estimation]]

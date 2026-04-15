@@ -25,7 +25,7 @@ Dense feature matching -- estimating correspondences for every pixel between two
 ### Architecture: Two-stage matching-then-refinement
 
 **Coarse Matcher** (Figure 4):
-1. Frozen [[DINOv3]] ViT-L extracts features from both images (layers 11 and 17, concatenated to 2048-dim, projected to 768-dim)
+1. Frozen [[dinov2|DINOv3]] ViT-L extracts features from both images (layers 11 and 17, concatenated to 2048-dim, projected to 768-dim)
 2. Features processed by a ViT-B **Multi-view Transformer** with alternating frame-wise and global attention (12 blocks, 768 dim)
 3. DPT head outputs coarse warps and confidence at stride 4
 4. Key change: Replaced RoMa's Gaussian Process with single-headed attention + auxiliary NLL loss
@@ -68,7 +68,7 @@ RoMa v2 advances the state of the art in dense feature matching by resolving the
 
 - Builds on [[RoMa]] (Edstedt et al., CVPR 2024) and addresses its limitations
 - Competes with [[UFM]] (Zhang et al., NeurIPS 2025) -- RoMa v2 combines UFM's speed advantages with RoMa's robustness
-- Upgrades from [[DINOv2]] to [[DINOv3]] as frozen feature backbone
+- Upgrades from [[dinov2|DINOv2]] to [[dinov2|DINOv3]] as frozen feature backbone
 - Architecture inspired by [[dust3r|DUSt3R]], [[mast3r|MASt3R]], and [[vggt|VGGT]] for multi-view transformer design
 - Follows alternating attention pattern from [[vggt|VGGT]] (Wang et al.)
 - Uses DPT head from [[DPT]] (Ranftl et al., 2021)
@@ -88,7 +88,7 @@ RoMa v2 advances the state of the art in dense feature matching by resolving the
 
 - [[RoMa-v2]]
 - [[RoMa]]
-- [[DINOv3]]
+- [[dinov2|DINOv3]]
 - [[dense-feature-matching]]
 - [[multi-view-transformer]]
 - [[DPT]]

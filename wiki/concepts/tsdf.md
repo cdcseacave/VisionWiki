@@ -21,6 +21,7 @@ A **TSDF** is a voxel grid storing a signed distance to the nearest surface, *tr
 - Dense counterpart to a neural [[signed-distance-field|SDF]] — explicit grid vs. implicit network.
 - Input to KinectFusion-style real-time reconstruction and most classical RGB-D fusion pipelines.
 - Used in 3DGS-to-mesh pipelines (see [[gaussian-to-mesh-pipelines]]) to extract surfaces from rendered depths.
+- Substrate for voxel-based foundation-model lifting: [[jatavallabhula2023_conceptfusion|ConceptFusion]] augments each voxel with CLIP/DINO/AudioCLIP features alongside the signed distance (see [[lifting-foundation-models-to-3d]]).
 
 ## Strengths / limitations
 - **+** Simple, parallelizable, well-understood.

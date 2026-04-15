@@ -3,7 +3,7 @@ title: "Trident: Harnessing Vision Foundation Models for High-Performance, Train
 type: paper
 tags: [open-vocabulary-segmentation, training-free, CLIP, SAM, DINO, vision-foundation-model, semantic-segmentation]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/shi_2024_open-vocab-segmentation.pdf
 url: https://arxiv.org/abs/2411.09219
@@ -14,7 +14,7 @@ status: draft
 
 ## TL;DR
 
-Trident is a training-free open-vocabulary semantic segmentation framework that synergistically combines three vision foundation models: [[CLIP]] for semantic representation, [[DINO]] for object-level spatial correlation, and [[SAM]] for fine-grained global aggregation. The key innovation is a "Splice-then-Segment" paradigm that first splices CLIP feature maps from sub-images and then uses SAM's correlation matrix for global aggregation, overcoming the limited receptive field problem of previous "Segment-then-Splice" approaches. Trident achieves a 4.2% mIoU improvement over prior SOTA across eight benchmarks.
+Trident is a training-free [[open-vocabulary-segmentation]] framework that synergistically combines three [[foundation-model|vision foundation models]]: [[clip|CLIP]] for semantic representation, [[dinov2|DINO]] for object-level spatial correlation, and [[sam|SAM]] for fine-grained global aggregation. The key innovation is a "Splice-then-Segment" paradigm that first splices CLIP feature maps from sub-images and then uses SAM's correlation matrix for global aggregation, overcoming the limited receptive field problem of previous "Segment-then-Splice" approaches. Trident achieves a 4.2% mIoU improvement over prior SOTA across eight benchmarks.
 
 ## Problem
 
@@ -61,9 +61,9 @@ Trident demonstrates that combining complementary strengths of different vision 
 ## Relation to prior work
 
 - Builds on [[MaskCLIP]] which identified spatial invariance in CLIP and proposed attention modification
-- Extends ProxyCLIP which uses [[DINO]] for spatial correlation in sub-image processing
-- Uses [[SAM]] for both global aggregation (encoder features) and refinement (decoder)
-- Uses [[CLIP]] (ViT-B/16 and OpenCLIP ViT-H) for semantic features and text-image alignment
+- Extends ProxyCLIP which uses [[dinov2|DINO]] for spatial correlation in sub-image processing
+- Uses [[sam|SAM]] for both global aggregation (encoder features) and refinement (decoder)
+- Uses [[clip|CLIP]] (ViT-B/16 and OpenCLIP ViT-H) for semantic features and text-image alignment
 - Compares against training-based methods: SAM-CLIP, CLIP-DINOiser, SAN, CAT-Seg
 - Contrasts with Segment-then-Splice methods: MaskCLIP, SCLIP, ProxyCLIP
 - The spatial invariance problem in CLIP relates to findings in [[vision-transformer]] attention mechanisms
@@ -80,8 +80,13 @@ Trident demonstrates that combining complementary strengths of different vision 
 
 - [[Trident]]
 - [[open-vocabulary-segmentation]]
-- [[CLIP]]
-- [[DINO]]
-- [[SAM]]
+- [[clip|CLIP]]
+- [[dinov2|DINO]]
+- [[sam|SAM]]
 - [[MaskCLIP]]
 - [[splice-then-segment]]
+
+
+## In the wiki
+- Cited by [[open-vocabulary-segmentation]] and [[open-vocab-2d-composition]] threads as the canonical training-free CLIP+DINO+SAM composition.
+- See [[lifting-foundation-models-to-3d]] for how this 2D pattern transfers to 3DGS.

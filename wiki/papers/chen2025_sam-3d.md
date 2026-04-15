@@ -56,3 +56,7 @@ Pushes single-image 3D from "isolated synthetic object" territory into **natural
 ## References added to the wiki
 
 - [[gaussian-to-mesh-pipelines]] thread — orthogonal single-image paradigm to note.
+
+
+## In the wiki
+- Central evidence in [[lifting-foundation-models-to-3d]] — single-image generative 3D under the SAM umbrella.

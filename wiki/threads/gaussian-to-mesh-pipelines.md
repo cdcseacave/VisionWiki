@@ -3,8 +3,8 @@ title: Gaussian-to-Mesh Pipelines
 type: thread
 tags: [3dgs, mesh-reconstruction, surface-extraction, marching-cubes, sdf, tsdf]
 created: 2026-04-12
-updated: 2026-04-12
-sources: [papers/li2025_geosvr.md, papers/li2025_va-gs.md, papers/gao2025_anisdf.md, papers/radl2025_sof.md, papers/guedon2025_milo.md, papers/radl2026_confidence-mesh-3dgs.md, papers/elflein2026_vgg-t3.md, papers/kim2025_multiview-geometric-gs.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md]
+updated: 2026-04-15
+sources: [papers/li2025_geosvr.md, papers/li2025_va-gs.md, papers/gao2025_anisdf.md, papers/radl2025_sof.md, papers/guedon2025_milo.md, papers/radl2026_confidence-mesh-3dgs.md, papers/elflein2026_vgg-t3.md, papers/kim2025_multiview-geometric-gs.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/chen2024_pgsr.md]
 status: draft
 ---
 
@@ -24,7 +24,7 @@ and C may win long-term (SVRaster, GeoSVR).
 
 - [VA-GS (Li 2025)](../papers/li2025_va-gs.md): four alignment losses
   (edge-aware, visibility-aware, normal, feature) force Gaussians onto surfaces.
-  Mesh via [[TSDF]] fusion. Strong DTU results.
+  Mesh via [[tsdf|TSDF]] fusion. Strong DTU results.
 - [Kim 2025](../papers/kim2025_multiview-geometric-gs.md): MVS depth supervision
   + median-depth relative loss + normal/distortion regularization → SOTA explicit
   surface on DTU/TNT. Key insight: external MVS depth is more reliable than
@@ -36,6 +36,11 @@ and C may win long-term (SVRaster, GeoSVR).
 - [Zhu 2025](../papers/zhu2025_gs-discretized-sdf.md): per-Gaussian discretized
   SDF values with learned SDF-to-opacity mapping. Enables both relighting and
   mesh extraction from the same representation.
+- [PGSR (Chen 2024)](../papers/chen2024_pgsr.md): flattens Gaussians into
+  planes + unbiased-depth rendering + multi-view geometric regularization.
+  Matches neural-SDF surface quality without external priors — a strong
+  argument that the 3DGS↔surface gap is a regularization problem, not a
+  representation problem. Natural fit for Paradigm A.
 
 ### Paradigm B: Mesh-in-the-loop during training
 

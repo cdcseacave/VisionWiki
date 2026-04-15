@@ -18,7 +18,7 @@ MILo introduces a fully differentiable mesh-in-the-loop framework for [[3d-gauss
 
 ## Problem
 
-Current Gaussian Splatting methods extract surfaces through costly post-processing steps (e.g., [[TSDF]] fusion, [[marching-cubes]]), resulting in loss of fine geometric details or very dense meshes with millions of vertices. The a posteriori conversion from volumetric to surface representation fundamentally limits the final mesh's ability to preserve all geometric structures captured during training. Existing meshes are also too heavy for practical downstream applications like physics simulation and animation.
+Current Gaussian Splatting methods extract surfaces through costly post-processing steps (e.g., [[tsdf|TSDF]] fusion, [[marching-cubes]]), resulting in loss of fine geometric details or very dense meshes with millions of vertices. The a posteriori conversion from volumetric to surface representation fundamentally limits the final mesh's ability to preserve all geometric structures captured during training. Existing meshes are also too heavy for practical downstream applications like physics simulation and animation.
 
 ## Method
 
@@ -47,7 +47,7 @@ MILo is a conceptual advance: instead of extracting meshes as a post-processing 
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]], specifically using the RaDe-GS codebase.
-- Contrasts with post-hoc extraction methods: [[TSDF]] fusion (used by 2DGS, GOF, PGSR), [[marching-cubes]] (used by SOF, GOF), SuGaR's Poisson reconstruction.
+- Contrasts with post-hoc extraction methods: [[tsdf|TSDF]] fusion (used by 2DGS, GOF, PGSR), [[marching-cubes]] (used by SOF, GOF), SuGaR's Poisson reconstruction.
 - Uses [[delaunay-triangulation]] instead of [[marching-cubes]] or [[poisson-reconstruction]] for mesh generation.
 - Compared against GOF, [[2d-gaussian-splatting]], PGSR, RaDe-GS, GS-Pull, VCR-GauS, Neuralangelo, NeuS, VolSDF.
 

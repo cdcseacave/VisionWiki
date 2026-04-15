@@ -52,7 +52,7 @@ This work fundamentally rethinks camera pose representation for learning-based e
 ## Relation to prior work
 
 - Contrasts with global pose prediction in [[RelPose]], [[RelPose++]], [[SparsePose]], and [[PoseDiffusion]]
-- Uses [[DINOv2]] (ViT-B/14, frozen + registers) as the spatial feature backbone
+- Uses [[dinov2|DINOv2]] (ViT-B/14, frozen + registers) as the spatial feature backbone
 - Concurrent with [[dust3r|DUSt3R]] which predicts pixel-aligned pointclouds (rather than rays) and uses PnP
 - Relates to generalized camera models of Grossberg & Nayar (2001)
 - Diffusion component builds on [[DDPM]] / [[DDIM]] frameworks
@@ -72,6 +72,6 @@ This work fundamentally rethinks camera pose representation for learning-based e
 - [[RayDiffusion]]
 - [[cameras-as-rays]]
 - [[plucker-coordinates]]
-- [[DINOv2]]
+- [[dinov2|DINOv2]]
 - [[DDPM]]
 - [[sparse-view-pose-estimation]]

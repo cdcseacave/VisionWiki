@@ -56,9 +56,9 @@ SD-RPN demonstrates that MLLMs contain sufficient internal localization knowledg
 
 - Integrates into [[LLaVA]]-1.5, [[DeepSeek-VL]], and [[Qwen2.5-VL]] architectures
 - Competes with VILA-HD (training-heavy RoI) and ViCrop (training-free attention-based RoI)
-- Uses [[CLIP]] as the vision encoder within the MLLM pipeline
-- Self-distillation paradigm relates to [[DINOv2]] and other self-supervised VFM approaches
-- Attention sink token phenomenon studied in [[DINOv2]] register tokens (Darcet et al., 2023)
+- Uses [[clip|CLIP]] as the vision encoder within the MLLM pipeline
+- Self-distillation paradigm relates to [[dinov2|DINOv2]] and other self-supervised VFM approaches
+- Attention sink token phenomenon studied in [[dinov2|DINOv2]] register tokens (Darcet et al., 2023)
 - S2 multi-scale strategy from Shi et al. (2024) used as one upscaling option
 
 ## Open questions / limitations

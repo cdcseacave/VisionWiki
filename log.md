@@ -170,3 +170,34 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Notable: SAM 3D has no arXiv preprint — distributed via Meta AI blog + code release. Used Meta project URL in frontmatter.
 - Notable: The CVPR-only SfM paper gap in the wiki is now closed; all core classical pipeline references (SfM + MVS + TSDF + marching cubes origins) are present.
 - raw/ confirmed empty.
+
+## [2026-04-15] ingest (batch, 6 papers — 3DGS × foundation-model cluster)
+- raw/ scan: 7 files (6 papers + 1 supplement).
+- Ingested:
+  - 2312.00732 → ye2024_gaussian-grouping (ECCV 2024; SAM-lifted per-Gaussian identities).
+  - 2312.16084 → qin2024_langsplat (CVPR 2024; CLIP-distilled 3DGS language field).
+  - 2406.06521 → chen2024_pgsr (TVCG 2024; planar 3DGS + unbiased depth → SOTA surfaces).
+  - 2412.19142 → jiao2025_clip-gs (ICCV 2025; 3DGS-CLIP contrastive alignment for zero-shot 3D). + supplement.
+  - 2507.07395 → bao2025_seg-wild (2025; interactive 3DGS segmentation for in-the-wild photos).
+  - 2601.13132 → kim2026_gauss-explorer (2026; VLM + 3DGS for compositional embodied reasoning).
+- Cascade: 3d-gaussian-splatting.md (+foundation-lifting section + PGSR section), gaussian-to-mesh-pipelines.md (+PGSR), sam.md (+3D lineage block), clip.md (+3D applications block).
+- Updated: index.md (+6 rows), paper count 45 → 51.
+- Notable: all 6 are relevant to the planned Phase-B "lifting foundation models to 3D" thread; Phase B will follow in this session.
+- raw/ empty.
+
+## [2026-04-15] schema-expand (Phase B — foundation-model + segmentation synthesis)
+- Created 4 concept pages: foundation-model, self-supervised-learning, segmentation (taxonomy), open-vocabulary-segmentation.
+- Created 3 thread pages: foundation-features-for-geometry, lifting-foundation-models-to-3d, open-vocab-2d-composition.
+- Cascade: dinov2.md, clip.md, sam.md (link into concepts + threads), vision-transformer.md + feature-matching.md (link SSL + foundation-model + thread), paper-page backlinks on shi2024_open-vocab-segmentation, heinrich2025_radiov25, carion2026_sam-3, chen2025_sam-3d.
+- Index: +4 concept rows, +3 thread rows; counts 14/11/6 → 14/15/9.
+- Followup: KinectFusion still `[!needs-source]`. Consider future threads: foundation-model-distillation (RADIO family, needs ≥2 papers) and 3D-native multimodal pretraining (CLIP-GS + future).
+
+## [2026-04-15] ingest (voxel lane of lifting-foundation-models-to-3d)
+- Downloaded & ingested:
+  - ConceptFusion (Jatavallabhula et al., RSS 2023, arXiv 2302.07241) → papers/radiance-fields/jatavallabhula_2023_conceptfusion.pdf
+  - LangSVR (Wu et al., Huawei, arXiv 2602.15734, Feb 2026) → papers/radiance-fields/wu_2026_langsvr.pdf [dropped by user in raw/ during ingest]
+- Created paper pages: jatavallabhula2023_conceptfusion, wu2026_langsvr.
+- Cascade: lifting-foundation-models-to-3d.md gains a "Voxel-based lifting" subsection + two rows in the tradeoffs table; tsdf.md links ConceptFusion as a voxel-feature-fusion consumer.
+- Updated: index.md (+2 rows), paper count 51 → 53.
+- Notable: two voxel-representation data points (classical TSDF + sparse-voxel rasterization) now ground the voxel lane of the thread. The lifting pattern is confirmed representation-agnostic (Gaussian / sparse voxel / TSDF cell all admit the same "per-primitive foundation-feature" template).
+- raw/ empty.

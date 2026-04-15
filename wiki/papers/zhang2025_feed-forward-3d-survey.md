@@ -82,7 +82,7 @@ The survey covers a vast network of related methods:
 - Classical pipelines: [[colmap|COLMAP]], [[bundle-adjustment]], [[SfM]]
 - Diffusion-based: Zero123, SV3D, RenderDiffusion
 - Feature matching: DUSt3R and MASt3R used for [[feature-matching]]
-- Pre-training: [[CroCo]], [[DINOv2]] as backbones
+- Pre-training: [[CroCo]], [[dinov2|DINOv2]] as backbones
 
 ## Open questions / limitations
 

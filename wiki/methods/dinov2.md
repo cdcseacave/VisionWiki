@@ -22,7 +22,8 @@ DINOv2 is a **self-supervised vision foundation model** (Meta, 2023) producing d
 
 - Feature backbone for feed-forward SfM / MVS methods ([[dust3r|DUSt3R]], [[mast3r|MASt3R]], [[vggt|VGGT]], CUT3R).
 - Supplies dense descriptors for learned matching and monocular depth ([[monocular-depth-estimation]]).
-- Establishes the "frozen foundation backbone + task head" pattern now standard in 2025–2026 3D vision.
+- Establishes the "frozen foundation backbone + task head" pattern now standard in 2025–2026 3D vision. See [[foundation-features-for-geometry]] thread.
+- Part of the [[foundation-model]] family; produced by [[self-supervised-learning|vision-only SSL]].
 
 ## Variants & lineage
 - DINO (2021) → DINOv2 (2023) → [DINOv3](../papers/simeoni2025_dinov3.md) (2025) — Gram anchoring + post-hoc resolution/text alignment.
