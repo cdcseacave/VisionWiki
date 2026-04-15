@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/guedon_2025_milo.pdf
 url: https://arxiv.org/abs/2506.24096
+code: https://github.com/Anttwo/MILo
+license_code: Gaussian-Splatting-License
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/guedon_2025_milo.pdf) · [arXiv](https://arxiv.org/abs/2506.24096)
+📄 [Full paper](../../papers/mesh-reconstruction/guedon_2025_milo.pdf) · [arXiv](https://arxiv.org/abs/2506.24096) · [code](https://github.com/Anttwo/MILo)
+
+_Code license: `Gaussian-Splatting-License`_
 
 ## TL;DR
 
@@ -63,6 +68,10 @@ MILo is a conceptual advance: instead of extracting meshes as a post-processing 
 - The dense variant requires more memory and training time.
 - DTU evaluation focuses on small, object-centric scenes where the mesh-in-the-loop approach has less advantage over simpler methods.
 - Background handling relies on a separate evaluation protocol (Mesh-Based NVS) since no dataset provides ground truth for backgrounds.
+
+## Code & license
+
+Inria/MPII Gaussian-Splatting License — non-commercial research use only (inherits 3DGS base terms). Blocks commercial integration without separate licensing from Inria.
 
 ## References added to the wiki
 

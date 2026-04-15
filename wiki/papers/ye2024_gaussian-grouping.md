@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/ye_2024_gaussian-grouping.pdf
 url: https://arxiv.org/abs/2312.00732
+code: https://github.com/lkeab/gaussian-grouping
+license_code: Apache-2.0
+license_paper: CC-BY-4.0
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/ye_2024_gaussian-grouping.pdf) · [arXiv](https://arxiv.org/abs/2312.00732) · [GitHub](https://github.com/lkeab/gaussian-grouping)
+📄 [Full paper](../../papers/radiance-fields/ye_2024_gaussian-grouping.pdf) · [arXiv](https://arxiv.org/abs/2312.00732) · [GitHub](https://github.com/lkeab/gaussian-grouping) · [code](https://github.com/lkeab/gaussian-grouping)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

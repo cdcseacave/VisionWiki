@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/zhao_2025_diffusionsfm.pdf
 url: https://arxiv.org/abs/2505.05473
+code: https://github.com/QitaoZhao/DiffusionSfM
+license_code: MIT
+license_paper: CC-BY-SA-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/zhao_2025_diffusionsfm.pdf) · [arXiv](https://arxiv.org/abs/2505.05473)
+📄 [Full paper](../../papers/sfm-slam/zhao_2025_diffusionsfm.pdf) · [arXiv](https://arxiv.org/abs/2505.05473) · [code](https://github.com/QitaoZhao/DiffusionSfM)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

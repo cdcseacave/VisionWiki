@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: [papers/barron2023_zip-nerf.md, papers/park2023_camp.md]
 local_paper: papers/radiance-fields/barron_2022_mip-nerf-360.pdf
 url: https://arxiv.org/abs/2111.12077
+code: https://github.com/google-research/multinerf
+license_code: Apache-2.0
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/barron_2022_mip-nerf-360.pdf) · [arXiv](https://arxiv.org/abs/2111.12077) · [Project](https://jonbarron.info/mipnerf360/)
+📄 [Full paper](../../papers/radiance-fields/barron_2022_mip-nerf-360.pdf) · [arXiv](https://arxiv.org/abs/2111.12077) · [Project](https://jonbarron.info/mipnerf360/) · [code](https://github.com/google-research/multinerf)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

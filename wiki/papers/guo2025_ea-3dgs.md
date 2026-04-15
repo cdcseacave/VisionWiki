@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/guo_2025_ea-3dgs.pdf
 url: https://arxiv.org/abs/2505.10787
+code: https://github.com/SCUT-BIP-Lab/EA-3DGS
+license_code: Gaussian-Splatting-License
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/radiance-fields/guo_2025_ea-3dgs.pdf) · [arXiv](https://arxiv.org/abs/2505.10787)
+📄 [Full paper](../../papers/radiance-fields/guo_2025_ea-3dgs.pdf) · [arXiv](https://arxiv.org/abs/2505.10787) · [code](https://github.com/SCUT-BIP-Lab/EA-3DGS)
+
+_Code license: `Gaussian-Splatting-License`_
 
 ## TL;DR
 
@@ -67,6 +72,10 @@ EA-3DGS addresses the practical deployment challenges of Gaussian splatting for 
 - The codebook quantization requires a separate fine-tuning phase; end-to-end quantization-aware training could be more efficient.
 - Handling of dynamic elements in outdoor scenes (vehicles, pedestrians) is not addressed.
 - The structure-aware densification heuristic based on curvature eigenvalues may need tuning for different scene types.
+
+## Code & license
+
+Gaussian-Splatting License (GMUM additions + Inria/MPII base) — non-commercial research use only. Blocks commercial integration without separate licensing.
 
 ## References added to the wiki
 

@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/curless_1996_tsdf.pdf
 url: https://graphics.stanford.edu/papers/volrange/volrange.pdf
+code: https://github.com/isl-org/Open3D
+license_code: MIT
+license_paper: institutional
 status: stable
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/curless_1996_tsdf.pdf) · [Stanford PDF](https://graphics.stanford.edu/papers/volrange/volrange.pdf)
+📄 [Full paper](../../papers/mesh-reconstruction/curless_1996_tsdf.pdf) · [Stanford PDF](https://graphics.stanford.edu/papers/volrange/volrange.pdf) · [code](https://github.com/isl-org/Open3D)
+
+_Code license: `MIT`_
 
 ## TL;DR
 
@@ -60,6 +65,10 @@ TSDF is the **canonical bridge between depth observations and surfaces**. Downst
 - Dense voxel grid scales cubically; hierarchical/sparse structures (octrees, VDB, voxel hashing) needed for large scenes.
 - Weighted averaging assumes Gaussian noise — outliers still leak through at voxel level without explicit robust variants.
 - No modeling of color/radiance — TSDF is geometry only.
+
+## Code & license
+
+Linked repo is the canonical community TSDF implementation (Open3D's `UniformTSDFVolume` / `ScalableTSDFVolume`), not an artifact of the 1996 paper — that paper predates modern repo conventions. Use Open3D as the reference implementation of the paper's concept.
 
 ## References added to the wiki
 

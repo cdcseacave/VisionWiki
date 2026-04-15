@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/radford_2021_clip.pdf
 url: https://arxiv.org/abs/2103.00020
+code: https://github.com/openai/CLIP
+license_code: MIT
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/fundamentals/radford_2021_clip.pdf) · [arXiv](https://arxiv.org/abs/2103.00020) · [Project](https://openai.com/research/clip)
+📄 [Full paper](../../papers/fundamentals/radford_2021_clip.pdf) · [arXiv](https://arxiv.org/abs/2103.00020) · [Project](https://openai.com/research/clip) · [code](https://github.com/openai/CLIP)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

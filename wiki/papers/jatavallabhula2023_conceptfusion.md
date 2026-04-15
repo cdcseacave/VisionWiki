@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/jatavallabhula_2023_conceptfusion.pdf
 url: https://arxiv.org/abs/2302.07241
+code: https://github.com/concept-fusion/concept-fusion
+license_code: MIT
+license_paper: CC-BY-SA-4.0
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/jatavallabhula_2023_conceptfusion.pdf) · [arXiv](https://arxiv.org/abs/2302.07241) · [Project](https://concept-fusion.github.io)
+📄 [Full paper](../../papers/radiance-fields/jatavallabhula_2023_conceptfusion.pdf) · [arXiv](https://arxiv.org/abs/2302.07241) · [Project](https://concept-fusion.github.io) · [code](https://github.com/concept-fusion/concept-fusion)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

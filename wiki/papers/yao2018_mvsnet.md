@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/yao_2018_mvsnet.pdf
 url: https://arxiv.org/abs/1804.02505
+code: https://github.com/YoYo000/MVSNet
+license_code: MIT
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/mvs-depth/yao_2018_mvsnet.pdf) · [arXiv](https://arxiv.org/abs/1804.02505)
+📄 [Full paper](../../papers/mvs-depth/yao_2018_mvsnet.pdf) · [arXiv](https://arxiv.org/abs/1804.02505) · [code](https://github.com/YoYo000/MVSNet)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

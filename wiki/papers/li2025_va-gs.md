@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/li_2025_va-gs.pdf
 url: https://arxiv.org/abs/2510.11473
+code: https://github.com/LeoQLi/VA-GS
+license_code: none
+license_paper: CC-BY-NC-SA-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/li_2025_va-gs.pdf) · [arXiv](https://arxiv.org/abs/2510.11473)
+📄 [Full paper](../../papers/mesh-reconstruction/li_2025_va-gs.pdf) · [arXiv](https://arxiv.org/abs/2510.11473) · [code](https://github.com/LeoQLi/VA-GS)
+
+_Code license: `none`_
 
 ## TL;DR
 
@@ -67,6 +72,10 @@ VA-GS shows that carefully designed multi-view geometric constraints can substan
 - Feature alignment loss ($\mathcal{L}_f$) shows limited benefit on Tanks and Temples (diverse lighting) compared to DTU (cleaner conditions); stronger feature extractors may help.
 - Requires significant GPU resources for training.
 - High-fidelity reconstruction raises ethical concerns about unauthorized digital replication.
+
+## Code & license
+
+Repo has **no LICENSE file** — all rights reserved by default under GitHub's terms. Code is viewable but not legally forkable or redistributable without the author's explicit permission.
 
 ## References added to the wiki
 

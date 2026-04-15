@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: [papers/schonberger2016_colmap-sfm.md, papers/schonberger2016_colmap-mvs.md]
 local_paper: papers/datasets-benchmarks/knapitsch_2017_tanks-and-temples.pdf
 url: https://dl.acm.org/doi/10.1145/3072959.3073599
+code: https://github.com/isl-org/TanksAndTemples
+license_code: MIT
+license_paper: ACM
 status: stable
 ---
 
-📄 [Full paper](../../papers/datasets-benchmarks/knapitsch_2017_tanks-and-temples.pdf) · [ACM SIGGRAPH 2017](https://dl.acm.org/doi/10.1145/3072959.3073599) · [Project](https://www.tanksandtemples.org/)
+📄 [Full paper](../../papers/datasets-benchmarks/knapitsch_2017_tanks-and-temples.pdf) · [ACM SIGGRAPH 2017](https://dl.acm.org/doi/10.1145/3072959.3073599) · [Project](https://www.tanksandtemples.org/) · [code](https://github.com/isl-org/TanksAndTemples)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

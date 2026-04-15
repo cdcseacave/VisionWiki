@@ -8,10 +8,15 @@ sources:
   - papers/lin2024_vastgaussian.md
 local_paper: papers/radiance-fields/lin_2024_vastgaussian.pdf
 url: https://arxiv.org/abs/2402.17427
+code: https://github.com/kangpeilun/VastGaussian
+license_code: Apache-2.0
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/radiance-fields/lin_2024_vastgaussian.pdf) · [arXiv](https://arxiv.org/abs/2402.17427) · [project page](https://vastgaussian.github.io)
+📄 [Full paper](../../papers/radiance-fields/lin_2024_vastgaussian.pdf) · [arXiv](https://arxiv.org/abs/2402.17427) · [project page](https://vastgaussian.github.io) · [code](https://github.com/kangpeilun/VastGaussian)
+
+_Code license: `Apache-2.0`_
 
 *Lin, Li, Tang, Liu, Liu, Liu, Lu, Wu, Xu, Yan, Yang — CVPR 2024 (Tsinghua · Huawei Noah's Ark · CAS).*
 
@@ -121,6 +126,12 @@ Wins SSIM and LPIPS on **all 5 scenes** — dominance on LPIPS (perceptual quali
 ## Downstream in this wiki
 
 - The decoupled appearance module is ported into the visiofacto/nerfstudio design at [[come-integration-nerfstudio]] (Part 7), combined with CoMe's SSIM decoupling so the per-image embedding compensates only for luminance.
+
+## Code & license
+
+Authors did not release official code. Linked repo is the most-used unofficial community reimplementation (self-declared unofficial in its README); treat as a working reference, not a ground-truth reproduction. Low confidence.
+
+Update — the linked community reimplementation is Apache-2.0 licensed (confirmed from GitHub LICENSE). The "unofficial reimplementation" caveat remains: there is no authors' release.
 
 ## References added to the wiki
 

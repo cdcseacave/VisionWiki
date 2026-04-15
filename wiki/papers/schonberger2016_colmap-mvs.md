@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/schonberger_2016_colmap-mvs.pdf
 url: https://arxiv.org/abs/1607.08203
+code: https://github.com/colmap/colmap
+license_code: BSD-3-Clause
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/mvs-depth/schonberger_2016_colmap-mvs.pdf) · [arXiv](https://arxiv.org/abs/1607.08203)
+📄 [Full paper](../../papers/mvs-depth/schonberger_2016_colmap-mvs.pdf) · [arXiv](https://arxiv.org/abs/1607.08203) · [code](https://github.com/colmap/colmap)
+
+_Code license: `BSD-3-Clause`_
 
 ## TL;DR
 

@@ -323,3 +323,45 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
   10. LangSVR one-stage recipe with SAM 3 + DINOv3 + RADIOv2.5 — every 2024 component upgraded to 2026.
 - Notable: "external-MVS-depth vs self-supervised-Gaussian-depth" contradiction flagged across both gaussian-to-mesh-pipelines and radiance-field-evolution remains the highest-leverage unresolved tension — principled switch is an open research direction, not yet addressed by any paper.
 - Next operational step suggested: `lint frontmatter` to sweep `updated:` dates on the 55 touched paper pages + 6 threads.
+
+## [2026-04-15] schema-change | Code + license tracking
+- Updated: [CLAUDE.md](CLAUDE.md).
+- §2 frontmatter: added `code:`, `license_paper:`, `license_code:`, `license_dataset:` fields with SPDX-first recording discipline and explicit handling of `unknown` / non-commercial / research-only values.
+- §2 paper template: resource strip now includes a `[code]` link + paper/code license line; body gains an optional `## Code & license` section for restrictive-license callouts.
+- §3.1 Step 0: new sub-steps 6 (find code — official or canonical community only; no guessing) and 7 (identify paper / code / dataset licenses from arXiv footer, LICENSE file, or dataset release page).
+- §3.1 Step 3: paper-page writing now populates the resource + license frontmatter and body strip; pages without code record a `no code found (<date>)` marker so `lint find-code` has a timestamp.
+- §3.3 bare lint: added diagnostics for "Missing code" (incl. 6-month-stale no-code markers), "Missing license", and "Restrictive licenses" (informational usability map).
+- §3.3 lint actions: added `lint find-code` (re-searches for code on unlinked pages, refreshes stale markers) and `lint licenses` (fills paper / code / dataset license fields from arXiv, GitHub LICENSE, and dataset pages).
+- §5 log format: added log shapes for `lint find-code` and `lint licenses`.
+- Rationale: code availability and license restrictions materially affect whether a pipeline component is usable downstream — burying this in "open questions" of paper pages made it invisible. Treating licenses as first-class frontmatter lets designs ([[wiki/designs/]]) reason about redistributable stacks explicitly.
+- Backfill needed: existing 55 paper pages have no `code:` / `license_*:` fields. First `lint find-code` + `lint licenses` pass will be substantive; run after this schema change settles.
+
+## [2026-04-15] lint find-code
+- Pages searched: 55 (54 papers + 1 dataset page wiki/datasets/tanks-and-temples.md). Plus 1 paper held for user decision (radl2026_confidence-mesh-3dgs — stub repo, code "coming soon") and 1 held for user decision (shi2026_self-distilled-roi — authors' repo but low-adoption medium-confidence).
+- Newly linked: 47 pages with canonical code (top examples):
+  - `wiki/papers/kirillov2023_sam.md` → github.com/facebookresearch/segment-anything [Apache-2.0]
+  - `wiki/papers/schonberger2016_colmap-{sfm,mvs}.md` → github.com/colmap/colmap [BSD-3-Clause]
+  - `wiki/papers/radford2021_clip.md` → github.com/openai/CLIP [MIT]
+  - `wiki/papers/oquab2023_dinov2.md` → github.com/facebookresearch/dinov2 [Apache-2.0]
+  - `wiki/papers/heinrich2025_radiov25.md` → github.com/NVlabs/RADIO [NSCL, non-commercial]
+  - `wiki/papers/carion2026_sam-3.md` → github.com/facebookresearch/sam3 [SAM License]
+  - `wiki/papers/chen2025_sam-3d.md` → github.com/facebookresearch/sam-3d-objects [SAM License]
+  - `wiki/papers/qin2024_langsplat.md` → github.com/minghanqin/LangSplat
+  - `wiki/papers/ye2024_gaussian-grouping.md` → github.com/lkeab/gaussian-grouping
+  - `wiki/papers/wu2026_langsvr.md` → NONE (no code found)
+- No-code-marker set (6): elflein2026_vgg-t3, jiao2025_clip-gs, kim2025_multiview-geometric-gs, kim2026_gauss-explorer, wu2026_langsvr, zhang2025_feed-forward-3d-survey.
+- Restrictive-license callouts raised (10, written as `## Code & license` sections): carion2026_sam-3 (SAM License), chen2025_sam-3d (SAM License), heinrich2025_radiov25 (NSCL non-commercial), jang2025_pow3r (NAVER non-commercial), mao2025_spatiallm (Apache code + CC-BY-NC-4.0 weights), murai2025_mast3r-slam (DROID-SLAM-derived custom), radl2025_sof (NOASSERTION custom), sun2025_sparse-voxels-rasterization (NVIDIA Source Code License), yu2025_cusfm (NVIDIA Software License), zhong2026_instantsfm (NOASSERTION custom).
+- Special-note callouts (7, written as `## Code & license` sections): curless1996_tsdf (Open3D is community impl of the concept, not paper-specific), edstedt2025_roma-v2 (MIT but DINOv3 components custom), jiao2025_clip-gs (name-collision warning: `gbliao/CLIP-GS` belongs to Liao 2404.14249, not Jiao 2412.19142), lin2024_vastgaussian (unofficial community reimplementation only, low confidence), simeoni2025_dinov3 (custom license, commercial-ok with conditions), zhang2025_feed-forward-3d-survey (survey, no dedicated code repo), zhang2025_loger (first-author's repo despite "reimplementation" naming).
+- Not-addressed / held: radl2026_confidence-mesh-3dgs (stub repo), shi2026_self-distilled-roi (authors' repo, low-adoption). Await user decision before writing.
+- License-field gap: ~20 pages recorded `license_code: unknown` because GitHub LICENSE file fetches were blocked during search — `lint licenses` follow-up will resolve these by reading the repos' LICENSE files directly.
+- Total pages touched: 55 (all across 2 parallel edit-agents, 0 failures).
+
+## [2026-04-15] lint licenses
+- Filled: 56 paper-licenses, 23 code-licenses (`unknown` → resolved), 1 dataset-license.
+- Paper licenses: 26 arxiv-nonexclusive (default), 12 CC-BY-4.0, 6 CC-BY-NC-SA-4.0, 2 CC-BY-SA-4.0, 2 CC-BY-NC-ND-4.0, 1 CVF-open-access (schonberger_colmap-sfm), 1 ACM (knapitsch_tanks-and-temples), 1 institutional (curless_tsdf), 1 unknown (chen_sam-3d — Meta project page, no explicit license).
+- Code licenses resolved: 7 MIT, 4 Apache-2.0, 1 BSD-3-Clause, 1 GPL-3.0, 3 Gaussian-Splatting-License (langsplat / milo / ea-3dgs — inherits Inria 3DGS non-commercial terms), 1 NVIDIA-Source-Code-License (geosvr, inherits svraster), 1 CC-BY-NC-4.0 (discretized-sdf), 1 CC-BY-NC-SA-4.0 (ttt3r, inherits cut3r), 1 research-only (pgsr, ZJU custom), 3 `none` (chebbi_dense-matching, li_va-gs, zhang_loger — no LICENSE file, effectively all-rights-reserved under GitHub defaults).
+- Dataset license: tanks-and-temples dataset → CC-BY-4.0 (toolbox already MIT).
+- New `## Code & license` body sections added / updated: 9 ADD (chebbi, pgsr, ttt3r, milo, ea-3dgs, geosvr, langsplat, va-gs, discretized-sdf) + 2 UPDATE (vastgaussian — append Apache-2.0 confirmation, loger — append no-license warning).
+- Unknowns retained: 1 paper license (chen_sam-3d — Meta project page has no explicit license line). Can be resolved if/when a companion arXiv version drops.
+- Notable patterns: (1) Inria Gaussian-Splatting License propagates downstream — LangSplat / MILo / EA-3DGS all inherit 3DGS non-commercial restrictions, as does GeoSVR via SVRaster-NSCL and TTT3R via CUT3R. Any design that stacks these is structurally non-commercial regardless of the downstream license choice. (2) Paper licenses skew more open than code licenses — ~12 papers are CC-BY-4.0 but their matching repos are often restrictive or unlicensed. Classic academic pattern: open ideas, restricted implementations. (3) Three repos with no LICENSE file at all is a quieter but significant finding — these are effectively all-rights-reserved and block even forking.
+- Total pages touched: 57 (56 papers + 1 dataset), 0 failures across 2 parallel edit-agents.

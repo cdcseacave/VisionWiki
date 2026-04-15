@@ -9,6 +9,7 @@ sources: [papers/lin2024_vastgaussian.md]
 local_paper: papers/mesh-reconstruction/radl_2026_confidence-mesh-3dgs.pdf
 url: https://arxiv.org/abs/2603.24725
 project_page: https://r4dl.github.io/CoMe/
+license_paper: CC-BY-NC-ND-4.0
 status: draft
 ---
 

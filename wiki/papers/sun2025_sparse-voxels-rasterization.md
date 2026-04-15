@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/sun_2025_sparse-voxels-rasterization.pdf
 url: https://arxiv.org/abs/2412.04459
+code: https://github.com/NVlabs/svraster
+license_code: NVIDIA-Source-Code-License
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/radiance-fields/sun_2025_sparse-voxels-rasterization.pdf) · [arXiv](https://arxiv.org/abs/2412.04459)
+📄 [Full paper](../../papers/radiance-fields/sun_2025_sparse-voxels-rasterization.pdf) · [arXiv](https://arxiv.org/abs/2412.04459) · [code](https://github.com/NVlabs/svraster)
+
+_Code license: `NVIDIA-Source-Code-License`_
 
 ## TL;DR
 
@@ -62,6 +67,10 @@ SVRaster demonstrates that voxels -- a classical 3D representation -- can match 
 - Sorting 48-bit Morton codes is more expensive than 3DGS's 32-bit float sorting.
 - The adaptive voxel allocation requires careful hyperparameter tuning for different scene types.
 - Memory consumption for very high-resolution grids (65536^3) may be a concern for resource-constrained devices.
+
+## Code & license
+
+NVIDIA Source Code License — non-commercial research use only; blocks redistribution in commercial pipelines without separate NVIDIA licensing.
 
 ## References added to the wiki
 

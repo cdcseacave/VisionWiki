@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/tang_2025_dronesplat.pdf
 url: https://arxiv.org/abs/2503.16964
+code: https://github.com/BITyia/DroneSplat
+license_code: MIT
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/radiance-fields/tang_2025_dronesplat.pdf) · [arXiv](https://arxiv.org/abs/2503.16964)
+📄 [Full paper](../../papers/radiance-fields/tang_2025_dronesplat.pdf) · [arXiv](https://arxiv.org/abs/2503.16964) · [code](https://github.com/BITyia/DroneSplat)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

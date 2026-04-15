@@ -144,9 +144,19 @@ updated: YYYY-MM-DD
 sources: [papers/kerbl2023_3dgs.md, papers/mildenhall2020_nerf.md]
 local_paper: papers/<subfolder>/<filename>.pdf   # paper pages only
 url: https://arxiv.org/abs/XXXX.XXXXX            # paper pages only — external URL
+code: https://github.com/<org>/<repo>            # paper / method / dataset pages — official or canonical implementation; omit if none found at ingest time
+license_paper: CC-BY-4.0                         # paper pages only — paper license (arXiv / conference page); "unknown" if it cannot be determined
+license_code: MIT                                # paper / method / dataset pages — license of the repository at `code:`; omit if `code:` is omitted, "unknown" if repo exists but no LICENSE file
+license_dataset: CC-BY-NC-4.0                    # dataset pages only — data license; "unknown" if not stated
 status: stub | draft | stable | contested
 ---
 ```
+
+**Code and license fields**:
+- `code:` must be an *official* or *canonical community* implementation (authors' own repo, or the most-used community port when authors release none). Do **not** link random forks. If no code can be found after a reasonable search (Google + Papers-with-Code + GitHub search for first-author + title), omit the field — `lint find-code` exists to re-check over time.
+- `license_paper:` usually found at the arXiv abstract page footer (arXiv submission license), on the publisher page (CC-BY / ACM DL / Springer), or in the PDF's first page. Record as SPDX identifier when possible (`CC-BY-4.0`, `CC-BY-NC-4.0`, `arxiv-nonexclusive`, `ACM`, `IEEE`, `Springer`, `unknown`).
+- `license_code:` read from the repo's `LICENSE` / `COPYING` file or the GitHub sidebar badge. SPDX form (`MIT`, `Apache-2.0`, `BSD-3-Clause`, `GPL-3.0`, `AGPL-3.0`, `non-commercial`, `research-only`, `unknown`). **Flag every non-commercial / research-only license explicitly** — these materially affect whether a pipeline component is usable downstream.
+- `license_dataset:` same SPDX discipline; common values `CC-BY-4.0`, `CC-BY-NC-4.0`, `custom-research`, `unknown`.
 
 **`sources:` semantics by page type**:
 - **method / concept / thread / dataset / person pages**: `sources:` lists the wiki paper pages that back the claims on this page. Required, non-empty.
@@ -170,7 +180,10 @@ status: stub | draft | stable | contested
 
 **Paper page** (`wiki/papers/<key>.md`):
 ```markdown
-📄 [Full paper](../../papers/<subfolder>/<filename>.pdf) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX)
+📄 [Full paper](../../papers/<subfolder>/<filename>.pdf) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX) · [code](https://github.com/<org>/<repo>)
+
+_Paper license: `<spdx>` · Code license: `<spdx>`_   <!-- omit code half if no code; write "no code found" if searched and none located -->
+
 
 ## TL;DR
 One paragraph. What is the contribution in one breath?
@@ -322,8 +335,19 @@ After acquiring:
    `articles/`, or `assets/`). Create subfolders as needed.
 5. **If the source came from `raw/`**: the move itself empties it from the
    inbox. Verify `raw/` is clean after batch ingest.
-6. Report the final path to the user (e.g. "Saved to
-   `papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf`").
+6. **Find the code** (papers / datasets only). Search in this order:
+   a. the paper's abstract / conclusion / footnotes / GitHub badge;
+   b. the project page (if the URL is a project page, not arXiv);
+   c. Papers-with-Code entry for the title;
+   d. GitHub search for `<first-author> <short-title>` and `<short-title>` in the paper's topic area.
+   Accept only the **official** repo (authors' own) or, if authors released none, the **canonical** community implementation most cited / forked in follow-up work. Record as `code:` in frontmatter. If the search returns nothing, omit the field — do **not** guess; `lint find-code` will re-check later.
+7. **Identify the licenses**:
+   - `license_paper:` — read from arXiv (submission license at the abstract-page footer), or the publisher page / PDF first page for conference versions. Record SPDX-style.
+   - `license_code:` — if `code:` is set, read the repo's `LICENSE` file or the GitHub sidebar license badge. If a repo exists but has no detectable license, record `unknown` (this is an actual signal — unlicensed code is effectively all-rights-reserved and needs flagging).
+   - `license_dataset:` — for dataset pages only; read the dataset's release page / README / `LICENSE`.
+   Flag non-commercial, research-only, and `unknown` license-code results explicitly in the paper-page body under *"Code & license"* (see template) — these materially affect downstream usability and must not be buried in frontmatter.
+8. Report the final path to the user (e.g. "Saved to
+   `papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf` · code: `github.com/graphdeco-inria/gaussian-splatting` · paper license: `arxiv-nonexclusive` · code license: `non-commercial`").
 
 #### Step 1 — Read the source
 
@@ -377,15 +401,24 @@ until the user has reviewed the analysis or explicitly waived review.
 #### Step 3 — Write the paper page
 
 Create `wiki/papers/<key>.md` using the paper template from §2. In the
-frontmatter, add `local_paper:` and `url:` fields:
+frontmatter, populate the resource and license fields found in Step 0.6–0.7:
 
 ```yaml
 local_paper: papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf
 url: https://arxiv.org/abs/2308.14737
+code: https://github.com/graphdeco-inria/gaussian-splatting
+license_paper: arxiv-nonexclusive
+license_code: non-commercial
 ```
 
-In the body, include links to both the local paper and the external URL at the top:
-`📄 [Full paper](../../papers/<subfolder>/<filename>) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX)`
+In the body, include the resource + license strip at the top:
+```
+📄 [Full paper](../../papers/<subfolder>/<filename>) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX) · [code](https://github.com/<org>/<repo>)
+
+_Paper license: `arxiv-nonexclusive` · Code license: `non-commercial`_
+```
+
+If no code was found, replace the `[code]` link with `no code found (<date>)` so `lint find-code` has a timestamp to compare against. If a license is restrictive (non-commercial, research-only, unknown), add a `## Code & license` short section to the body calling out what downstream use it blocks — do not bury this information in frontmatter alone.
 
 **Finding the URL**: if the user provides a URL, use it. If the paper was
 dropped as a local file, search the web for the paper title + "arXiv" to find
@@ -531,6 +564,9 @@ Scan the wiki and report (do not auto-fix — present a list for human approval)
 - **Frontmatter drift**: missing `updated:` dates, empty `sources:`, etc.
 - **Stale threads**: threads whose `updated:` predates the `updated:` date of at least one paper page in their own `sources:` list — the narrative hasn't absorbed what its own citations now say. See `lint stale-threads` for the remediation action.
 - **Missing papers**: wiki pages with a `url:` field but no local file at `local_paper:`.
+- **Missing code**: paper / method / dataset pages with no `code:` field *and* no "no code found (<date>)" marker in the body — these have never been searched. Also flag pages whose "no code found" marker is older than 6 months — time to re-check. Remediation: `lint find-code`.
+- **Missing license**: paper pages without `license_paper:`, or with `code:` set but `license_code:` missing, or dataset pages without `license_dataset:`. Remediation: `lint licenses`.
+- **Restrictive licenses**: paper / method / dataset pages whose `license_code:` is `non-commercial` / `research-only` / `unknown`, or `license_dataset:` is `non-commercial` / `custom-research` — report these as a *usability map* (which pipeline components are actually redistributable), not as a fix target. No `lint` action; this is informational.
 - **Investigation suggestions**: 3–5 follow-up questions or source hunts.
 
 #### `lint <action>` — targeted fixes
@@ -545,6 +581,8 @@ user approval before making changes.
 | `lint frontmatter` | Fills in missing `updated:` dates, empty `sources:` arrays, and other frontmatter drift. | `wiki/` pages |
 | `lint orphans` | Proposes inbound wikilinks for orphan pages. | `wiki/` pages |
 | `lint stale-threads` | Identifies threads whose narrative has fallen behind their own cited sources; proposes a targeted re-cascade. | `wiki/threads/*.md` (after per-thread approval) |
+| `lint find-code` | Re-searches for code implementations for paper / method / dataset pages that currently have no `code:` field. Populates `code:` + `license_code:` on hits. | `wiki/papers/*.md`, `wiki/methods/*.md`, `wiki/datasets/*.md` (after per-page approval) |
+| `lint licenses` | Fills in missing `license_paper:`, `license_code:`, `license_dataset:` on pages that have the underlying resource (`url:`, `code:`, or dataset reference) but no license recorded yet. | `wiki/papers/*.md`, `wiki/methods/*.md`, `wiki/datasets/*.md` (after per-page approval) |
 
 New actions can be added as patterns emerge. The contract: **bare `lint` is
 always safe and read-only; `lint <action>` may write but always asks first.**
@@ -602,6 +640,78 @@ A thread is **stale** when its narrative hasn't kept up with its own cited sourc
 - **Ingest hygiene complement**: after a batch ingest that touches many threads, run `lint stale-threads` to find the cascade updates you missed. Step 5 of §3.1 says to update threads during ingest — this is the safety net for when that step gets rushed.
 - **Lag threshold tuning**: by default every non-zero lag counts. If that's too noisy on a large wiki, filter to threads with lag ≥ N days (user-specified) — but err on reporting more.
 
+#### `lint find-code` procedure
+
+Code releases lag papers by months or years — a paper ingested in 2024 with
+no official code may have gained an official or canonical community
+implementation by 2026. `lint find-code` re-searches for those.
+
+1. **Scan** all `wiki/papers/**/*.md`, `wiki/methods/**/*.md`, and
+   `wiki/datasets/**/*.md`. Select pages where **either**:
+   - the `code:` field is absent/empty, **or**
+   - the body contains `no code found (<date>)` and that date is older than
+     6 months from today.
+2. **For each selected page, search** in the same order as ingest Step 0.6:
+   paper body mentions → project page → Papers-with-Code → GitHub search for
+   `<first-author> <short-title>`. Accept only official or canonical
+   community implementations — same rule as ingest.
+3. **Present** a table to the user per found candidate:
+   _"Page `wiki/papers/kerbl2023_3dgs.md` — candidate: `github.com/graphdeco-inria/gaussian-splatting`
+   (first-author repo, 18.2k stars, last commit 2026-02-14, LICENSE: Gaussian-Splatting-License (non-commercial research only))._"
+   For each, state: **repo URL · why it's canonical · LICENSE file contents (SPDX if possible) · last-commit date · star count**. The LICENSE readout is critical — an unreadable license kills the candidate.
+4. **On per-page approval**, update frontmatter: set `code:`, set
+   `license_code:`, update the resource strip in the body. If the repo has
+   a restrictive license (non-commercial / research-only / unknown), also
+   add or update the `## Code & license` body section flagging downstream
+   implications.
+5. **For pages with no candidate found**, refresh the `no code found
+   (<date>)` marker in the body with today's date so the next
+   `lint find-code` run 6 months from now has a correct timestamp.
+6. **Append to `log.md`** with counts: pages searched, pages newly linked,
+   pages refreshed with no-code marker, restrictive-license flags raised.
+
+**Notes on `lint find-code`**:
+- Never overwrites an existing `code:` entry — if you think the current code
+  link is wrong or stale (e.g. repo deleted), that's a separate manual fix,
+  not automation.
+- Non-commercial licenses are valid results (3DGS, several large-model
+  papers) — do not reject a canonical repo because its license is
+  restrictive. Record faithfully and flag downstream.
+- Respect rate limits on GitHub / Papers-with-Code; batch queries and back
+  off on 429s rather than hammering.
+
+#### `lint licenses` procedure
+
+Separate from `lint find-code` because some papers have no code but still
+need a paper license recorded, and some have code but no code-license yet.
+
+1. **Scan** all `wiki/papers/**/*.md`, `wiki/methods/**/*.md`, and
+   `wiki/datasets/**/*.md`. Select pages where:
+   - `url:` is set but `license_paper:` is missing, **or**
+   - `code:` is set but `license_code:` is missing, **or**
+   - page type is `dataset` and `license_dataset:` is missing.
+2. **Resolve each**:
+   - `license_paper:` via arXiv abstract page scrape (submission license
+     footer) or publisher page. If ambiguous, record `unknown` rather than
+     guessing.
+   - `license_code:` via the repo's `LICENSE` file (raw.githubusercontent.com
+     fetch) or GitHub's `license` API endpoint. Map to SPDX when possible.
+   - `license_dataset:` via the dataset's release page / README / LICENSE
+     file.
+3. **Present** a table of proposed fills per page, with the evidence source
+   (URL, API response, file path). User can approve-all or per-page.
+4. **On approval**, update frontmatter and refresh the resource strip in
+   the body. Non-SPDX licenses (`arxiv-nonexclusive`, `Gaussian-Splatting-License`,
+   `custom-research`) should be recorded verbatim with a short gloss in the
+   body `## Code & license` section.
+5. **Append to `log.md`**.
+
+**Notes on `lint licenses`**:
+- Wiki-write-only; never fetches / modifies / deletes files in `papers/`
+  or `articles/` caches.
+- `unknown` is a legitimate value and must remain visible — downstream
+  readers need to know when a license is ambiguous rather than missing.
+
 ## 4. `index.md` format
 
 Grouped by category. Each line:
@@ -635,6 +745,16 @@ consistent prefix so `grep "^## \[" log.md | tail -20` works:
 ## [YYYY-MM-DD] lint fetch
 - Downloaded: N papers (M already present, K failed)
 - Failures: <list of failed URLs if any>
+
+## [YYYY-MM-DD] lint find-code
+- Pages searched: N (P papers + M methods + D datasets)
+- Newly linked: K pages (list top 3 or so: `wiki/papers/<key>.md` → `<repo>` [license])
+- No-code-marker refreshed: R pages
+- Restrictive licenses flagged: <count> (list categories: non-commercial / research-only / unknown)
+
+## [YYYY-MM-DD] lint licenses
+- Filled: N paper-licenses, M code-licenses, D dataset-licenses
+- Unknowns retained: K (list brief reasons if interesting)
 ```
 
 ## 6. Hard rules

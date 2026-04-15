@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/heinrich_2025_radiov25.pdf
 url: https://arxiv.org/abs/2412.07679
+code: https://github.com/NVlabs/RADIO
+license_code: NSCL (non-commercial)
+license_paper: CC-BY-NC-SA-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/fundamentals/heinrich_2025_radiov25.pdf) · [arXiv](https://arxiv.org/abs/2412.07679)
+📄 [Full paper](../../papers/fundamentals/heinrich_2025_radiov25.pdf) · [arXiv](https://arxiv.org/abs/2412.07679) · [code](https://github.com/NVlabs/RADIO)
+
+_Code license: `NSCL (non-commercial)`_
 
 ## TL;DR
 
@@ -73,6 +78,10 @@ RADIOv2.5 addresses the practical challenge of building a single vision encoder 
 - Training cost is substantial (600k iterations on DataComp-1B with multiple teachers)
 - The optimal number and selection of teachers for different downstream tasks is not fully explored
 - Feature normalization (PHI-S) helps but doesn't fully resolve the challenge of balancing disparate teacher distributions
+
+## Code & license
+
+NVIDIA Source Code License (NSCL) — non-commercial research use only. The C-RADIO variant ships under NVIDIA Open Model License. Blocks redistribution and commercial integration without separate licensing.
 
 ## References added to the wiki
 

@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/feature-matching/edstedt_2025_roma-v2.pdf
 url: https://arxiv.org/abs/2511.15706
+code: https://github.com/Parskatt/RoMaV2
+license_code: MIT
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/feature-matching/edstedt_2025_roma-v2.pdf) · [arXiv](https://arxiv.org/abs/2511.15706)
+📄 [Full paper](../../papers/feature-matching/edstedt_2025_roma-v2.pdf) · [arXiv](https://arxiv.org/abs/2511.15706) · [code](https://github.com/Parskatt/RoMaV2)
+
+_Code license: `MIT`_
 
 ## TL;DR
 
@@ -91,6 +96,10 @@ RoMa v2 advances the state of the art in dense feature matching by resolving the
 - The decoupled two-stage training prevents end-to-end gradient flow between matcher and refiners
 - Predictive covariance training assumes Gaussian error distribution, which may not hold for all failure modes
 - New SatAst benchmark is small (39 pairs) and limited to homography-related scenes
+
+## Code & license
+
+Repo is MIT-licensed overall but depends on DINOv3 components that ship under Meta's custom DINOv3 License — verify the DINOv3 terms for any commercial use.
 
 ## References added to the wiki
 

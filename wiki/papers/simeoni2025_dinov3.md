@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/simeoni_2025_dinov3.pdf
 url: https://arxiv.org/abs/2508.10104
+code: https://github.com/facebookresearch/dinov3
+license_code: DINOv3 License (custom)
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/fundamentals/simeoni_2025_dinov3.pdf) · [arXiv](https://arxiv.org/abs/2508.10104)
+📄 [Full paper](../../papers/fundamentals/simeoni_2025_dinov3.pdf) · [arXiv](https://arxiv.org/abs/2508.10104) · [code](https://github.com/facebookresearch/dinov3)
+
+_Code license: `DINOv3 License (custom)`_
 
 ## TL;DR
 
@@ -57,6 +62,10 @@ DINOv3 is the **new default frozen backbone** for 2025–2026 feed-forward 3D an
 - Gram anchoring stabilizes training but adds memory/compute — no ablation on how severe the instability is at different scales.
 - Aerial-domain results suggest the recipe generalizes, but other specialized domains (medical, microscopy) untested.
 - Post-hoc text alignment is a retrofit; quality gap vs. natively trained CLIP-style models on zero-shot tasks remains.
+
+## Code & license
+
+Meta's custom DINOv3 License — commercial use *is* permitted but subject to acceptable-use and distribution terms that differ from Apache/MIT. Review the LICENSE file before integrating into a commercial product.
 
 ## References added to the wiki
 

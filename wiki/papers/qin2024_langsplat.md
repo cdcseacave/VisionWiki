@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/qin_2024_langsplat.pdf
 url: https://arxiv.org/abs/2312.16084
+code: https://github.com/minghanqin/LangSplat
+license_code: Gaussian-Splatting-License
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/qin_2024_langsplat.pdf) · [arXiv](https://arxiv.org/abs/2312.16084) · [Project](https://langsplat.github.io)
+📄 [Full paper](../../papers/radiance-fields/qin_2024_langsplat.pdf) · [arXiv](https://arxiv.org/abs/2312.16084) · [Project](https://langsplat.github.io) · [code](https://github.com/minghanqin/LangSplat)
+
+_Code license: `Gaussian-Splatting-License`_
 
 ## TL;DR
 
@@ -58,6 +63,10 @@ LangSplat **is the canonical CLIP-lifted-to-3DGS method** and the immediate base
 - Per-scene autoencoder means no cross-scene transfer of the latent space.
 - CLIP's still-coarse semantics limit fine-grained open-vocab queries on visually similar classes.
 - SAM-hierarchy supervision inherits SAM's failure modes (thin structures, transparent objects).
+
+## Code & license
+
+Inria/MPII Gaussian-Splatting License — non-commercial research use only (inherits the 3DGS base license). Blocks commercial integration without separate licensing from Inria.
 
 ## References added to the wiki
 

@@ -7,10 +7,11 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/elflein_2026_vgg-t3.pdf
 url: https://arxiv.org/abs/2602.23361
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/elflein_2026_vgg-t3.pdf) · [arXiv](https://arxiv.org/abs/2602.23361)
+📄 [Full paper](../../papers/mesh-reconstruction/elflein_2026_vgg-t3.pdf) · [arXiv](https://arxiv.org/abs/2602.23361) · _no code found (2026-04-15)_
 
 ## TL;DR
 

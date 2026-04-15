@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/shi_2024_open-vocab-segmentation.pdf
 url: https://arxiv.org/abs/2411.09219
+code: https://github.com/YuHengsss/Trident
+license_code: Apache-2.0
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/fundamentals/shi_2024_open-vocab-segmentation.pdf) · [arXiv](https://arxiv.org/abs/2411.09219)
+📄 [Full paper](../../papers/fundamentals/shi_2024_open-vocab-segmentation.pdf) · [arXiv](https://arxiv.org/abs/2411.09219) · [code](https://github.com/YuHengsss/Trident)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

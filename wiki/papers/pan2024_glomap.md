@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/pan_2024_glomap.pdf
 url: https://arxiv.org/abs/2407.20219
+code: https://github.com/colmap/glomap
+license_code: BSD-3-Clause
+license_paper: CC-BY-4.0
 status: stable
 ---
 
-📄 [Full paper](../../papers/sfm-slam/pan_2024_glomap.pdf) · [arXiv](https://arxiv.org/abs/2407.20219) · [GitHub](https://github.com/colmap/glomap)
+📄 [Full paper](../../papers/sfm-slam/pan_2024_glomap.pdf) · [arXiv](https://arxiv.org/abs/2407.20219) · [GitHub](https://github.com/colmap/glomap) · [code](https://github.com/colmap/glomap)
+
+_Code license: `BSD-3-Clause`_
 
 ## TL;DR
 

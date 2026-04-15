@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/murai_2025_mast3r-slam.pdf
 url: https://arxiv.org/abs/2412.12392
+code: https://github.com/rmurai0610/MASt3R-SLAM
+license_code: custom (DROID-SLAM-derived)
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/murai_2025_mast3r-slam.pdf) · [arXiv](https://arxiv.org/abs/2412.12392)
+📄 [Full paper](../../papers/sfm-slam/murai_2025_mast3r-slam.pdf) · [arXiv](https://arxiv.org/abs/2412.12392) · [code](https://github.com/rmurai0610/MASt3R-SLAM)
+
+_Code license: `custom (DROID-SLAM-derived)`_
 
 ## TL;DR
 
@@ -68,6 +73,10 @@ MASt3R-SLAM demonstrates that off-the-shelf two-view 3D reconstruction priors ca
 - MASt3R is only trained on pinhole images; geometry predictions degrade with increasing distortion.
 - Full-resolution decoder is a bottleneck for low-latency tracking and loop closure candidate checking.
 - Scale inconsistency across MASt3R predictions requires Sim(3) optimization rather than SE(3).
+
+## Code & license
+
+Portions of the code are derived from DROID-SLAM and inherit its custom license terms — verify per-file headers for any commercial use; treat as research-only by default.
 
 ## References added to the wiki
 

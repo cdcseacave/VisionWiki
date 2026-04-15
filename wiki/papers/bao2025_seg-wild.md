@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/bao_2025_seg-wild.pdf
 url: https://arxiv.org/abs/2507.07395
+code: https://github.com/Sugar0725/Seg-Wild
+license_code: MIT
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/bao_2025_seg-wild.pdf) · [arXiv](https://arxiv.org/abs/2507.07395) · [GitHub](https://github.com/Sugar0725/Seg-Wild)
+📄 [Full paper](../../papers/radiance-fields/bao_2025_seg-wild.pdf) · [arXiv](https://arxiv.org/abs/2507.07395) · [GitHub](https://github.com/Sugar0725/Seg-Wild) · [code](https://github.com/Sugar0725/Seg-Wild)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

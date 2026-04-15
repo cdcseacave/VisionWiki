@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/chen_2025_sam-3d.pdf
 url: https://ai.meta.com/sam3d
+code: https://github.com/facebookresearch/sam-3d-objects
+license_code: SAM License
+license_paper: unknown
 status: stable
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/chen_2025_sam-3d.pdf) · [Project](https://ai.meta.com/sam3d) · [GitHub](https://github.com/facebookresearch/sam-3d-objects) · [Demo](https://www.aidemos.meta.com/segment-anything/editor/convert-image-to-3d)
+📄 [Full paper](../../papers/mesh-reconstruction/chen_2025_sam-3d.pdf) · [Project](https://ai.meta.com/sam3d) · [GitHub](https://github.com/facebookresearch/sam-3d-objects) · [Demo](https://www.aidemos.meta.com/segment-anything/editor/convert-image-to-3d) · [code](https://github.com/facebookresearch/sam-3d-objects)
+
+_Code license: `SAM License`_
 
 ## TL;DR
 
@@ -59,6 +64,10 @@ Pushes single-image 3D from "isolated synthetic object" territory into **natural
 - No arXiv preprint at time of ingest — reference paper distributed via Meta AI blog/project site.
 - Generative hallucination vs. fidelity: single-image 3D is fundamentally underconstrained; paper does not quantify the reconstruction-vs-generation trade.
 - No discussion of compositing reconstructed objects into existing scenes (texture/lighting consistency).
+
+## Code & license
+
+Ships under Meta's SAM License (custom) — non-commercial research use only; downstream commercial integration requires separate licensing.
 
 ## References added to the wiki
 

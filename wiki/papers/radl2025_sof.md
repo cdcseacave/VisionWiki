@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/radl_2025_sof.pdf
 url: https://arxiv.org/abs/2506.19139
+code: https://github.com/r4dl/SOF
+license_code: NOASSERTION (custom)
+license_paper: CC-BY-NC-ND-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/radl_2025_sof.pdf) · [arXiv](https://arxiv.org/abs/2506.19139)
+📄 [Full paper](../../papers/mesh-reconstruction/radl_2025_sof.pdf) · [arXiv](https://arxiv.org/abs/2506.19139) · [code](https://github.com/r4dl/SOF)
+
+_Code license: `NOASSERTION (custom)`_
 
 ## TL;DR
 
@@ -63,6 +68,10 @@ SOF makes high-quality mesh extraction from Gaussian Splatting practical for lar
 - Slightly reduced image quality compared to GOF in novel view synthesis (tradeoff for speed).
 - Unbounded scene handling still depends on background model / contraction strategies.
 - Opacity field formulation may still struggle with semi-transparent objects.
+
+## Code & license
+
+GitHub reports NOASSERTION — the repo has a LICENSE file that doesn't map to a standard SPDX identifier. Likely a custom research-use license; verify the LICENSE file before commercial use.
 
 ## References added to the wiki
 

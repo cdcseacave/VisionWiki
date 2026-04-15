@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/zhong_2026_instantsfm.pdf
 url: https://arxiv.org/abs/2510.13310
+code: https://github.com/cre185/InstantSfM
+license_code: NOASSERTION (custom)
+license_paper: CC-BY-NC-SA-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/zhong_2026_instantsfm.pdf) · [arXiv](https://arxiv.org/abs/2510.13310)
+📄 [Full paper](../../papers/sfm-slam/zhong_2026_instantsfm.pdf) · [arXiv](https://arxiv.org/abs/2510.13310) · [code](https://github.com/cre185/InstantSfM)
+
+_Code license: `NOASSERTION (custom)`_
 
 ## TL;DR
 
@@ -63,6 +68,10 @@ See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM
 - Designed for single-node execution; distributed settings not yet supported.
 - Robustness under more challenging imaging conditions (e.g., extreme lighting, heavy occlusion) not extensively evaluated.
 - Relies on external feature extraction and matching (RootSIFT); not an end-to-end learned system.
+
+## Code & license
+
+GitHub reports NOASSERTION — LICENSE file does not map to a standard SPDX ID. Verify terms before commercial redistribution.
 
 ## References added to the wiki
 

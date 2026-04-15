@@ -5,8 +5,15 @@ tags: [benchmark, multi-view-stereo, 3d-reconstruction, large-scale, laser-scan,
 created: 2026-04-15
 updated: 2026-04-15
 sources: [papers/knapitsch2017_tanks-and-temples.md]
+code: https://github.com/isl-org/TanksAndTemples
+license_code: MIT
+license_dataset: CC-BY-4.0
 status: stable
 ---
+
+[code](https://github.com/isl-org/TanksAndTemples)
+
+_Code license: `MIT`_
 
 ## What it is
 

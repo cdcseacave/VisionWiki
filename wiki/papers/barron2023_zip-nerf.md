@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: [papers/barron2022_mip-nerf-360.md]
 local_paper: papers/radiance-fields/barron_2023_zip-nerf.pdf
 url: https://arxiv.org/abs/2304.06706
+code: https://github.com/jonbarron/camp_zipnerf
+license_code: Apache-2.0
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/barron_2023_zip-nerf.pdf) · [arXiv](https://arxiv.org/abs/2304.06706) · [Project](https://jonbarron.info/zipnerf/)
+📄 [Full paper](../../papers/radiance-fields/barron_2023_zip-nerf.pdf) · [arXiv](https://arxiv.org/abs/2304.06706) · [Project](https://jonbarron.info/zipnerf/) · [code](https://github.com/jonbarron/camp_zipnerf)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

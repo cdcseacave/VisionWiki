@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/yu_2025_cusfm.pdf
 url: https://arxiv.org/abs/2510.15271
+code: https://github.com/nvidia-isaac/pyCuSFM
+license_code: NVIDIA Software License (NOASSERTION)
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/yu_2025_cusfm.pdf) · [arXiv](https://arxiv.org/abs/2510.15271)
+📄 [Full paper](../../papers/sfm-slam/yu_2025_cusfm.pdf) · [arXiv](https://arxiv.org/abs/2510.15271) · [code](https://github.com/nvidia-isaac/pyCuSFM)
+
+_Code license: `NVIDIA Software License (NOASSERTION)`_
 
 ## TL;DR
 
@@ -67,6 +72,10 @@ See [[gpu-native-sfm]] thread for the broader "Tier 1: accelerated classical SfM
 - COLMAP/GLOMAP comparison uses monocular input only, which disadvantages those systems (CuSfM leverages priors).
 - Extrinsic refinement assumes rigid multi-camera rig; does not handle time-varying calibration.
 - Limited evaluation on non-driving scenarios.
+
+## Code & license
+
+NVIDIA Software License — custom terms reported as NOASSERTION by GitHub. Non-commercial / research-oriented; verify LICENSE for any commercial integration.
 
 ## References added to the wiki
 

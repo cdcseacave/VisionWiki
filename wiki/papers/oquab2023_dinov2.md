@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/oquab_2023_dinov2.pdf
 url: https://arxiv.org/abs/2304.07193
+code: https://github.com/facebookresearch/dinov2
+license_code: Apache-2.0
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/fundamentals/oquab_2023_dinov2.pdf) · [arXiv](https://arxiv.org/abs/2304.07193) · [Project](https://dinov2.metademolab.com)
+📄 [Full paper](../../papers/fundamentals/oquab_2023_dinov2.pdf) · [arXiv](https://arxiv.org/abs/2304.07193) · [Project](https://dinov2.metademolab.com) · [code](https://github.com/facebookresearch/dinov2)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

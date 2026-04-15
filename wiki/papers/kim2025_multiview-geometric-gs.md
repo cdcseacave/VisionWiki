@@ -7,10 +7,11 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/kim_2025_multiview-geometric-gs.pdf
 url: https://arxiv.org/abs/2506.13508
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/radiance-fields/kim_2025_multiview-geometric-gs.pdf) · [arXiv](https://arxiv.org/abs/2506.13508)
+📄 [Full paper](../../papers/radiance-fields/kim_2025_multiview-geometric-gs.pdf) · [arXiv](https://arxiv.org/abs/2506.13508) · _no code found (2026-04-15)_
 
 ## TL;DR
 

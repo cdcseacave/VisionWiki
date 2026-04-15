@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/xie_2025_gauss-mi.pdf
 url: https://arxiv.org/abs/2504.21067
+code: https://github.com/JohannaXie/GauSS-MI
+license_code: GPL-3.0
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/radiance-fields/xie_2025_gauss-mi.pdf) · [arXiv](https://arxiv.org/abs/2504.21067)
+📄 [Full paper](../../papers/radiance-fields/xie_2025_gauss-mi.pdf) · [arXiv](https://arxiv.org/abs/2504.21067) · [code](https://github.com/JohannaXie/GauSS-MI)
+
+_Code license: `GPL-3.0`_
 
 ## TL;DR
 

@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/li_2025_megasam.pdf
 url: https://arxiv.org/abs/2412.04463
+code: https://github.com/mega-sam/mega-sam
+license_code: Apache-2.0
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/li_2025_megasam.pdf) · [arXiv](https://arxiv.org/abs/2412.04463)
+📄 [Full paper](../../papers/sfm-slam/li_2025_megasam.pdf) · [arXiv](https://arxiv.org/abs/2412.04463) · [code](https://github.com/mega-sam/mega-sam)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

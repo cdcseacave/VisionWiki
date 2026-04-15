@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/chen_2024_pgsr.pdf
 url: https://arxiv.org/abs/2406.06521
+code: https://github.com/zju3dv/PGSR
+license_code: research-only
+license_paper: CC-BY-NC-SA-4.0
 status: stable
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/chen_2024_pgsr.pdf) · [arXiv](https://arxiv.org/abs/2406.06521)
+📄 [Full paper](../../papers/mesh-reconstruction/chen_2024_pgsr.pdf) · [arXiv](https://arxiv.org/abs/2406.06521) · [code](https://github.com/zju3dv/PGSR)
+
+_Code license: `research-only`_
 
 ## TL;DR
 
@@ -55,6 +60,10 @@ Strong evidence that the 3DGS ↔ surface gap is a **regularization problem, not
 
 - Scene with genuinely thin/non-planar structure (hair, foliage) resists planar flattening — some fidelity loss there.
 - Multi-view consistency term is expensive (re-projects + photometric checks) during training.
+
+## Code & license
+
+ZJU custom research-only license ("educational, research and non-profit purposes only"). Non-commercial; blocks commercial integration without separate licensing.
 
 ## References added to the wiki
 

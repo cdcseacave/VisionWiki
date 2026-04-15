@@ -7,6 +7,7 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/shi_2026_self-distilled-roi.pdf
 url: https://arxiv.org/abs/2509.16944
+license_paper: CC-BY-4.0
 status: draft
 ---
 

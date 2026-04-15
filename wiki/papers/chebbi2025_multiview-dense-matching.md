@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/chebbi_2025_multiview-dense-matching.pdf
 url: https://arxiv.org/abs/2505.11264
+code: https://github.com/DaliCHEBBI/DeepSimNets
+license_code: none
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/mvs-depth/chebbi_2025_multiview-dense-matching.pdf) · [arXiv](https://arxiv.org/abs/2505.11264)
+📄 [Full paper](../../papers/mvs-depth/chebbi_2025_multiview-dense-matching.pdf) · [arXiv](https://arxiv.org/abs/2505.11264) · [code](https://github.com/DaliCHEBBI/DeepSimNets)
+
+_Code license: `none`_
 
 ## TL;DR
 
@@ -69,6 +74,10 @@ This work demonstrates that powerful multi-view dense matching can be achieved b
 - MS-AFF has not been trained on low-GSD imagery; handcrafted features are still needed at coarse pyramid levels
 - The MLP similarity function encodes epipolar-specific information, making cosine similarity preferable when homographic warping is used
 - Error metrics based on pixel-level histograms may not capture semantic quality of reconstructed surfaces (e.g., building edges vs. noise)
+
+## Code & license
+
+Repo has **no LICENSE file** — all rights reserved by default under GitHub's terms. Code is viewable but not legally forkable or redistributable without the author's explicit permission.
 
 ## References added to the wiki
 

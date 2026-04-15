@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/carion_2026_sam-3.pdf
 url: https://arxiv.org/abs/2511.16719
+code: https://github.com/facebookresearch/sam3
+license_code: SAM License
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/fundamentals/carion_2026_sam-3.pdf) · [arXiv](https://arxiv.org/abs/2511.16719) · [Project](https://ai.meta.com/sam3)
+📄 [Full paper](../../papers/fundamentals/carion_2026_sam-3.pdf) · [arXiv](https://arxiv.org/abs/2511.16719) · [Project](https://ai.meta.com/sam3) · [code](https://github.com/facebookresearch/sam3)
+
+_Code license: `SAM License`_
 
 ## TL;DR
 
@@ -58,6 +63,10 @@ Consolidates three previously-separate capabilities (open-vocab detection, insta
 - Concept definition is still fuzzy at the edges — compositional prompts ("red chair *without* armrests") untested.
 - Video memory is bounded; very long-horizon identity preservation across occlusions unclear.
 - Paper does not explicitly address 3D; lifting-to-3D is left for downstream work.
+
+## Code & license
+
+Repo ships under Meta's SAM License (custom, NOASSERTION on GitHub) — non-commercial research use only; blocks redistribution in commercial pipelines without separate licensing.
 
 ## References added to the wiki
 

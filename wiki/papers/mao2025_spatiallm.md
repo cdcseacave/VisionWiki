@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/mao_2025_spatiallm.pdf
 url: https://arxiv.org/abs/2506.07491
+code: https://github.com/manycore-research/SpatialLM
+license_code: Apache-2.0 (code) + CC-BY-NC-4.0 (weights)
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/mao_2025_spatiallm.pdf) · [arXiv](https://arxiv.org/abs/2506.07491)
+📄 [Full paper](../../papers/mesh-reconstruction/mao_2025_spatiallm.pdf) · [arXiv](https://arxiv.org/abs/2506.07491) · [code](https://github.com/manycore-research/SpatialLM)
+
+_Code license: `Apache-2.0 (code) + CC-BY-NC-4.0 (weights)`_
 
 ## TL;DR
 
@@ -66,6 +71,10 @@ SpatialLM demonstrates a feasible path for using general-purpose LLMs in 3D spat
 2. **Effect on language capabilities**: Impact on the base LLM's natural language processing and reasoning abilities not evaluated.
 3. **Closed vocabulary**: Uses predefined object categories, limiting the LLM's open-ended language capabilities. Future work includes open-vocabulary detection and 3D VQA.
 4. **Small objects**: Difficulty with small objects like "picture" and "sink" categories in ScanNet.
+
+## Code & license
+
+Code is Apache-2.0 but model weights (and the Llama-3.2 base) are under CC-BY-NC-4.0 — non-commercial for the released checkpoints. Code is redistributable; trained weights are not for commercial use.
 
 ## References added to the wiki
 

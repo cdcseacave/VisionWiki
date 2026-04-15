@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/jin_2026_zipmap.pdf
 url: https://arxiv.org/abs/2603.04385
+code: https://github.com/Haian-Jin/ZipMap
+license_code: Apache-2.0
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/jin_2026_zipmap.pdf) · [arXiv](https://arxiv.org/abs/2603.04385)
+📄 [Full paper](../../papers/sfm-slam/jin_2026_zipmap.pdf) · [arXiv](https://arxiv.org/abs/2603.04385) · [code](https://github.com/Haian-Jin/ZipMap)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

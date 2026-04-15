@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/li_2025_geosvr.pdf
 url: https://arxiv.org/abs/2509.18090
+code: https://github.com/Fictionarry/GeoSVR
+license_code: NVIDIA-Source-Code-License
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/li_2025_geosvr.pdf) · [arXiv](https://arxiv.org/abs/2509.18090)
+📄 [Full paper](../../papers/mesh-reconstruction/li_2025_geosvr.pdf) · [arXiv](https://arxiv.org/abs/2509.18090) · [code](https://github.com/Fictionarry/GeoSVR)
+
+_Code license: `NVIDIA-Source-Code-License`_
 
 ## TL;DR
 
@@ -62,6 +67,10 @@ GeoSVR demonstrates that explicit sparse voxels -- rather than Gaussians or impl
 - Multi-view regularization increases training time due to less efficient code implementation (acknowledged by authors as future work).
 - Potential for further quality improvement by combining with learned geometric priors.
 - Scalability to very large-scale unbounded outdoor scenes not fully explored.
+
+## Code & license
+
+NVIDIA Source Code License for SVRaster (non-commercial research use only, inherited from the SVRaster base). Blocks commercial integration without separate NVIDIA licensing.
 
 ## References added to the wiki
 

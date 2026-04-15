@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/schonberger_2016_colmap-sfm.pdf
 url: https://openaccess.thecvf.com/content_cvpr_2016/papers/Schonberger_Structure-From-Motion_Revisited_CVPR_2016_paper.pdf
+code: https://github.com/colmap/colmap
+license_code: BSD-3-Clause
+license_paper: CVF-open-access
 status: stable
 ---
 
-📄 [Full paper](../../papers/sfm-slam/schonberger_2016_colmap-sfm.pdf) · [CVPR 2016 PDF](https://openaccess.thecvf.com/content_cvpr_2016/papers/Schonberger_Structure-From-Motion_Revisited_CVPR_2016_paper.pdf) · [GitHub](https://github.com/colmap/colmap)
+📄 [Full paper](../../papers/sfm-slam/schonberger_2016_colmap-sfm.pdf) · [CVPR 2016 PDF](https://openaccess.thecvf.com/content_cvpr_2016/papers/Schonberger_Structure-From-Motion_Revisited_CVPR_2016_paper.pdf) · [GitHub](https://github.com/colmap/colmap) · [code](https://github.com/colmap/colmap)
+
+_Code license: `BSD-3-Clause`_
 
 ## TL;DR
 

@@ -7,10 +7,11 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/jiao_2025_clip-gs.pdf
 url: https://arxiv.org/abs/2412.19142
+license_paper: CC-BY-4.0
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/jiao_2025_clip-gs.pdf) · [Supplement](../../papers/radiance-fields/jiao_2025_clip-gs_supplemental.pdf) · [arXiv](https://arxiv.org/abs/2412.19142)
+📄 [Full paper](../../papers/radiance-fields/jiao_2025_clip-gs.pdf) · [Supplement](../../papers/radiance-fields/jiao_2025_clip-gs_supplemental.pdf) · [arXiv](https://arxiv.org/abs/2412.19142) · _no code found (2026-04-15)_
 
 ## TL;DR
 
@@ -57,6 +58,10 @@ Establishes **3DGS as a first-class citizen in 3D foundation-model learning**, d
 - 3DGS must be pre-computed (not reconstructed jointly with the multimodal alignment).
 - GS Tokenizer's serialization order is heuristic; performance sensitivity to ordering not fully characterized.
 - Scene-scale tokenization (thousands of Gaussians) still strained; works best on object-scale captures.
+
+## Code & license
+
+No code released for Jiao et al. 2412.19142 as of 2026-04-15. Name-collision warning: the repo `github.com/gbliao/CLIP-GS` belongs to a *different* paper (Liao et al. 2404.14249) — do not link it here.
 
 ## References added to the wiki
 

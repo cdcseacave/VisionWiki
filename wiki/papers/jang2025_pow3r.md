@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/jang_2025_pow3r.pdf
 url: https://arxiv.org/abs/2503.17316
+code: https://github.com/naver/pow3r
+license_code: NAVER non-commercial
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/mvs-depth/jang_2025_pow3r.pdf) · [arXiv](https://arxiv.org/abs/2503.17316)
+📄 [Full paper](../../papers/mvs-depth/jang_2025_pow3r.pdf) · [arXiv](https://arxiv.org/abs/2503.17316) · [code](https://github.com/naver/pow3r)
+
+_Code license: `NAVER non-commercial`_
 
 ## TL;DR
 
@@ -74,6 +79,10 @@ Pow3R demonstrates that feed-forward 3D reconstruction models can be made signif
 - The model does not handle dynamic scenes (unlike MonST3R)
 - Scale ambiguity remains when no depth priors are provided (as in DUSt3R)
 - Coarse-to-fine high-resolution strategy requires solving for scale in overlapping crop regions
+
+## Code & license
+
+NAVER custom non-commercial license (CC-BY-NC-SA-style, shows as NOASSERTION on GitHub). Research use only; blocks commercial redistribution.
 
 ## References added to the wiki
 

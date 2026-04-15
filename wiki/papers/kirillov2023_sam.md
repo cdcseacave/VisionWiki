@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/kirillov_2023_sam.pdf
 url: https://arxiv.org/abs/2304.02643
+code: https://github.com/facebookresearch/segment-anything
+license_code: Apache-2.0
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/fundamentals/kirillov_2023_sam.pdf) · [arXiv](https://arxiv.org/abs/2304.02643) · [Project](https://segment-anything.com)
+📄 [Full paper](../../papers/fundamentals/kirillov_2023_sam.pdf) · [arXiv](https://arxiv.org/abs/2304.02643) · [Project](https://segment-anything.com) · [code](https://github.com/facebookresearch/segment-anything)
+
+_Code license: `Apache-2.0`_
 
 ## TL;DR
 

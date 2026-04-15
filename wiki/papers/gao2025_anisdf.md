@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/gao_2025_anisdf.pdf
 url: https://arxiv.org/abs/2410.01202
+code: https://github.com/G-1nOnly/AniSDF
+license_code: MIT
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/mesh-reconstruction/gao_2025_anisdf.pdf) · [arXiv](https://arxiv.org/abs/2410.01202)
+📄 [Full paper](../../papers/mesh-reconstruction/gao_2025_anisdf.pdf) · [arXiv](https://arxiv.org/abs/2410.01202) · [code](https://github.com/G-1nOnly/AniSDF)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

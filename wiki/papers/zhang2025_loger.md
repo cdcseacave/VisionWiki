@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/zhang_2025_loger.pdf
 url: https://arxiv.org/abs/2603.03269
+code: https://github.com/Junyi42/LoGeR
+license_code: none
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/zhang_2025_loger.pdf) · [arXiv](https://arxiv.org/abs/2603.03269)
+📄 [Full paper](../../papers/sfm-slam/zhang_2025_loger.pdf) · [arXiv](https://arxiv.org/abs/2603.03269) · [code](https://github.com/Junyi42/LoGeR)
+
+_Code license: `none`_
 
 ## TL;DR
 
@@ -70,6 +75,12 @@ LoGeR breaks both the "context wall" and "data wall" that limit feedforward 3D r
 - SWA only inserted at 4 layers; increasing SWA depth may improve local consistency at higher compute cost.
 - Depends on pi3/VGGT-quality bidirectional backbone; quality of intra-chunk reconstruction bounded by base model.
 - Dynamic scenes not explicitly addressed; relies on base model's robustness to scene changes.
+
+## Code & license
+
+Repo title is "Reimplementation" but owner `Junyi42` is Junyi Zhang, the paper's first author — treat as the canonical release despite the naming.
+
+**License note:** Repo has **no LICENSE file** — all rights reserved by default under GitHub's terms. Code is viewable but not legally forkable or redistributable without the author's explicit permission.
 
 ## References added to the wiki
 

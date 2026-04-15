@@ -7,10 +7,11 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/kim_2026_gauss-explorer.pdf
 url: https://arxiv.org/abs/2601.13132
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/kim_2026_gauss-explorer.pdf) · [arXiv](https://arxiv.org/abs/2601.13132)
+📄 [Full paper](../../papers/radiance-fields/kim_2026_gauss-explorer.pdf) · [arXiv](https://arxiv.org/abs/2601.13132) · _no code found (2026-04-15)_
 
 ## TL;DR
 

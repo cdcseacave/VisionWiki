@@ -7,10 +7,11 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/zhang_2025_feed-forward-3d-survey.pdf
 url: https://arxiv.org/abs/2507.14501
+license_paper: CC-BY-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/fundamentals/zhang_2025_feed-forward-3d-survey.pdf) · [arXiv](https://arxiv.org/abs/2507.14501)
+📄 [Full paper](../../papers/fundamentals/zhang_2025_feed-forward-3d-survey.pdf) · [arXiv](https://arxiv.org/abs/2507.14501) · _no code found (2026-04-15)_
 
 ## TL;DR
 
@@ -101,6 +102,10 @@ The survey covers a vast network of related methods:
 - Most methods assume static scenes; dynamic scene handling remains challenging
 - Evaluation metrics (PSNR, SSIM, LPIPS) may not capture perceptual quality adequately
 - Societal impact concerns: potential misuse for deepfakes and privacy violations
+
+## Code & license
+
+Survey paper — no dedicated code repo expected. Project page exists at fnzhan.com/projects/Feed-Forward-3D/ but no curated awesome-list / resource repo found as of 2026-04-15. Third-party awesome lists include this survey among many entries; not canonical.
 
 ## References added to the wiki
 

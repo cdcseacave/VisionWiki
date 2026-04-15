@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/pose-estimation/zhang_2024_cameras-as-rays.pdf
 url: https://arxiv.org/abs/2402.14817
+code: https://github.com/jasonyzhang/RayDiffusion
+license_code: MIT
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/pose-estimation/zhang_2024_cameras-as-rays.pdf) · [arXiv](https://arxiv.org/abs/2402.14817)
+📄 [Full paper](../../papers/pose-estimation/zhang_2024_cameras-as-rays.pdf) · [arXiv](https://arxiv.org/abs/2402.14817) · [code](https://github.com/jasonyzhang/RayDiffusion)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

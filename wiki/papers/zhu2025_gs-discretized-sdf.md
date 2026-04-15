@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/zhu_2025_gs-discretized-sdf.pdf
 url: https://arxiv.org/abs/2507.15629
+code: https://github.com/NK-CS-ZZL/DiscretizedSDF
+license_code: CC-BY-NC-4.0
+license_paper: CC-BY-NC-SA-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/radiance-fields/zhu_2025_gs-discretized-sdf.pdf) · [arXiv](https://arxiv.org/abs/2507.15629)
+📄 [Full paper](../../papers/radiance-fields/zhu_2025_gs-discretized-sdf.pdf) · [arXiv](https://arxiv.org/abs/2507.15629) · [code](https://github.com/NK-CS-ZZL/DiscretizedSDF)
+
+_Code license: `CC-BY-NC-4.0`_
 
 ## TL;DR
 
@@ -64,6 +69,10 @@ This work provides an elegant solution to the geometry regularization problem in
 - Mesh extraction with BRDF parameters is left for future work.
 - Currently limited to bounded object-scale scenes; extending to unbounded scenes is a promising future direction.
 - The discrete SDF approximation may not capture very fine geometric details compared to continuous SDF methods.
+
+## Code & license
+
+Creative Commons Attribution-NonCommercial 4.0 International — non-commercial research use only. Blocks commercial integration.
 
 ## References added to the wiki
 

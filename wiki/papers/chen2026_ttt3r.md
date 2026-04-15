@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: [papers/zhang2025_feed-forward-3d-survey.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md]
 local_paper: papers/sfm-slam/chen_2026_ttt3r.pdf
 url: https://arxiv.org/abs/2509.26645
+code: https://github.com/Inception3D/TTT3R
+license_code: CC-BY-NC-SA-4.0
+license_paper: arxiv-nonexclusive
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/chen_2026_ttt3r.pdf) · [arXiv](https://arxiv.org/abs/2509.26645) · [Project](https://rover-xingyu.github.io/TTT3R/)
+📄 [Full paper](../../papers/sfm-slam/chen_2026_ttt3r.pdf) · [arXiv](https://arxiv.org/abs/2509.26645) · [Project](https://rover-xingyu.github.io/TTT3R/) · [code](https://github.com/Inception3D/TTT3R)
+
+_Code license: `CC-BY-NC-SA-4.0`_
 
 ## TL;DR
 
@@ -78,6 +83,10 @@ It also sharpens the emerging narrative in the [[feed-forward-structure-from-mot
 - **Unexplored states**: the learning-rate formula still drives the hidden state into OOD regimes on very long rollouts — the State Reset workaround is an admission that the fast-weight dynamics aren't fully well-conditioned outside the training horizon.
 - Does the recipe transfer to non-pointmap backbones (e.g. feed-forward radiance-field methods)? Paper restricts analysis to the pointmap family.
 - Interaction with [[bundle-adjustment]] refinement: TTT3R doesn't do global optimization — does a light BA pass on top further improve its poses, or does the TTT update already absorb that signal?
+
+## Code & license
+
+Inherits CUT3R base under CC-BY-NC-SA-4.0 (non-commercial research); TTT3R additions are MIT but governed by the most-restrictive base license. Non-commercial research use only.
 
 ## References added to the wiki
 

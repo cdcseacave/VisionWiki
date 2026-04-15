@@ -7,10 +7,15 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/deng_2026_vpgs-slam.pdf
 url: https://arxiv.org/abs/2505.18992
+code: https://github.com/dtc111111/vpgs-slam
+license_code: MIT
+license_paper: CC-BY-NC-SA-4.0
 status: draft
 ---
 
-📄 [Full paper](../../papers/sfm-slam/deng_2026_vpgs-slam.pdf) · [arXiv](https://arxiv.org/abs/2505.18992)
+📄 [Full paper](../../papers/sfm-slam/deng_2026_vpgs-slam.pdf) · [arXiv](https://arxiv.org/abs/2505.18992) · [code](https://github.com/dtc111111/vpgs-slam)
+
+_Code license: `MIT`_
 
 ## TL;DR
 

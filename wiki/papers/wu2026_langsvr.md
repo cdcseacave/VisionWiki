@@ -7,10 +7,11 @@ updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/wu_2026_langsvr.pdf
 url: https://arxiv.org/abs/2602.15734
+license_paper: arxiv-nonexclusive
 status: stable
 ---
 
-📄 [Full paper](../../papers/radiance-fields/wu_2026_langsvr.pdf) · [arXiv](https://arxiv.org/abs/2602.15734)
+📄 [Full paper](../../papers/radiance-fields/wu_2026_langsvr.pdf) · [arXiv](https://arxiv.org/abs/2602.15734) · _no code found (2026-04-15)_
 
 ## TL;DR
 
