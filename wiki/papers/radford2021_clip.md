@@ -3,7 +3,7 @@ title: "Learning Transferable Visual Models From Natural Language Supervision (C
 type: paper
 tags: [vision-language, contrastive-learning, foundation-model, zero-shot]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/radford_2021_clip.pdf
 url: https://arxiv.org/abs/2103.00020

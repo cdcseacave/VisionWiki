@@ -3,7 +3,7 @@ title: "GauSS-MI: Gaussian Splatting Shannon Mutual Information for Active 3D Re
 type: paper
 tags: [3d-gaussian-splatting, active-reconstruction, uncertainty-quantification, mutual-information, next-best-view, robotics]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/xie_2025_gauss-mi.pdf
 url: https://arxiv.org/abs/2504.21067

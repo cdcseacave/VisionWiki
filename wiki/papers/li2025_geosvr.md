@@ -3,7 +3,7 @@ title: "GeoSVR: Taming Sparse Voxels for Geometrically Accurate Surface Reconstr
 type: paper
 tags: [sparse-voxels, surface-reconstruction, radiance-fields, depth-estimation, multi-view]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/li_2025_geosvr.pdf
 url: https://arxiv.org/abs/2509.18090

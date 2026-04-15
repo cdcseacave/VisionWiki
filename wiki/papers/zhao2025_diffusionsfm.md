@@ -3,7 +3,7 @@ title: "DiffusionSfM: Predicting Structure and Motion via Ray Origin and Endpoin
 type: paper
 tags: [sfm, diffusion, transformer, ray-representation, sparse-view, pose-estimation, 3d-reconstruction]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/zhao_2025_diffusionsfm.pdf
 url: https://arxiv.org/abs/2505.05473

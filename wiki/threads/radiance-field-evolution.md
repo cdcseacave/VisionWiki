@@ -3,7 +3,7 @@ title: Radiance Field Evolution
 type: thread
 tags: [nerf, 3dgs, differentiable-rendering, novel-view-synthesis, sparse-voxels]
 created: 2026-04-11
-updated: 2026-04-14
+updated: 2026-04-15
 sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md]
 status: draft
 ---

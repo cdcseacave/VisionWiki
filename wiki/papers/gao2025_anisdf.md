@@ -3,7 +3,7 @@ title: "AniSDF: Fused-Granularity Neural Surfaces with Anisotropic Encoding for 
 type: paper
 tags: [neural-implicit-surfaces, SDF, anisotropic-encoding, reflective-surfaces, novel-view-synthesis]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/gao_2025_anisdf.pdf
 url: https://arxiv.org/abs/2410.01202

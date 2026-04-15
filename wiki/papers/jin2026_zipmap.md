@@ -3,7 +3,7 @@ title: "ZipMap: Linear-Time Stateful 3D Reconstruction via Test-Time Training"
 type: paper
 tags: [3d-reconstruction, test-time-training, linear-time, feedforward, implicit-scene-representation, scalability]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/jin_2026_zipmap.pdf
 url: https://arxiv.org/abs/2603.04385

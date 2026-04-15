@@ -3,7 +3,7 @@ title: "VPGS-SLAM: Voxel-based Progressive 3D Gaussian SLAM in Large-Scale Scene
 type: paper
 tags: [slam, 3d-gaussian-splatting, large-scale, loop-closure, voxel-representation, rgbd]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/deng_2026_vpgs-slam.pdf
 url: https://arxiv.org/abs/2505.18992

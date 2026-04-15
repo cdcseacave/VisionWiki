@@ -3,7 +3,7 @@ title: "Gaussian Splatting with Discretized SDF for Relightable Assets"
 type: paper
 tags: [3d-gaussian-splatting, signed-distance-field, inverse-rendering, relighting, BRDF, material-decomposition]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/zhu_2025_gs-discretized-sdf.pdf
 url: https://arxiv.org/abs/2507.15629

@@ -3,7 +3,7 @@ title: "Pixelwise View Selection for Unstructured Multi-View Stereo"
 type: paper
 tags: [mvs, patchmatch, view-selection, colmap]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/schonberger_2016_colmap-mvs.pdf
 url: https://arxiv.org/abs/1607.08203

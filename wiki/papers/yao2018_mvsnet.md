@@ -3,7 +3,7 @@ title: "MVSNet: Depth Inference for Unstructured Multi-view Stereo"
 type: paper
 tags: [mvs, depth, cost-volume, deep-learning]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/yao_2018_mvsnet.pdf
 url: https://arxiv.org/abs/1804.02505

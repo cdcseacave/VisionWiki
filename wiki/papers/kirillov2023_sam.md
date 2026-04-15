@@ -3,7 +3,7 @@ title: "Segment Anything"
 type: paper
 tags: [segmentation, foundation-model, promptable, data-engine]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/kirillov_2023_sam.pdf
 url: https://arxiv.org/abs/2304.02643

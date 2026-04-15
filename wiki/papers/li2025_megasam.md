@@ -3,7 +3,7 @@ title: "MegaSaM: Accurate, Fast, and Robust Structure and Motion from Casual Dyn
 type: paper
 tags: [sfm, slam, dynamic-scenes, monocular-depth, motion-segmentation, video-depth, differentiable-ba]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/li_2025_megasam.pdf
 url: https://arxiv.org/abs/2412.04463

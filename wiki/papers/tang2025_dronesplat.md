@@ -3,7 +3,7 @@ title: "DroneSplat: 3D Gaussian Splatting for Robust 3D Reconstruction from In-t
 type: paper
 tags: [3d-gaussian-splatting, drone, aerial-reconstruction, dynamic-distractors, sparse-view, multi-view-stereo]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/tang_2025_dronesplat.pdf
 url: https://arxiv.org/abs/2503.16964

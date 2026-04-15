@@ -3,7 +3,7 @@ title: "MV-DeepSimNets: Multi-view Dense Image Matching with Similarity Learning
 type: paper
 tags: [multi-view-stereo, dense-matching, similarity-learning, geometry-priors, aerial-imagery, satellite-imagery, photogrammetry]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/chebbi_2025_multiview-dense-matching.pdf
 url: https://arxiv.org/abs/2505.11264

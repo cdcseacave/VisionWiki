@@ -3,7 +3,7 @@ title: "MILo: Mesh-In-the-Loop Gaussian Splatting for Detailed and Efficient Sur
 type: paper
 tags: [gaussian-splatting, mesh-extraction, delaunay-triangulation, surface-reconstruction, differentiable-rendering]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/guedon_2025_milo.pdf
 url: https://arxiv.org/abs/2506.24096

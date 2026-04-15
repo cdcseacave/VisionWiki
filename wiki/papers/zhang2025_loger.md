@@ -3,7 +3,7 @@ title: "LoGeR: Long-Context Geometric Reconstruction with Hybrid Memory"
 type: paper
 tags: [3d-reconstruction, long-sequences, test-time-training, sliding-window-attention, feedforward, scalability]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/zhang_2025_loger.pdf
 url: https://arxiv.org/abs/2603.03269

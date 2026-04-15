@@ -3,7 +3,7 @@ title: "DINOv3"
 type: paper
 tags: [self-supervised-learning, foundation-model, vision-transformer, features]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/simeoni_2025_dinov3.pdf
 url: https://arxiv.org/abs/2508.10104

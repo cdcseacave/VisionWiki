@@ -3,7 +3,7 @@ title: "SAM 3D: 3Dfy Anything in Images"
 type: paper
 tags: [single-image-3d, generative-3d, flow-matching, scene-reconstruction]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/chen_2025_sam-3d.pdf
 url: https://ai.meta.com/sam3d

@@ -3,7 +3,7 @@ title: "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey"
 type: paper
 tags: [survey, feed-forward, 3d-reconstruction, novel-view-synthesis, NeRF, 3d-gaussian-splatting, pointmap, depth-estimation, SLAM]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/zhang_2025_feed-forward-3d-survey.pdf
 url: https://arxiv.org/abs/2507.14501

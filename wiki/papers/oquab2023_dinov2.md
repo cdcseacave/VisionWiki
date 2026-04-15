@@ -3,7 +3,7 @@ title: "DINOv2: Learning Robust Visual Features without Supervision"
 type: paper
 tags: [self-supervised-learning, foundation-model, vision-transformer, features]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/oquab_2023_dinov2.pdf
 url: https://arxiv.org/abs/2304.07193

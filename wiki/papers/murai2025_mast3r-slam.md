@@ -3,7 +3,7 @@ title: "MASt3R-SLAM: Real-Time Dense SLAM with 3D Reconstruction Priors"
 type: paper
 tags: [slam, mast3r, dense-slam, monocular, uncalibrated, real-time, pointmaps]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/murai_2025_mast3r-slam.pdf
 url: https://arxiv.org/abs/2412.12392

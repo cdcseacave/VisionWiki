@@ -3,7 +3,7 @@ title: "SpatialLM: Training Large Language Models for Structured Indoor Modeling
 type: paper
 tags: [large-language-model, 3d-scene-understanding, point-cloud, layout-estimation, object-detection, indoor-modeling]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/mao_2025_spatiallm.pdf
 url: https://arxiv.org/abs/2506.07491

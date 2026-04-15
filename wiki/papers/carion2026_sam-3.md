@@ -3,7 +3,7 @@ title: "SAM 3: Segment Anything with Concepts"
 type: paper
 tags: [segmentation, foundation-model, open-vocabulary, video-tracking]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/carion_2026_sam-3.pdf
 url: https://arxiv.org/abs/2511.16719

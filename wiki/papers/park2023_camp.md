@@ -3,7 +3,7 @@ title: "CamP: Camera Preconditioning for Neural Radiance Fields"
 type: paper
 tags: [nerf, camera-optimization, bundle-adjustment, preconditioning, pose-refinement, zip-nerf]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/park_2023_camp.pdf
 url: https://arxiv.org/abs/2308.10902

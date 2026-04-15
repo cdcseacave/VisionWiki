@@ -3,7 +3,7 @@ title: "EA-3DGS: Efficient and Adaptive 3D Gaussians with Highly Enhanced Qualit
 type: paper
 tags: [3d-gaussian-splatting, outdoor-reconstruction, large-scale, mesh-guided-initialization, vector-quantization, pruning, densification]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/guo_2025_ea-3dgs.pdf
 url: https://arxiv.org/abs/2505.10787

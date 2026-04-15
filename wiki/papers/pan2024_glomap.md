@@ -3,7 +3,7 @@ title: "GLOMAP: Global Structure-from-Motion Revisited"
 type: paper
 tags: [sfm, global-sfm, bundle-adjustment, colmap]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/pan_2024_glomap.pdf
 url: https://arxiv.org/abs/2407.20219

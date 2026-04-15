@@ -3,7 +3,7 @@ title: "InstantSfM: Towards GPU-Native SfM for the Deep Learning Era"
 type: paper
 tags: [sfm, gpu-acceleration, bundle-adjustment, global-sfm, pytorch, depth-priors, metric-scale]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/zhong_2026_instantsfm.pdf
 url: https://arxiv.org/abs/2510.13310

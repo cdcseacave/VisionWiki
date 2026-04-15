@@ -3,7 +3,7 @@ title: "Catching the Details: Self-Distilled RoI Predictors for Fine-Grained MLL
 type: paper
 tags: [multimodal-llm, region-of-interest, self-distillation, fine-grained-perception, visual-question-answering, high-resolution]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/shi_2026_self-distilled-roi.pdf
 url: https://arxiv.org/abs/2509.16944

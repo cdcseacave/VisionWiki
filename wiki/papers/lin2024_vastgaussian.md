@@ -3,7 +3,7 @@ title: "VastGaussian: Vast 3D Gaussians for Large Scene Reconstruction"
 type: paper
 tags: [radiance-fields, 3dgs, large-scale, scene-partitioning, appearance-modeling, aerial]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources:
   - papers/lin2024_vastgaussian.md
 local_paper: papers/radiance-fields/lin_2024_vastgaussian.pdf

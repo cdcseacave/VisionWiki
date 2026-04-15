@@ -3,7 +3,7 @@ title: "SOF: Sorted Opacity Fields for Fast Unbounded Surface Reconstruction"
 type: paper
 tags: [gaussian-splatting, opacity-fields, mesh-extraction, unbounded-scenes, surface-reconstruction]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/radl_2025_sof.pdf
 url: https://arxiv.org/abs/2506.19139

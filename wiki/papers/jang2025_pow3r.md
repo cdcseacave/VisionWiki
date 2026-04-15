@@ -3,7 +3,7 @@ title: "Pow3R: Empowering Unconstrained 3D Reconstruction with Camera and Scene 
 type: paper
 tags: [3d-reconstruction, depth-estimation, pointmap-regression, foundation-model, depth-completion, multi-view-stereo, pose-estimation]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mvs-depth/jang_2025_pow3r.pdf
 url: https://arxiv.org/abs/2503.17316

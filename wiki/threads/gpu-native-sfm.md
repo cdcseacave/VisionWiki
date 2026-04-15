@@ -3,7 +3,7 @@ title: GPU-Native SfM (Tier 1 — Accelerated Classical)
 type: thread
 tags: [sfm, gpu-acceleration, bundle-adjustment, colmap, glomap, cuda, pytorch]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: [papers/zhong2026_instantsfm.md, papers/yu2025_cusfm.md]
 status: draft
 ---

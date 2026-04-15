@@ -3,7 +3,7 @@ title: "RADIOv2.5: Improved Baselines for Agglomerative Vision Foundation Models
 type: paper
 tags: [vision-foundation-model, knowledge-distillation, multi-teacher, vision-transformer, token-merging, multi-resolution, VLM]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/fundamentals/heinrich_2025_radiov25.pdf
 url: https://arxiv.org/abs/2412.07679

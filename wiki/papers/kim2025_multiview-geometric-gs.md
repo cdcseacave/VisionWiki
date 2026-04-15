@@ -3,7 +3,7 @@ title: "Multiview Geometric Regularization of Gaussian Splatting for Accurate Ra
 type: paper
 tags: [3d-gaussian-splatting, multi-view-stereo, surface-reconstruction, depth-regularization, normal-consistency, geometric-accuracy]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/kim_2025_multiview-geometric-gs.pdf
 url: https://arxiv.org/abs/2506.13508

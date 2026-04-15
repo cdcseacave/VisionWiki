@@ -3,7 +3,7 @@ title: "Sparse Voxels Rasterization: Real-time High-fidelity Radiance Field Rend
 type: paper
 tags: [voxel, radiance-field, rasterization, novel-view-synthesis, real-time-rendering, neural-free]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/radiance-fields/sun_2025_sparse-voxels-rasterization.pdf
 url: https://arxiv.org/abs/2412.04459

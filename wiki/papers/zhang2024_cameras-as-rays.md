@@ -3,7 +3,7 @@ title: "Cameras as Rays: Pose Estimation via Ray Diffusion"
 type: paper
 tags: [pose-estimation, camera-rays, diffusion-model, sparse-view, transformer, plucker-coordinates]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/pose-estimation/zhang_2024_cameras-as-rays.pdf
 url: https://arxiv.org/abs/2402.14817

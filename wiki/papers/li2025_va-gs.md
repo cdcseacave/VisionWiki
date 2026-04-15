@@ -3,7 +3,7 @@ title: "VA-GS: Enhancing the Geometric Representation of Gaussian Splatting via 
 type: paper
 tags: [gaussian-splatting, surface-reconstruction, multi-view-consistency, novel-view-synthesis, geometric-constraints]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/li_2025_va-gs.pdf
 url: https://arxiv.org/abs/2510.11473

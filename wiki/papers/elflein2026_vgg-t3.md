@@ -3,7 +3,7 @@ title: "VGG-T3: Offline Feed-Forward 3D Reconstruction at Scale"
 type: paper
 tags: [feed-forward-reconstruction, test-time-training, multi-view-stereo, linear-scaling, visual-localization]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/elflein_2026_vgg-t3.pdf
 url: https://arxiv.org/abs/2602.23361

@@ -4,7 +4,7 @@ aliases: [CoMe]
 type: paper
 tags: [gaussian-splatting, mesh-extraction, confidence-estimation, surface-reconstruction, appearance-modeling]
 created: 2026-04-12
-updated: 2026-04-14
+updated: 2026-04-15
 sources: [papers/lin2024_vastgaussian.md]
 local_paper: papers/mesh-reconstruction/radl_2026_confidence-mesh-3dgs.pdf
 url: https://arxiv.org/abs/2603.24725

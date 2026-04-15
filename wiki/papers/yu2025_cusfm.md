@@ -3,7 +3,7 @@ title: "CuSfM: CUDA-Accelerated Structure-from-Motion"
 type: paper
 tags: [sfm, cuda, gpu-acceleration, autonomous-driving, extrinsic-refinement, nvidia]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/yu_2025_cusfm.pdf
 url: https://arxiv.org/abs/2510.15271

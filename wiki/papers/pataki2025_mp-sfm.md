@@ -3,7 +3,7 @@ title: "MP-SfM: Monocular Surface Priors for Robust Structure-from-Motion"
 type: paper
 tags: [sfm, monocular-depth, surface-normals, incremental-sfm, low-overlap, robustness]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/sfm-slam/pataki_2025_mp-sfm.pdf
 url: https://arxiv.org/abs/2504.20040

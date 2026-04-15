@@ -3,7 +3,7 @@ title: "A Volumetric Method for Building Complex Models from Range Images"
 type: paper
 tags: [tsdf, volumetric, range-image, fusion, meshing]
 created: 2026-04-14
-updated: 2026-04-14
+updated: 2026-04-15
 sources: []
 local_paper: papers/mesh-reconstruction/curless_1996_tsdf.pdf
 url: https://graphics.stanford.edu/papers/volrange/volrange.pdf

@@ -3,7 +3,7 @@ title: "RoMa v2: Harder Better Faster Denser Feature Matching"
 type: paper
 tags: [feature-matching, dense-matching, correspondence, DINOv3, multi-view-transformer, refinement, pose-estimation]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-15
 sources: []
 local_paper: papers/feature-matching/edstedt_2025_roma-v2.pdf
 url: https://arxiv.org/abs/2511.15706
