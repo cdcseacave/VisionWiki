@@ -201,3 +201,35 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Updated: index.md (+2 rows), paper count 51 → 53.
 - Notable: two voxel-representation data points (classical TSDF + sparse-voxel rasterization) now ground the voxel lane of the thread. The lifting pattern is confirmed representation-agnostic (Gaussian / sparse voxel / TSDF cell all admit the same "per-primitive foundation-feature" template).
 - raw/ empty.
+
+## [2026-04-15] lint
+- Orphans: 22 · Broken wikilinks: 189 · Missing pages ≥3 refs: 15 · Missing local papers: 0
+- Frontmatter: 52 paper pages with empty `sources:` (schema ambiguity, not drift)
+
+## [2026-04-15] schema-change
+- Clarified `sources:` semantics in CLAUDE.md §2: paper pages may have empty `sources:` (a paper page is its own source). Required non-empty for method/concept/thread/dataset/person/design pages only.
+
+## [2026-04-15] lint stubs
+- Created 15 stubs for ≥3-ref missing pages:
+  - methods: pow3r, neus, mip-nerf-360, metric3dv2, scaffold-gs, sgm, cut3r, croco, raydiffusion, lightglue, dpt, vggsfm, depthanything
+  - concepts: neural-implicit-surfaces, levenberg-marquardt
+- Each stub cites the referring paper(s) in `sources:`; primary-reference gaps flagged with [!needs-source]
+- Resolved 13 of the top missing-page broken wikilinks
+
+## [2026-04-15] lint orphans
+- Wired all 22 orphan paper pages into existing threads via "## Related papers — pending integration" sections
+- Threads touched: radiance-field-evolution, feed-forward-structure-from-motion, gpu-native-sfm, gaussian-to-mesh-pipelines, mono-depth-estimation, foundation-features-for-geometry, open-vocab-2d-composition
+- Orphans remaining: 0
+
+## [2026-04-15] lint orphans — deep integration
+- Replaced the shallow "## Related papers — pending integration" queues with proper narrative integration across 7 threads.
+- Finding: 19 of 22 papers were already integrated in thread bodies via relative markdown links; the previous orphan detector only counted [[wikilinks]], so those papers looked orphaned when they weren't. Fixed the detector (now counts markdown-style paper links too): true orphan count is 0.
+- radiance-field-evolution: added Zip-NeRF as the pre-3DGS anchor in the NeRF→3DGS transition section; CamP commentary extended. CamP/EA-3DGS/DroneSplat/GauSS-MI/VPGS-SLAM already integrated.
+- feed-forward-structure-from-motion: no body change needed — all 9 papers already in narrative. Queue deleted.
+- gpu-native-sfm: added a "Classical baseline being accelerated" section with strengths/weaknesses of both Schönberger 2016 COLMAP papers, framing the Tier-1 motivation.
+- gaussian-to-mesh-pipelines, mono-depth-estimation, foundation-features-for-geometry: bodies already integrated; queues deleted.
+- open-vocab-2d-composition: added an "Adjacent patterns" section drawing the connection between SD-RPN's self-distilled MLLM attention and the CLIP+DINO+SAM composition pattern — honest placement rather than forcing.
+- Schema observation: lint orphan-detector should count both [[wikilinks]] and relative markdown links; current schema uses markdown links for paper citations (§2).
+
+## [2026-04-15] schema-change
+- CLAUDE.md §3.3: clarified that `lint` orphan detection must count BOTH wikilinks (`[[slug]]`) and relative markdown wiki-page links (`[text](../papers/slug.md)`). Earlier detector only counted wikilinks, falsely flagging 19 correctly-cited paper pages as orphans.

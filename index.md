@@ -88,8 +88,23 @@ see [CLAUDE.md](CLAUDE.md).
 - [Zip-NeRF](wiki/methods/zip-nerf.md) — anti-aliased grid-based NeRF · _stub_
 - [SAM](wiki/methods/sam.md) — promptable segmentation foundation model · _stub_
 - [CLIP](wiki/methods/clip.md) — contrastive vision-language embedding · _stub_
+- [Pow3R](wiki/methods/pow3r.md) — multi-conditioning pointmap predictor · _stub_
+- [NeuS](wiki/methods/neus.md) — SDF via unbiased volume rendering · _stub_
+- [Mip-NeRF 360](wiki/methods/mip-nerf-360.md) — unbounded-scene NeRF + 360° benchmark · _stub_
+- [Metric3Dv2](wiki/methods/metric3dv2.md) — feed-forward metric mono-depth + normals · _stub_
+- [Scaffold-GS](wiki/methods/scaffold-gs.md) — anchor-based 3DGS variant · _stub_
+- [SGM](wiki/methods/sgm.md) — classical semi-global stereo matching · _stub_
+- [CUT3R](wiki/methods/cut3r.md) — online/recurrent pointmap reconstruction · _stub_
+- [CroCo](wiki/methods/croco.md) — cross-view completion pretraining · _stub_
+- [RayDiffusion](wiki/methods/raydiffusion.md) — cameras-as-rays via diffusion · _stub_
+- [LightGlue](wiki/methods/lightglue.md) — efficient sparse feature matcher · _stub_
+- [DPT](wiki/methods/dpt.md) — Dense Prediction Transformer decoder · _stub_
+- [VGGSfM](wiki/methods/vggsfm.md) — end-to-end differentiable SfM · _stub_
+- [Depth Anything](wiki/methods/depthanything.md) — monocular depth foundation model · _stub_
 
 ## Concepts
+- [Neural Implicit Surfaces](wiki/concepts/neural-implicit-surfaces.md) — SDF-based continuous surfaces; NeuS→Neuralangelo lineage · _stub_
+- [Levenberg–Marquardt](wiki/concepts/levenberg-marquardt.md) — NLS optimizer behind bundle adjustment · _stub_
 - [Foundation Model](wiki/concepts/foundation-model.md) — unified concept: CLIP, DINO, SAM, RADIO families + the frozen-backbone pattern · _2026-04-15_
 - [Self-Supervised Learning](wiki/concepts/self-supervised-learning.md) — DINO→DINOv2→DINOv3 lineage, Gram anchoring, SSL vs. CLIP · _2026-04-15_
 - [Segmentation (taxonomy)](wiki/concepts/segmentation.md) — semantic / instance / panoptic / promptable / open-vocabulary · _2026-04-15_

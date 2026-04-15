@@ -21,6 +21,30 @@ Two papers in the current wiki illustrate the two ends of this spectrum:
 and [CuSfM](../papers/yu2025_cusfm.md) (domain-specialized for autonomous
 driving, CUDA+TensorRT+Ceres).
 
+## The classical baseline being accelerated
+
+Both Tier 1 papers measure themselves against the same target: Schönberger's
+2016 COLMAP system. It's worth pinning down *what* they're reimplementing.
+
+- [Schönberger & Frahm 2016 — SfM](../papers/schonberger2016_colmap-sfm.md):
+  the incremental SfM pipeline as meticulously re-engineered open source.
+  Multi-model RANSAC for geometric verification, expected-gain next-best-view
+  selection, iterative BA + re-triangulation loop. **Strengths**: robust on
+  internet photo collections, scales to tens of thousands of images, still
+  the accuracy benchmark. **Weaknesses**: CPU-bound; quadratic-ish in image
+  count; the BA solve is the bottleneck InstantSfM and CuSfM attack.
+- [Schönberger et al. 2016 — MVS](../papers/schonberger2016_colmap-mvs.md):
+  the companion pixelwise-view-selection PatchMatch MVS stage with joint
+  photometric + geometric consistency. **Strengths**: still the accuracy
+  reference for dense classical MVS a decade later. **Weaknesses**: slow
+  enough that modern pipelines route around it (learned MVS, Gaussian
+  Splatting) when speed matters.
+
+The persistent gravity of these two 2016 papers is itself evidence for the
+"keep the math, change the hardware" thesis: ten years of feed-forward
+alternatives have not displaced COLMAP as the accuracy benchmark. Tier 1
+papers exist because the math is still correct.
+
 ## The shared playbook
 
 Despite very different designs, both papers follow the same four-step recipe:
@@ -110,3 +134,4 @@ grabs the attention, Tier 1 is where production SfM is heading because:
   Tier 1 (InstantSfM, MP-SfM, MegaSaM).
 - [[radiance-field-evolution]] — InstantSfM specifically targets 3DGS/NeRF
   pipelines as its downstream consumer.
+

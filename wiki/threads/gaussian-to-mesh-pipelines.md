@@ -98,3 +98,4 @@ and C may win long-term (SVRaster, GeoSVR).
 
 ## Implementation notes
 - [[come-integration-nerfstudio]] — design doc for porting CoMe into the local visiofacto fork
+

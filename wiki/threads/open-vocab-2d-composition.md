@@ -58,3 +58,24 @@ Every 3D-lifting method in [[lifting-foundation-models-to-3d]] *inherits* this c
 - Does the composition pattern survive as each component improves independently, or does one backbone eventually subsume the others?
 - SAM 3 unifies CLIP + SAM capabilities — does a future "DINO 3" or "SigLIP 3" subsume the DINO role too, collapsing the Trident pattern into one model?
 - At what composition cost does inference latency push users toward distilled models (RADIO)?
+
+## Adjacent patterns: self-distilled attention as a zero-label signal
+
+- [SD-RPN (Shi 2026)](../papers/shi2026_self-distilled-roi.md) is not a
+  CLIP+DINO+SAM composition paper but lands in the same neighborhood: it
+  takes an MLLM's **own internal cross-attention**, denoises it by removing
+  sink tokens, and uses the cleaned signal as a pseudo-label to train a
+  Region Proposal Network — no external annotations. **Strengths**: +10%
+  absolute accuracy on TextVQA / DocVQA / V-Star with only 10K QA pairs,
+  single partial forward pass for RoI selection. **Weaknesses**: processes
+  RoIs independently (no spatial relation between RoIs), depends on base
+  MLLM attention quality, fixed thresholds ($\tau_{fg}$, $\tau_{bg}$,
+  $\tau_{norm}$) may need per-backbone tuning.
+
+The adjacency to this thread: the MLLM's attention is playing the same
+*spatial-coherence* role that DINO self-similarity plays in Trident, just
+sourced from a different frozen model (the MLLM itself). If the composition
+hypothesis generalizes, every powerful frozen backbone exposes a usable
+"where to look" signal that can be distilled into a task head with minimal
+supervision — Trident uses DINO's, SD-RPN uses an MLLM's, and RADIOv2.5
+distills several into one.

@@ -19,10 +19,19 @@ rasterization — sidesteps Gaussians entirely while matching their speed.
 ## Evidence
 
 ### The NeRF → 3DGS transition
+- [Zip-NeRF (Barron 2023)](../papers/barron2023_zip-nerf.md) was the
+  high-water-mark of implicit radiance fields: fuses Mip-NeRF 360's
+  anti-aliased cone-casting with Instant-NGP's hash-grid speed, achieving
+  **8× lower error than Mip-NeRF 360** at ~1h training. Its existence
+  made the NeRF→3DGS hand-off a fair fight — 3DGS won not on raw quality
+  but on *edit-ability* and real-time rendering, not on a weak NeRF baseline.
 - [CamP (Park 2023)](../papers/park2023_camp.md) showed that NeRF's joint
   pose-radiance optimization is brittle due to ill-conditioned camera
-  parameterization. Camera preconditioning via whitening reduced RMSE by 67% —
-  but this is a patch on an inherently fragile pipeline.
+  parameterization. Camera preconditioning via whitening reduced RMSE by 67%
+  (stacked on Zip-NeRF) — but this is a patch on an inherently fragile
+  pipeline, and no 3DGS paper in this batch has bothered replicating the
+  trick. That's a tell: when pose jitter matters enough to invent CamP, the
+  field is already shopping for a more robust representation.
 - The 3DGS papers in this batch (6 of 7 radiance-field papers) all build on
   [[3d-gaussian-splatting]] as the base representation, confirming its dominance.
 
@@ -90,3 +99,4 @@ stacked.
 - [[gaussian-to-mesh-pipelines]] — the downstream question of what to do with Gaussians
 - [[feed-forward-structure-from-motion]] — feed-forward methods that may replace the SfM stage radiance fields depend on
 - [[mono-depth-estimation]] — mono depth as a prior for sparse-view radiance field training
+

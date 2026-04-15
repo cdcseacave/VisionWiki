@@ -59,3 +59,4 @@ integrating mono depth without over-constraining the geometry.
 - [[feed-forward-structure-from-motion]] — mono depth as prior for SfM
 - [[radiance-field-evolution]] — mono depth for sparse-view 3DGS
 - [[gaussian-to-mesh-pipelines]] — depth supervision improves mesh quality
+

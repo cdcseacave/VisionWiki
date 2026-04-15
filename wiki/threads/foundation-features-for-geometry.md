@@ -47,3 +47,4 @@ Between ~2023 and 2026, **frozen self-supervised ViT features** ([[dinov2|DINOv2
 
 ## Outstanding hypotheses
 - *(Provisional)* The next major gain comes from **joint self-supervised pretraining across 2D images and 3D geometry** (video-aware DINO, 4D pretraining) rather than scaling DINOv3 further. Watch for evidence in 2026.
+

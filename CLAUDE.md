@@ -137,6 +137,11 @@ status: stub | draft | stable | contested
 ---
 ```
 
+**`sources:` semantics by page type**:
+- **method / concept / thread / dataset / person pages**: `sources:` lists the wiki paper pages that back the claims on this page. Required, non-empty.
+- **paper pages**: a paper page *is* its own primary source. Leave `sources:` omitted, or use it to list the **prior work this paper builds on** (other paper pages in the wiki). Either is acceptable; an empty `sources: []` on a paper page is not a lint violation.
+- **design pages**: `sources:` lists the wiki pages (any type) that the design rests on.
+
 - **Filenames**: lowercase-kebab-case. For papers use `<firstauthor><year>_<slug>.md`
   (e.g. `kerbl2023_3dgs.md`). For methods/concepts use the canonical name
   (e.g. `bundle-adjustment.md`, `3d-gaussian-splatting.md`).
@@ -353,7 +358,7 @@ When the user says "lint" or "health check":
 Scan the wiki and report (do not auto-fix — present a list for human approval):
 - **Contradictions**: pages making incompatible claims.
 - **Stale claims**: older pages whose claims a newer source has superseded.
-- **Orphans**: pages with zero inbound wikilinks.
+- **Orphans**: pages with zero inbound references. A reference is **either** an Obsidian wikilink (`[[slug]]` or `[[slug|alias]]`) **or** a relative markdown link to a wiki page (`[text](../papers/<slug>.md)`, `(wiki/methods/<slug>.md)`, etc.). Per §2, concept/method/thread pages are linked as wikilinks while paper citations use relative markdown links — the detector must count both, or every paper cited only via markdown links will be falsely flagged as an orphan.
 - **Missing pages**: concepts/methods referenced ≥3 times with no own page.
 - **Broken links**: wikilinks pointing to non-existent pages.
 - **Frontmatter drift**: missing `updated:` dates, empty `sources:`, etc.

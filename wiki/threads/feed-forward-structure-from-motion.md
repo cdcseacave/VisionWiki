@@ -97,3 +97,4 @@ quadratic attention costs.
 - [[radiance-field-evolution]]
 - [[mono-depth-estimation]]
 - [[gaussian-to-mesh-pipelines]] — VGG-T3 bridges feed-forward to mesh output
+

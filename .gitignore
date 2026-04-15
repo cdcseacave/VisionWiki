@@ -2,6 +2,7 @@
 # Leading slash anchors the pattern to the repo root; otherwise it would also match wiki/papers/ and wiki/assets/
 /papers/
 /assets/
+/raw/
 
 # Obsidian workspace files
 .obsidian/
