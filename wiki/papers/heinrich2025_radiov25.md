@@ -48,6 +48,13 @@ Training uses DataComp-1B dataset, batch size 1024+128, 600k iterations with MSE
 
 RADIOv2.5 addresses the practical challenge of building a single vision encoder that works well across diverse downstream tasks -- from classification and segmentation to 3D understanding and vision-language reasoning. The multi-resolution training and token merging contributions are particularly important for deploying foundation models in real-world applications where input resolutions vary and computational budgets are constrained. The work establishes improved baselines that benefit the entire ecosystem of vision foundation model research.
 
+## Pipeline contribution
+
+- **Multi-resolution agglomerative distillation from SigLIP + DINOv2 + SAM (N1)** — student trained against all teachers at multiple resolutions to kill the "mode switch" between DINO-like low-res and SAM-like high-res features. candidate thread: [[open-vocab-2d-composition]] Pipeline C · stage: *unified frontend replacing three-backbone Trident inference* · replaces/augments: *separate CLIP + DINO + SAM passes* · expected gain: single forward pass at no quality loss vs. Trident on Probe3D depth/normals; 82.51% zero-shot ImageNet.
+- **PHI-S teacher-distribution normalization (N2)** — balances disparate teacher statistics at the loss level. candidate thread: [[open-vocab-2d-composition]] · stage: *distillation training-time* · replaces/augments: *per-teacher loss weighting heuristics* · expected gain: removes hyperparameter search on teacher-weight balancing.
+- **Token merging (ToMe) head (N3)** — bipartite-matching global token merge preserves fine-grained info inside a fixed token budget for downstream VLMs. candidate thread: *VLM downstream* (no thread yet; adjacent to [shi2026_self-distilled-roi]'s RoI line) · expected gain: massive TextVQA / DocVQA improvements (+12.7 / +28.1 points over baseline).
+- **Does not yet appear in any 3D-lifting method** — candidate thread: [[lifting-foundation-models-to-3d]] · stage: *per-Gaussian feature source* · synthesis-bet candidate: *distill RADIOv2.5 into LangSplat's per-Gaussian autoencoder instead of CLIP — get CLIP + DINO + SAM capabilities per-primitive in one pass.* No paper does this. Expected gain: matches CLIP-GS retrieval + Gaussian Grouping identity in a single distillation.
+
 ## Relation to prior work
 
 - Builds on AM-RADIO [Ranzinger et al.] as the baseline agglomerative model

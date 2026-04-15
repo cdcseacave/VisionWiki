@@ -39,6 +39,13 @@ DINOv2 already produced strong frozen features but suffered a subtle pathology: 
 
 DINOv3 is the **new default frozen backbone** for 2025–2026 feed-forward 3D and dense-prediction work — directly succeeds [[dinov2|DINOv2]] in that role. Also notable for reaching text-alignment via post-hoc adaptation, blurring the self-supervised vs. vision-language distinction.
 
+## Pipeline contribution
+
+- **Gram anchoring for long-training dense-feature stability (N1)** — regularizes the pairwise patch-similarity matrix toward a reference snapshot to prevent dense-feature collapse. candidate thread: [[foundation-features-for-geometry]] · stage: *image tokenization / patch embedding* · replaces/augments: *DINOv2 ViT-g/14 — silent dense degradation at long schedules* · expected gain: cleaner patch affinities at high resolution (primary use: dense-matching heads like RoMa v2, which shows measurable pose-AUC gains swapping DINOv2→DINOv3).
+- **Multi-resolution + variable-input post-hoc adaptation (N2)** — short finetune to support resolutions beyond training. candidate thread: [[foundation-features-for-geometry]] · stage: *frozen backbone forward pass* · expected gain: geometry pipelines can run at native capture resolution without tiling artifacts.
+- **Post-hoc CLIP-style text-encoder adaptation (N3)** — retrofits text alignment on frozen DINOv3. candidate thread: [[open-vocab-2d-composition]] · stage: *semantic alignment (text ↔ region)* · replaces/augments: *separate CLIP backbone* · expected gain: one backbone for Pipeline A's semantic + spatial stages (today they use separate CLIP + DINO); speculative — no paper yet uses the text-aligned DINOv3 as a Trident CLIP-replacement.
+- **Aerial-imagery variant** — domain-specific DINOv3. candidate thread: [[feed-forward-structure-from-motion]] · stage: *feed-forward backbone for drone/aerial datasets* · expected gain: direct benefit to [tang2025_dronesplat](tang2025_dronesplat.md) and [lin2024_vastgaussian](lin2024_vastgaussian.md) preprocessing.
+
 ## Relation to prior work
 
 - Direct successor to [[dinov2|DINOv2]]; extends DINO + iBOT losses with Gram anchoring.

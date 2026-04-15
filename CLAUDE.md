@@ -1,8 +1,19 @@
 # Vision Wiki — Schema & Operating Manual
 
-This is a **personal second brain** for photogrammetry and machine-learning research.
-You (the LLM) are the sole author and maintainer of the `wiki/` layer. The human
-curates sources and asks questions. Never invent citations.
+This is a **personal research-synthesis engine** for photogrammetry and
+machine-learning. It is not a reading list and not a summarization tool. Its
+end-product is **novel pipelines**: each thread maintains a current
+best-known end-to-end pipeline for a problem, and every ingested paper is
+mined for ideas that could improve that pipeline — either by replacing a
+stage, or by unlocking a *new combination* of ideas that no single paper has
+tried. Deep mechanism-level understanding of each paper, and holistic
+reasoning about how ideas compose across papers, are the two activities the
+wiki exists to support.
+
+You (the LLM) are the sole author and maintainer of the `wiki/` layer. The
+human curates sources and asks questions. Never invent citations. A shallow
+summary is worse than useless — if you can't explain the mechanism of a new
+idea, you don't yet understand the paper.
 
 Domain focus: photogrammetry, SfM, MVS, SLAM, NeRF / 3D Gaussian Splatting,
 neural implicit surfaces, feature matching, bundle adjustment, camera calibration,
@@ -176,6 +187,15 @@ Headline numbers, datasets, comparisons. Only cite numbers that appear in the pa
 ## Why it matters
 How this fits into the broader [[thread-name]] and what it enables downstream.
 
+## Pipeline contribution
+For each novel idea from this paper, state how it could plug into a thread's
+SOTA pipeline. One bullet per idea:
+
+- **<idea name>** — mechanism (1–2 sentences) · candidate thread: [[thread-slug]] · stage: `<pipeline stage>` · replaces/augments: `<current component>` · expected gain: `<metric / ablation that supports this>` · risks / assumptions: `<what must hold>`
+
+If no thread currently owns the relevant stage, propose whether a new thread
+should exist rather than filing it nowhere.
+
 ## Relation to prior work
 - Builds on [[method]] / [Author Year](papers/...)
 - Contrasts with [[method]]
@@ -204,10 +224,57 @@ Chronological: origin → notable successors. Link to paper pages.
 ## Key references
 ```
 
-**Thread page** (`wiki/threads/<name>.md`): an *evolving synthesis* — e.g.
+**Thread page** (`wiki/threads/<name>.md`): a *living SOTA pipeline*, not just
+an annotated reading list. A thread exists to answer: "given everything we've
+ingested, what is the current best end-to-end pipeline for this problem, and
+what novel combinations of ideas could beat it?" Example slugs:
 `radiance-field-evolution.md`, `feature-matching-learned-vs-classical.md`.
-Hypothesis at top, supporting evidence below, contradictions flagged, open
-questions at bottom. Reread and revise on every relevant ingest.
+
+Required sections:
+
+```markdown
+## Goal & success criteria
+What the pipeline is trying to do. What "better" means — metric(s), dataset(s),
+or qualitative target. This is what every component swap is judged against.
+
+## Current SOTA pipeline (as of YYYY-MM-DD)
+Stage-by-stage — numbered list or diagram. For each stage name:
+- the current best component,
+- the paper it comes from (linked),
+- the measured / claimed gain over the prior choice,
+- known failure modes or assumptions it imposes on neighbouring stages.
+
+## Pipeline lineage
+Chronological record of component swaps and pipeline-level redesigns.
+Format: `YYYY-MM-DD · <stage>: <old> → <new>` · driver: [paper link] · rationale.
+Prior pipelines are preserved (strikethrough or collapsed) — never silently
+rewritten (Hard Rule §6.3).
+
+## Candidate components / not yet integrated
+Ideas from ingested papers that look promising but haven't been promoted into
+the pipeline. Each entry: component · source paper · which stage it targets ·
+why it's not yet in (needs ablation, incompatible assumptions, untested
+combination, waiting on a prerequisite idea, etc.).
+
+## Open questions & synthesis bets
+Where the LLM proposes *novel combinations* not tried in any single paper.
+Each bet: hypothesis · ideas being combined (≥2 papers) · expected gain · risk ·
+what experiment would validate it. This section is the project's research
+agenda — keep it alive.
+
+## Contradictions & tensions
+Places where ingested papers disagree. The thread's current resolution and
+confidence level. Link the conflicting sources.
+
+## Sources
+(populated from frontmatter `sources:`)
+```
+
+Reread and revise on every relevant ingest. The "Current SOTA pipeline" and
+"Open questions & synthesis bets" sections together are the thread's reason
+to exist — if an ingest touches a thread without updating at least one of
+them (or explicitly noting "no change warranted"), the synthesis step was
+skipped.
 
 ## 3. Workflows
 
@@ -269,11 +336,43 @@ Create any missing subdirectories under `papers/` before downloading.
 Read the source fully. For PDFs, read all pages. For arXiv markdown,
 read the whole file. Don't skim.
 
-#### Step 2 — Discuss before writing
+#### Step 2 — Deep analysis (hard gate before any writing)
 
-Report TL;DR (2–3 sentences), the 3 most important takeaways, and what
-existing wiki pages this will touch. Ask the user if they want to
-emphasize anything before you commit edits.
+Understanding a paper is the whole point of this project. A shallow summary is
+worse than useless — it pollutes the wiki and blocks synthesis. Before any
+file is written, produce a structured analysis and present it to the user for
+review. This is the hard gate between reading and writing.
+
+Required analysis artifacts:
+
+1. **Goal.** What problem does the paper attack, in the paper's own framing?
+   What does "solved" look like for them?
+2. **Foundations.** Which prior methods / concepts / datasets does it rest on?
+   Link every foundation to an existing wiki page. Flag gaps where a load-bearing
+   foundation has no page yet (candidate for a Step 4 stub).
+3. **Novel contributions — enumerated.** List each *distinct* new idea /
+   feature / method / architectural choice separately. For each:
+   - **What it is** (one line).
+   - **How it works at mechanism level** — not "they use contrastive loss" but
+     *what* is contrasted against *what*, under *which* invariance, driven by
+     *which* signal. Math or pseudocode where it clarifies. If you can't
+     explain the mechanism, you don't yet understand the paper — read again.
+4. **Why it wins.** For each novel contribution, give the causal story linking
+   it to the headline result: which ablation / table / comparison in the paper
+   actually supports the claim, and what the measured effect is. If no
+   ablation isolates the contribution, say so — that's a weakness worth
+   flagging.
+5. **Relation map.** For each contribution, how does it relate to existing
+   wiki pages? Extends / replaces / contradicts / is orthogonal to. Cite the
+   wiki pages.
+6. **Pipeline contribution candidates.** For each novel contribution, which
+   existing thread's SOTA pipeline could absorb it, at which stage, and what
+   it would replace or augment? If no thread owns the stage, propose whether
+   a new thread should exist. This feeds directly into Step 5.
+
+Present the analysis to the user. Ask whether anything should be emphasized,
+reframed, or deepened before pages are written. Do not proceed to Step 3
+until the user has reviewed the analysis or explicitly waived review.
 
 #### Step 3 — Write the paper page
 
@@ -308,11 +407,68 @@ When referencing the paper from any wiki page, link to both the wiki
 summary and the local source:
 `[Kerbl et al. 2023](papers/kerbl2023_3dgs.md) · [pdf](../../papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf)`
 
-#### Step 5 — Update affected threads
+#### Step 5 — Evolve affected threads (two passes)
 
-If the paper advances or contradicts a thread, revise the thread page.
-Preserve prior hypotheses with strikethrough or a "superseded by" note —
-don't silently rewrite history.
+Threads are living SOTA pipelines, not reading lists. Every ingest runs two
+passes on every thread flagged by Step 2's "Pipeline contribution candidates"
+(and any other thread where the new paper is clearly relevant).
+
+**Pass A — Local, per-stage evaluation.** For each pipeline-contribution
+candidate from Step 2:
+
+1. Open the target thread. Re-read its "Goal & success criteria", "Current
+   SOTA pipeline", and "Candidate components".
+2. Does the new component **beat** the current SOTA pipeline's corresponding
+   stage on the thread's stated success criteria (accuracy, speed, robustness,
+   data requirements, assumptions)?
+3. If yes: update "Current SOTA pipeline" to use the new component. Supersede
+   the prior entry with strikethrough + a "superseded by" note per Hard Rule
+   §6.3. Record the swap in "Pipeline lineage" with driver paper + rationale.
+4. If no but the contribution is interesting: add it to "Candidate components
+   / not yet integrated" with a note on *why* it lost (and under what
+   conditions it might win later).
+5. If the paper *contradicts* a current pipeline choice (claims it's wrong,
+   not just worse): flag in "Contradictions & tensions" and require explicit
+   user review before changing the pipeline.
+6. If the paper opens a stage or problem no thread currently covers: propose
+   (don't silently create) a new thread.
+
+**Pass B — Holistic synthesis (mandatory, even when Pass A changed nothing).**
+Step back from stage-by-stage substitution and reason about the pipeline as a
+whole system. The core ambition of this project — finding *novel* combinations
+of ideas that beat any single paper's pipeline — lives entirely in this pass.
+For each affected thread, write answers to:
+
+1. **Do any ideas compose?** Does this paper's contribution unlock, strengthen,
+   or get unlocked by an *existing* candidate in this thread's backlog (or in
+   another thread)? Example: a new uncertainty estimator may make a
+   previously-shelved refinement method viable. Say so explicitly, or say
+   "nothing composes" explicitly.
+2. **Cross-stage interactions.** Does the new component change *assumptions*
+   of upstream or downstream stages in a way that invites redesigning those
+   stages too? Locally neutral swaps can be globally beneficial when they
+   remove a constraint elsewhere. Locally beneficial swaps can be globally
+   harmful if they break a downstream assumption.
+3. **New combinations not proposed in any single paper.** Propose at least one
+   *novel* pipeline variant that mixes ideas across ≥2 papers (including this
+   one) in a configuration none of them proposed. State hypothesis, ideas
+   combined, expected gain, risk, and what experiment would validate it. Add
+   to "Open questions & synthesis bets".
+4. **Cross-thread transfer.** Could an idea from this paper, or any candidate
+   in this thread's backlog, improve a *different* thread's pipeline? File a
+   cross-thread note in both threads if so.
+5. **Verdict on the SOTA pipeline as a whole.** After the above, decide
+   whether the pipeline should be revised as a *coherent whole* — not just
+   one stage swapped, but possibly several stages redesigned together.
+   Propose the revised pipeline, preserve the prior one via "Pipeline
+   lineage", and record the cross-stage rationale.
+
+If Pass B produces nothing — no compositions, no novel combinations, no
+cross-thread transfer — state this explicitly in the ingest report. A silent
+Pass B almost always means it was skipped.
+
+Preserve prior hypotheses with strikethrough or "superseded by" — don't
+silently rewrite history (Hard Rule §6.3).
 
 #### Step 6 — Update `index.md`
 
@@ -330,6 +486,17 @@ and any contradictions or open questions the ingest surfaced.
 **Budget**: a single ingest typically touches 5–15 wiki pages. More than 20 is
 a smell — you're probably creating pages for trivia. Fewer than 3 is a smell
 too — you're probably missing cascade updates.
+
+A good ingest also produces:
+- at least one concrete pipeline-contribution evaluation (Pass A), even if
+  the verdict is "does not improve any current SOTA pipeline";
+- an explicit Pass B holistic-synthesis note on every affected thread, even
+  if that note concludes "no new combinations surfaced this round".
+
+An ingest that adds a paper page without writing anything in any thread's
+"Current SOTA pipeline", "Candidate components", or "Open questions &
+synthesis bets" section is a smell: deep analysis (Step 2) or holistic
+synthesis (Step 5 Pass B) was skipped.
 
 ### 3.2 Query
 
@@ -453,6 +620,8 @@ consistent prefix so `grep "^## \[" log.md | tail -20` works:
 ## [YYYY-MM-DD] ingest | <paper short title>
 - Created: wiki/papers/<key>.md, wiki/methods/<new>.md
 - Updated: wiki/threads/<thread>.md (added lineage entry), wiki/methods/<x>.md (contradiction flagged)
+- Pipeline impact: <thread>: <stage> updated (<old> → <new>) · <thread>: N candidates queued · <thread>: Pass B — no change warranted
+- Synthesis bet: <one-line novel combination proposed, if any, and where filed>
 - Notable: <one-line interesting finding or open question>
 
 ## [YYYY-MM-DD] query | <short question>

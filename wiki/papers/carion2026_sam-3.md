@@ -40,6 +40,13 @@ Prior [[sam|SAM]] was promptable but **identity-blind**: a point prompt returned
 
 Consolidates three previously-separate capabilities (open-vocab detection, instance segmentation, video tracking) into one prompt-driven model. For 3D pipelines: enables **concept-conditioned 3D segmentation** (e.g. "segment all chairs in this reconstruction") by lifting SAM 3 masks to 3DGS or NeRF assets.
 
+## Pipeline contribution
+
+- **Promptable Concept Segmentation (PCS) — unified text/exemplar-prompted masks + instance IDs + tracking (N1)** — collapses Pipeline A's separate CLIP + SAM stages into one model. candidate thread: [[open-vocab-2d-composition]] Pipeline B · stage: *full pipeline in one forward pass* · replaces/augments: *Trident's three-backbone composition* · expected gain: 2× accuracy over prior open-vocab segmenters on image/video PCS, plus video-native tracking.
+- **Presence head (N2)** — decouples "concept present at all" from per-instance localization. candidate thread: [[open-vocab-2d-composition]] · stage: *false-positive suppression* · replaces/augments: *per-detection thresholding* · expected gain: removes hallucinated detections on absent concepts — a consistent failure mode in the Trident and GroundingDINO lineage.
+- **SA-Co data engine (N3)** — 4M concept labels with hard-negative mining. Thread-level evidence; reinforces [kirillov2023_sam]'s claim that data-engine curation is the scaling axis for segmentation foundation models.
+- **Lift to 3D is not addressed in the paper** — candidate thread: [[lifting-foundation-models-to-3d]] · stage: *2D mask source with instance IDs* · candidate: *SAM 3 masks → per-Gaussian identity supervision in the Gaussian Grouping recipe; the instance IDs make cross-view association free.* No paper does this yet — this is the canonical downstream synthesis bet. Expected gain: kills Gaussian Grouping's "cross-view association" module (its most fragile stage) by having IDs already consistent out of the box.
+
 ## Relation to prior work
 
 - Direct successor to [[sam|SAM]] (2023) and SAM 2 (video, 2024).

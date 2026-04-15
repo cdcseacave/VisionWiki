@@ -37,6 +37,13 @@ Supervised ImageNet pretraining hit diminishing returns and transferred poorly t
 
 CLIP is the **pre-eminent vision-language embedding** and the workhorse of open-vocabulary 3D understanding: distilled into radiance fields (LERF), 3DGS (LangSplat, Feature-3DGS), and used as a semantic prior everywhere. Also the text-conditioning for diffusion models (Stable Diffusion, DALL-E 2).
 
+## Pipeline contribution
+
+- **Contrastive dual-encoder (N1)** — symmetric InfoNCE over N×N image-text similarity matrix with learned temperature. candidate thread: [[open-vocab-2d-composition]] · stage: *semantic alignment (text ↔ region)* · replaces/augments: *pre-2021 text-free classifiers* · expected gain: zero-shot mIoU transfer across 30+ datasets; the semantic-alignment leg of Trident (+4.2% over prior SOTA, Shi 2024).
+- **Zero-shot prompt-embedding classifier (N2)** — class-name text embeddings enable arbitrary-vocabulary classification at inference. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *2D semantic prior lifted to 3D* · replaces/augments: *per-scene object labels* · expected gain: open-vocab queries on 3DGS scenes (LangSplat distills CLIP per-Gaussian).
+- **Web-scale contrastive data recipe (N3)** — 400M WIT pairs + predictable scaling law. Not a pipeline component but thread-level evidence that *frozen backbone + small head* will keep winning; supports the project-wide bet.
+- **Not a component of** [[foundation-features-for-geometry]]: CLIP is image-level and text-aligned but spatially weak, so it is excluded from the geometry pipeline. SigLIP (not yet in the wiki) is the natural drop-in successor for the semantic-alignment lane.
+
 ## Relation to prior work
 
 - Generalizes ConVIRT (medical image–text contrastive) to web-scale.

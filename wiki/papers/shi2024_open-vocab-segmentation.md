@@ -58,6 +58,13 @@ CLIP excels at open-vocabulary recognition but suffers from spatial-invariant fe
 
 Trident demonstrates that combining complementary strengths of different vision foundation models can achieve strong segmentation without any training. The Splice-then-Segment paradigm solves a fundamental scalability issue of adapting CLIP for high-resolution segmentation. This training-free approach preserves the full generalization capability of the constituent models and eliminates annotation requirements, making it immediately applicable to any open-vocabulary scenario.
 
+## Pipeline contribution
+
+- **Splice-then-Segment paradigm (N1)** — CLIP features spliced across sub-images, aggregated via SAM affinity matrix, then classified against text. candidate thread: [[open-vocab-2d-composition]] Pipeline A · stage: *aggregation (top-level assembly of CLIP + DINO + SAM)* · replaces/augments: *sliding-window Segment-then-Splice with shrinking receptive fields* · expected gain: +4.2% mIoU over prior training-free SOTA across 8 benchmarks; resolves the resolution-vs-receptive-field scaling trap.
+- **SAM affinity matrix with cross-window attention (N2)** — $A = (W + M)/\|W+M\|$ from SAM's encoder features enables global aggregation across sub-image windows. candidate thread: [[open-vocab-2d-composition]] · stage: *spatial coherence (global)* · replaces/augments: *DINO-only affinity in ProxyCLIP-like methods* · expected gain: captures large-scale coherence SAM carries that DINO's patch-level SSL misses.
+- **Triple-prompt SAM refinement (N3)** — point + box + mask prompts simultaneously from CLIP's coarse map. candidate thread: [[open-vocab-2d-composition]] · stage: *mask refinement* · replaces/augments: *single-prompt-type SAM refinement* · expected gain: SAM-3-class-agnostic refinement without retraining SAM.
+- **Trident is the canonical Pipeline A definition** — this thread's current SOTA pipeline is conceptually *this paper's recipe with per-stage component upgrades* (DINOv3 replacing DINOv2, candidate SigLIP replacing CLIP, candidate SAM 3 replacing SAM). All future Pipeline-A synthesis bets modify one of Trident's three legs at a time.
+
 ## Relation to prior work
 
 - Builds on [[MaskCLIP]] which identified spatial invariance in CLIP and proposed attention modification

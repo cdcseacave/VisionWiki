@@ -52,6 +52,13 @@ Key insight: Using the MLLM's own responses (rather than stronger teacher respon
 
 SD-RPN demonstrates that MLLMs contain sufficient internal localization knowledge to bootstrap their own fine-grained perception improvement without expensive annotations or large-scale retraining. The approach is model-agnostic, data-efficient, and computationally lightweight, making it a practical plug-in module for enhancing any MLLM's visual detail perception. This has direct implications for document understanding, OCR-dependent tasks, and visual grounding.
 
+## Pipeline contribution
+
+- **Self-distilled attention denoising via sink-token removal (N1)** — removes high-L2-norm sink tokens from the MLLM's cross-attention map to produce clean pseudo-labels for RoI training, without any external supervision. candidate thread: [[open-vocab-2d-composition]] · stage: *spatial coherence (alternative to DINO self-similarity)* · synthesis-bet candidate: *route DINOv3 self-attention through the same sink-token denoising, use as Pipeline A's spatial-coherence signal.* No paper does this. Expected gain: cheaper spatial signal than DINO self-similarity, derived from the same backbone doing the semantic-alignment task (when the MLLM is the semantic-alignment component).
+- **Selective foreground/background pseudo-labeling with ambiguous-region masking (N2)** — $a_j \geq \tau_{fg}a_{max}$ foreground, $a_j \leq \tau_{bg}a_{max}$ background, ambiguous tokens excluded. candidate thread: *general* · stage: *self-distillation label filtering* · expected gain: generalizable pattern for any frozen-backbone-as-pseudo-labeler (applies to DINO attention, SAM prompt-distillation, 3DGS render-distillation).
+- **Two-stage RoI → crop → re-encode inference (N3)** — MLLM partial-forward predicts RoI, crops re-encoded at high resolution. candidate thread: *VLM downstream* · stage: *fine-grained perception frontend* · expected gain: +10–16% on TextVQA/DocVQA/V-Star with 10K training samples, 2.5× faster than ViCrop.
+- **Not directly on the main open-vocab Pipeline A/B/C yet** — SD-RPN is "adjacent pattern" in the thread: the *attention-as-spatial-signal* idea generalizes beyond MLLMs to any frozen-backbone.
+
 ## Relation to prior work
 
 - Integrates into [[LLaVA]]-1.5, [[DeepSeek-VL]], and [[Qwen2.5-VL]] architectures

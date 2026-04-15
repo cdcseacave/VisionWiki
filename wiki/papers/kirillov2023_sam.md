@@ -40,6 +40,12 @@ Semantic and instance segmentation models had historically been **task-specific*
 
 SAM is the **default mask source** for 2024–2026 object-centric 3D work: background removal, instance-aware radiance fields, segmented 3DGS editing, and open-vocabulary 3D understanding (often paired with [[clip|CLIP]] or DINO features). Established that high-quality masks are a commoditized upstream primitive.
 
+## Pipeline contribution
+
+- **Promptable segmentation + ambiguity-aware multi-mask head (N1)** — point/box/text prompt → ≤3 valid masks + confidence. candidate thread: [[open-vocab-2d-composition]] Pipeline A · stage: *mask quality* · replaces/augments: *Mask R-CNN / class-specific mask heads* · expected gain: clean boundaries snapped to any spatially-coherent region score — the piece Trident relies on. Also superseded-by [carion2026_sam-3] in Pipeline B.
+- **Per-image encode-once / per-prompt decode architecture (N2)** — heavyweight ViT-H image encoder run once, lightweight decoder per prompt. candidate thread: [[lifting-foundation-models-to-3d]] · stage: *2D mask generation for 3D lifting* · expected gain: amortized cost across many object-queries per scene — the architecture that makes per-Gaussian identity distillation (Gaussian Grouping, LangSplat) tractable.
+- **SA-1B data engine (N3)** — three-stage (assisted→semi→fully automatic) mask generation at scale. Not a pipeline component, but it is the foundation [carion2026_sam-3]'s SA-Co engine explicitly builds on. Thread-level evidence that high-quality masks are a commodity input.
+
 ## Relation to prior work
 
 - Precursor to video-extended SAM 2 (2024).

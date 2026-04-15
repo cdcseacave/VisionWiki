@@ -72,6 +72,15 @@ The survey does not present novel experimental results but provides comprehensiv
 
 This survey provides the first comprehensive taxonomy of the feed-forward 3D reconstruction field, which has grown from a handful of works (PixelNeRF, 2021) to a major research direction with hundreds of papers. It serves as an essential reference for understanding how methods relate to each other and where the field is heading. The clear categorization by representation type helps researchers identify which approach is most suitable for their specific application.
 
+## Pipeline contribution
+
+Survey papers contribute structural scaffolding, not pipeline components. The concrete pipeline-level contributions of this paper to the wiki:
+
+- **Five-category representation taxonomy** (NeRF / pointmap / 3DGS / other / 3D-free) — framework used to organize [[feed-forward-structure-from-motion]]'s Tier-3 evidence section. Confirms pointmap-based (DUSt3R family) as the dominant feed-forward paradigm.
+- **Dataset + evaluation protocol enumeration** — flags the "limited modality diversity, mostly RGB" constraint as a cross-paper tension; fuels the open question in [[feed-forward-structure-from-motion]] about outdoor generalization from ScanNet/CO3D training.
+- **Identifies explicit gaps** feed-forward methods don't yet fill: dynamic scenes, long-context memory scaling, free-viewpoint synthesis to unseen viewpoint ranges. These map directly onto the "Open questions & synthesis bets" entries in [[feed-forward-structure-from-motion]] (TTT scaling, memory mechanisms).
+- **No component-level pipeline contribution**; the survey is thread-level evidence rather than a stage swap.
+
 ## Relation to prior work
 
 The survey covers a vast network of related methods:

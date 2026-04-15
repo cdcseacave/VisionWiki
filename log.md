@@ -245,3 +245,19 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 
 ## [2026-04-15] schema-change
 - CLAUDE.md §3.3: added `lint stale-threads` sub-action. Definition: a thread is stale when `thread.updated < max(source.updated)` for sources listed in its frontmatter. Diagnostic in bare `lint`; targeted re-cascade procedure (with per-thread approval) as `lint stale-threads`. Replaces the vaguer "thread debt: not updated in last N ingests" bullet with a deterministic, computable check.
+
+## [2026-04-15] schema-change | Ingest elevated to deep analysis + pipeline synthesis
+- CLAUDE.md §2, §3.1 Step 2, §3.1 Step 5, §3.1 budget, §5: ingest reframed around deep mechanism-level analysis (Step 2 hard gate) and two-pass thread evolution (Pass A per-stage, Pass B holistic synthesis). Added `## Pipeline contribution` to paper template; rewrote Thread template as a living SOTA pipeline (Goal / Current SOTA pipeline / Pipeline lineage / Candidate components / Open questions & synthesis bets / Contradictions). Log entries now carry `Pipeline impact` and `Synthesis bet` lines.
+- README.md: reframed project as a "research-synthesis engine" whose end-product is novel pipelines, not summaries.
+- CLAUDE.md §1: project description updated to reflect the new goals.
+
+## [2026-04-15] reingest-batch | Batch 1 — Foundations (9 papers)
+- Created: wiki/designs/reingest-tracker.md
+- Re-ingested under enhanced workflow: radford2021_clip, oquab2023_dinov2, simeoni2025_dinov3, kirillov2023_sam, carion2026_sam-3, heinrich2025_radiov25, shi2024_open-vocab-segmentation, shi2026_self-distilled-roi, zhang2025_feed-forward-3d-survey
+- Added `## Pipeline contribution` sections to all 9 papers enumerating per-contribution mechanism, target thread, stage, and expected gain.
+- Threads augmented with new structural sections:
+  - foundation-features-for-geometry: added Goal & success criteria, Current SOTA pipeline (DINOv3 backbone + task head), Pipeline lineage (SIFT → DINOv2 → DINOv3 → RADIOv2.5 for multi-task; TTT3R as training-dynamics source), Candidate components (SigLIP, EVA-CLIP, 3D-native SSL), Open questions & synthesis bets (silent-failure rejection head, TTT3R + RoMa v2 fusion).
+  - open-vocab-2d-composition: added three parallel Current SOTA pipelines (Trident / SAM 3 / RADIOv2.5), Pipeline lineage, Candidate components (SigLIP, SAM 2), three explicit synthesis bets (SigLIP+DINOv3+SAM 3 Trident, SAM 3+DINOv3 RADIO distillation, SD-RPN spatial denoising on DINOv3), Contradictions (benchmark incommensurability).
+- Pipeline impact: foundation-features-for-geometry: backbone stage formalized (DINOv3 default) + 1 synthesis bet · open-vocab-2d-composition: 3 pipelines formalized + 3 synthesis bets · Pass B on all 9 papers.
+- Synthesis bets proposed: DINOv3 self-attention → SD-RPN-style denoised spatial signal · TTT3R closed-form LR applied to RoMa v2 dense matching · RADIOv2.5-into-LangSplat per-Gaussian distillation · SAM 3 instance IDs replace Gaussian Grouping cross-view association.
+- Notable: CLIP explicitly excluded from foundation-features-for-geometry (text-aligned/spatially weak); SigLIP flagged as highest-priority missing stub.

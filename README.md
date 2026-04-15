@@ -1,21 +1,25 @@
 # Vision Wiki
 
-A **personal second brain** for photogrammetry and machine-learning research, maintained collaboratively by a human curator and an LLM (Claude) that authors and tends the knowledge base.
+A **personal research-synthesis engine** for photogrammetry and machine-learning, maintained collaboratively by a human curator and an LLM that authors and tends the knowledge base.
 
 ## Goal
 
-Turn a messy stream of papers, blog posts, and figures into a durable, cross-linked, citation-grounded wiki covering:
+This is not a reading list and not a summarization tool. The goal is to mine every ingested paper for ideas worth recombining, and to evolve a set of **living SOTA pipelines** — one per research thread — that assemble the best current components from across the literature. Each ingest asks two questions that matter: *how does this paper's contribution work at a mechanism level?* and *does it compose with ideas already in our pipelines to produce something better than any single paper has proposed?*
+
+Domains covered:
 
 - Photogrammetry: SfM, MVS, SLAM, bundle adjustment, camera calibration, pose estimation
 - Neural scene representations: NeRF, 3D Gaussian Splatting, neural implicit surfaces
 - Feature matching, depth estimation, point-cloud and mesh processing
 - The ML methods powering them: transformers, diffusion, self-supervised learning
 
-The human drops sources into an inbox and asks questions. The LLM reads, summarizes, cross-links, maintains threads of evolving thought, and flags contradictions — never inventing citations.
+The human drops sources into an inbox and asks questions. The LLM reads deeply, extracts mechanisms, proposes pipeline upgrades and novel cross-paper combinations, flags contradictions, and maintains threads as evolving design documents — never inventing citations.
 
 ## How it works
 
 The repo is split into a **source layer** (raw PDFs, articles, assets — git-ignored caches) and a **wiki layer** (committed markdown authored by the LLM). Wiki pages carry a `url:` field so any clone can re-fetch the original paper on demand, making the repo portable without bloating git with binaries.
+
+The wiki's center of gravity is `wiki/threads/`. Each thread page is a **living SOTA pipeline** with explicit stages, a lineage of component swaps, a backlog of candidate components not yet integrated, and an "open questions & synthesis bets" section where the LLM proposes novel combinations of ideas. Paper pages are raw material; threads are where the synthesis happens.
 
 All conventions, templates, and workflows are specified in [CLAUDE.md](CLAUDE.md) — that file is the authoritative schema the LLM follows.
 
@@ -45,7 +49,7 @@ VisionWiki/
     ├── concepts/  # general ideas and primitives
     ├── datasets/  # benchmarks and training datasets
     ├── people/    # prolific authors and research groups
-    ├── threads/   # evolving syntheses, comparisons, open questions
+    ├── threads/   # living SOTA pipelines + novel-combination synthesis bets
     └── designs/   # concrete implementation design docs
 ```
 
@@ -68,15 +72,15 @@ Each ingest runs Steps 0–8:
 
 0. **Acquire** — download if needed, classify, rename (`<FirstAuthor>_<Year>_<short-title>`), and file into the correct subfolder.
 1. **Read** the source fully (no skimming). Auto-downloads missing PDFs when a wiki page has a `url:` but no local file.
-2. **Discuss** the TL;DR and touched pages with the user before writing.
-3. **Write the paper page** at `wiki/papers/<key>.md` using the standard template (TL;DR, Problem, Method, Results, Why it matters, Relation to prior work, Open questions).
+2. **Deep analysis — hard gate before any writing.** Produce a structured analysis: goal, foundations, *each* novel contribution with a mechanism-level explanation, the causal story linking each contribution to the headline result, a relation map to existing wiki pages, and pipeline-contribution candidates naming which thread / stage each idea could upgrade. The user reviews before pages are written.
+3. **Write the paper page** at `wiki/papers/<key>.md` using the standard template (TL;DR, Problem, Method, Results, Why it matters, **Pipeline contribution**, Relation to prior work, Open questions).
 4. **Cascade updates** to referenced concepts, methods, and people — creating stubs only for load-bearing entries.
-5. **Update threads** that the paper advances or contradicts, preserving superseded claims rather than silently rewriting.
+5. **Evolve affected threads — two passes.** Pass A: per-stage evaluation — does the new component beat the current SOTA pipeline on the thread's success criteria? Swap it in, queue it as a candidate, or flag a contradiction. Pass B (mandatory, even when Pass A changed nothing): holistic synthesis — do ideas compose, do cross-stage interactions invite redesigning multiple stages together, and is there a *novel combination across ≥2 papers* worth proposing as a synthesis bet? Superseded claims are preserved, never silently rewritten.
 6. **Update `index.md`** — add new pages, bump `updated:` dates.
-7. **Append to `log.md`** with the ingest entry format.
-8. **Report back** — list all files created/modified.
+7. **Append to `log.md`** with the ingest entry format, including a `Pipeline impact` line and any `Synthesis bet` proposed.
+8. **Report back** — list all files created/modified, and state explicitly if Pass B surfaced no new combinations.
 
-A healthy ingest touches 5–15 wiki pages.
+A healthy ingest touches 5–15 wiki pages *and* leaves an audit trail in at least one thread's "Current SOTA pipeline", "Candidate components", or "Open questions & synthesis bets" section. An ingest that adds a paper page without touching any thread's pipeline state is a smell: deep analysis or holistic synthesis was skipped.
 
 ### 2. `query` — answer questions from the wiki
 

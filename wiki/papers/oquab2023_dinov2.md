@@ -37,6 +37,12 @@ Prior self-supervised vision models (DINO, MAE, iBOT) produced competitive linea
 
 DINOv2 is the **default frozen backbone** for 2024–2026 feed-forward 3D methods: [[dust3r|DUSt3R]], [[mast3r|MASt3R]], [[vggt|VGGT]], Pow3R, CUT3R, and many monocular-depth works build on it. It crystallized the "frozen foundation features + task head" pattern in geometric computer vision.
 
+## Pipeline contribution
+
+- **DINO+iBOT patch-level SSL on curated 142M dataset (N1)** — produces frozen ViT features that are simultaneously spatially coherent and semantically meaningful. candidate thread: [[foundation-features-for-geometry]] · stage: *frozen backbone forward pass* · replaces/augments: *task-trained descriptors (SuperPoint/SuperGlue), hand-crafted SIFT* · expected gain: generalization to textureless / illumination-varying scenes where SIFT collapses; higher pose AUC for feed-forward methods with a tiny regression head.
+- **KoLeo regularizer + distillation recipe (N2)** — makes frozen features linearly separable + distills ViT-g/14 into smaller students without quality loss. candidate thread: [[foundation-features-for-geometry]] · stage: *patch embedding* · replaces/augments: *from-scratch descriptor training* · expected gain: hours-of-training heads replace weeks-of-training specialists.
+- **Also consumed by** [[open-vocab-2d-composition]] Pipeline A · stage: *spatial coherence (DINO affinity)* — superseded by DINOv3 as the default but still widely deployed.
+
 ## Relation to prior work
 
 - Extends DINO (Caron et al. 2021) with patch-level loss (from iBOT) and dramatically more data.
