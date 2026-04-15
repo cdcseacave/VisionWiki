@@ -42,6 +42,13 @@ Methods like [[2d-gaussian-splatting|2D-Gaussian-Splatting]] and Gaussian Opacit
 
 This work demonstrates that the complementary strengths of classical MVS and neural Gaussian splatting can be systematically combined. Rather than relying solely on photometric loss for geometry, incorporating MVS priors through a well-designed relative depth loss closes the gap between explicit and implicit methods for surface reconstruction, while retaining the fast rendering advantage of [[3d-gaussian-splatting]].
 
+## Pipeline contribution
+
+- **MVS-guided Gaussian initialization (N1)** — dense MVS depth replaces COLMAP sparse points as the init source. candidate thread: [[radiance-field-evolution]] · stage: *Gaussian initialization* · replaces/augments: *sparse-point init* · expected gain: coverage in textureless / high color-variation regions; input to every subsequent geometry regularization.
+- **Median-depth-based relative depth loss with learned uncertainty (N2)** — median rather than mean depth; depth-ratio comparison between neighboring pixels; per-pixel uncertainty downweights unreliable MVS. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm A · stage: *depth supervision loss* · replaces/augments: *absolute-depth L1 against MVS* · expected gain: robust to semi-transparent Gaussian ambiguity and MVS noise; the signature loss that establishes "external MVS > Gaussian self-supervision" on DTU/T&T.
+- **Multiview extension of losses to virtual neighbor viewpoints (N3)** — regularizes more Gaussians per iteration via gradients from neighbor views. candidate thread: [[radiance-field-evolution]] · stage: *loss propagation* · expected gain: faster convergence on geometry.
+- **Role**: Kim 2025 is the paper that formalized "external MVS > Gaussian self-supervision for mesh quality" — directly contradicted by [radl2026_confidence-mesh-3dgs] (CoMe), which argues self-supervised confidence wins. The unresolved contradiction is the open tension in [[gaussian-to-mesh-pipelines]] Current SOTA.
+
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]] (Kerbl et al., 2023) and extends it with geometric regularization.

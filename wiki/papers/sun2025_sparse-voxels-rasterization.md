@@ -41,6 +41,13 @@ SVRaster proposes an efficient radiance field rendering framework that rasterize
 
 SVRaster demonstrates that voxels -- a classical 3D representation -- can match or exceed the quality of Gaussian splatting when combined with modern rasterization techniques. By eliminating the need for neural networks and 3D Gaussians while providing correct depth ordering and well-defined volume density, it opens the door to a new class of efficient, artifact-free radiance field methods that are natively compatible with decades of grid-based 3D processing tools.
 
+## Pipeline contribution
+
+- **Ray-direction Morton-ordered sparse-voxel rasterizer (N1)** — 48-bit Morton codes sort voxels correctly per pixel, combining tile-based speed with volume-rendering correctness. candidate thread: [[radiance-field-evolution]] neural-free lane · stage: *rasterization primitive* · replaces/augments: *3DGS depth-sort by center (incorrect) / ray-casting (slow)* · expected gain: no popping artifacts; comparable FPS to 3DGS with sharper details.
+- **Post-activation density (N2)** — sharp boundaries modelable, unlike Gaussian falloff. candidate thread: [[radiance-field-evolution]] · stage: *density parameterization* · expected gain: 27 primitives/pixel (vs 63 for 3DGS); finer detail recovery.
+- **Native compatibility with TSDF / marching cubes / voxel pooling / VFM feature lifting (N3)** — voxel representation plugs into 30 years of grid-based tooling. candidate thread: [[gaussian-to-mesh-pipelines]] Paradigm C · stage: *primitive with direct mesh extraction* · expected gain: no TSDF fusion post-pass needed.
+- **Role**: SVRaster is the *alternative-primitive* lane in [[radiance-field-evolution]]. Every synthesis bet of the form "3DGS with X regularization" has a natural counterpart "SVRaster with X" that hasn't been tried.
+
 ## Relation to prior work
 
 - Positions as an alternative to [[3d-gaussian-splatting]] (Kerbl et al., 2023) with better geometric properties.

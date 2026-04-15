@@ -39,6 +39,13 @@ Drone-captured imagery in wild environments contains moving objects (vehicles, p
 
 DroneSplat is among the first methods to jointly handle dynamic distractors and viewpoint sparsity for drone-based reconstruction, which is the realistic operating condition for aerial surveying. The adaptive masking removes the need for scene-specific threshold tuning, and the MVS-guided optimization demonstrates that combining feed-forward stereo priors with per-scene [[3d-gaussian-splatting]] optimization is a powerful paradigm.
 
+## Pipeline contribution
+
+- **Adaptive local-global distractor masking (N1)** — residual-based statistical detection + pixel-level segmentation, with thresholds adapting via real-time residuals. candidate thread: [[radiance-field-evolution]] aerial/in-the-wild · stage: *distractor-aware photometric supervision* · replaces/augments: *fixed-threshold / semantic-category masks (RobustNeRF, NeRF-HuGS)* · expected gain: handles all dynamic-distractor levels (low/med/high) without per-scene tuning; best PSNR/SSIM/LPIPS on DroneSplat + NeRF On-the-go datasets.
+- **Geometric-aware point sampling from DUSt3R-based MVS (N2)** — dense 3D points from a feed-forward stereo model as initialization. candidate thread: [[radiance-field-evolution]] · stage: *Gaussian initialization* · replaces/augments: *COLMAP sparse points* · expected gain: robust init on sparse drone views; supersedes earlier "InstantSplat" style init with DUSt3R-specific voxel-guidance.
+- **Voxel-guided optimization with depth-distortion + geometric constraints (N3)** — voxel grid from MVS regularizes 3DGS training under sparse views. candidate thread: [[radiance-field-evolution]] · stage: *sparse-view regularization* · expected gain: +2 dB over next-best sparse-view baseline on 6-view Simingshan.
+- **Role**: DroneSplat is the **aerial + in-the-wild** exemplar in [[radiance-field-evolution]]; the adaptive-masking mechanism is the candidate component that VastGaussian's pipeline currently lacks (VastGaussian has appearance drift, DroneSplat has dynamic distractors — they target different failure modes and should compose cleanly).
+
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]] (Kerbl et al., 2023) as the core representation.

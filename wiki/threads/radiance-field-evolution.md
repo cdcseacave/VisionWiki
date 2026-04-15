@@ -109,3 +109,63 @@ stacked.
 - [[feed-forward-structure-from-motion]] — feed-forward methods that may replace the SfM stage radiance fields depend on
 - [[mono-depth-estimation]] — mono depth as a prior for sparse-view radiance field training
 
+---
+
+## Goal & success criteria
+
+Produce a radiance field from posed images that balances **rendering quality** (PSNR / SSIM / LPIPS on Mip-NeRF 360 + T&T), **rendering speed** (FPS at 1080p), **training cost** (per-scene wall-clock), and **scalability** (memory at city-scale). No single component dominates all four; the thread tracks per-regime winners.
+
+## Current SOTA pipelines (as of 2026-04-15)
+
+**Object / room scale (PSNR-dominant)**: 3DGS primitives + MVS-depth geometry regularization + decoupled appearance module.
+- Primitive: 3DGS (Kerbl 2023).
+- Geometry regularization: multiview-depth + median-depth relative loss. Paper: [kim2025_multiview-geometric-gs].
+- Appearance decoupling: per-image CNN transforming target, not representation. Paper: [lin2024_vastgaussian] (generalized from NeRF-W).
+- SfM/pose source: COLMAP (or InstantSfM when speed matters); CamP preconditioning when poses are noisy. Paper: [park2023_camp].
+
+**City / aerial scale**: 3DGS + spatial partitioning + decoupled appearance + optional compression.
+- Partition: airspace-aware `m×n` ground-plane cells with visibility-based camera selection. Paper: [lin2024_vastgaussian].
+- Compression: codebook vector quantization + tetrahedral-mesh init. Paper: [guo2025_ea-3dgs]. Orthogonal to partitioning; stackable.
+- Drone specifics: adaptive local-global distractor masking + MVS-voxel-guided sparse-view regularization. Paper: [tang2025_dronesplat].
+
+**NeRF-family alternative (reflective / unbounded quality ceiling)**: Zip-NeRF stack.
+- Scene contraction + proposal network + distortion regularizer. Paper: [barron2022_mip-nerf-360].
+- Hash-grid + multisample anti-aliasing + Z-aliasing normalization. Paper: [barron2023_zip-nerf].
+- Camera preconditioning. Paper: [park2023_camp].
+
+**Neural-free alternative**: sparse-voxel rasterization.
+- Adaptive sparse voxels + Morton-ordered CUDA rasterizer + post-activation density. Paper: [sun2025_sparse-voxels-rasterization].
+- Natively mesh-extractable (see [[gaussian-to-mesh-pipelines]] Paradigm C).
+
+## Pipeline lineage
+
+- 2020 · baseline: volumetric rendering via MLP. Driver: NeRF.
+- 2022 · unbounded scenes: contract + proposal + distortion. Driver: [barron2022_mip-nerf-360].
+- 2023 · speed: hash-grid + anti-aliased cone. Driver: [barron2023_zip-nerf].
+- 2023 · implicit-NeRF ceiling: per-frame pose preconditioning. Driver: [park2023_camp].
+- 2023 · representation switch: implicit MLP → explicit Gaussians. Driver: Kerbl (3DGS).
+- 2024 · city scale: partition + airspace-aware visibility + 2D-transform appearance. Driver: [lin2024_vastgaussian].
+- 2025 · geometry: external MVS depth + median-depth relative loss. Driver: [kim2025_multiview-geometric-gs].
+- 2025 · compression: tetra-mesh init + codebook VQ. Driver: [guo2025_ea-3dgs].
+- 2025 · aerial robustness: adaptive masking + MVS-voxel regularization. Driver: [tang2025_dronesplat].
+- 2025 · alternative primitive: sparse voxel rasterizer. Driver: [sun2025_sparse-voxels-rasterization].
+- 2026 · city-scale SLAM: progressive voxel-GS with submaps + loop closure. Driver: [deng2026_vpgs-slam].
+
+## Candidate components / not yet integrated
+
+- **Per-pixel confidence from CoMe** as an alternative to SSIM in VastGaussian's decoupled appearance module. Proposed in [radl2026_confidence-mesh-3dgs] discussion; no paper merges them.
+- **Pow3R-style prior injection** (intrinsics / poses / sparse depth) into a 3DGS training frontend. No paper does this yet; 3DGS is still COLMAP-posed.
+- **Feed-forward 3DGS initialization** (PixelSplat, MVSplat, NoPoSplat) replacing COLMAP-SfM in the per-scene pipeline.
+- **Foundation-feature distillation into per-Gaussian features** — tracked under [[lifting-foundation-models-to-3d]] but not yet in any Current-SOTA radiance pipeline.
+
+## Open questions & synthesis bets
+
+- Is SVRaster's sparse-voxel approach a serious competitor to Gaussians? **Synthesis bet**: *SVRaster primitives + CoMe confidence + MVS-depth supervision*. Combines [sun2025_sparse-voxels-rasterization] + [radl2026_confidence-mesh-3dgs] + [schonberger2016_colmap-mvs]. Could beat all 3DGS-based pipelines on geometry without losing render speed.
+- City-scale (km²): VastGaussian for partitioning, EA-3DGS for compression, VPGS-SLAM for incremental capture. **Synthesis bet**: *all three layered* — partition at capture time (VPGS-SLAM submaps), compress per submap (EA-3DGS codebooks), merge at render time. No paper composes the three.
+- Can CamP's preconditioning idea port to 3DGS? Paper explicitly leaves it open. **Synthesis bet**: *CamP-style Jacobian preconditioner on the 3DGS pose-refinement residual* (when poses are jointly optimized with Gaussians). Generic preconditioning is representation-agnostic; needs a 3DGS paper to try.
+
+## Contradictions & tensions
+
+- "External MVS depth > self-supervised 3DGS depth" (Kim 2025) vs. "self-supervised CoMe confidence wins" (Radl 2026) — same contradiction as in [[gaussian-to-mesh-pipelines]]. Open.
+- Z-aliasing fix in Zip-NeRF is empirical with no principled explanation. No follow-up paper has closed this.
+

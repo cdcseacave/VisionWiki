@@ -284,3 +284,10 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Pipeline impact: Tier-1 SOTA pipeline (GPU-native SfM) formalized with GLOMAP→InstantSfM/CuSfM; Tier-3 TTT-family formalized (TTT3R/LoGeR/ZipMap trade triangle: training-free / training-with-SWA / training-with-TTT-attention-replacement); Tier-2 hybrid formalized with MP-SfM / MegaSaM / Pow3R.
 - Synthesis bets proposed: LoGeR SWA + TTT3R training-free LR hybrid · DiffusionSfM uncertainty → MP-SfM depth-consistency gating · MegaSaM motion maps → MP-SfM BA pixel gating · RoMa v2 covariance → Pow3R depth prior.
 - Notable: VGG-T3 identified as the natural bridge between feed-forward Tier-3 and Paradigm-D (mesh-in-one-pass) of [[gaussian-to-mesh-pipelines]].
+
+## [2026-04-15] reingest-batch | Batch 5+6 — Pose estimation + radiance fields core (9 papers)
+- Re-ingested: zhang2024_cameras-as-rays, barron2022_mip-nerf-360, barron2023_zip-nerf, park2023_camp, lin2024_vastgaussian, sun2025_sparse-voxels-rasterization, guo2025_ea-3dgs, kim2025_multiview-geometric-gs, tang2025_dronesplat
+- Added Pipeline contribution sections to all 9.
+- Thread augmented: radiance-field-evolution now carries Goal / 4 parallel Current SOTA pipelines (object-scale / city-scale / NeRF-family / neural-free) / lineage / candidate components / 3 synthesis bets / contradictions.
+- Pipeline impact: radiance-field-evolution stack formalized in 4 regimes; city-scale three-way stack identified (VastGaussian partitioning / EA-3DGS compression / VPGS-SLAM incremental) as open synthesis bet.
+- Synthesis bets proposed: port Mip-NeRF-360 distortion regularizer to 3DGS/SVRaster · stack VastGaussian+EA-3DGS+VPGS-SLAM at city scale · port CamP preconditioner to 3DGS pose-refinement · SVRaster primitives + CoMe confidence + MVS supervision.

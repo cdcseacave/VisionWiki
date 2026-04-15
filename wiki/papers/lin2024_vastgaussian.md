@@ -111,6 +111,13 @@ Wins SSIM and LPIPS on **all 5 scenes** — dominance on LPIPS (perceptual quali
 - **The L1/D-SSIM split still lets appearance leak into geometry.** The D-SSIM term runs on the pre-transform render, but SSIM itself fuses luminance, contrast, and structure — so the appearance embedding can still mask geometric errors via contrast/structure compensation. [CoMe (Radl 2026)](radl2026_confidence-mesh-3dgs.md) later refines this by decoupling SSIM into $l \cdot c \cdot s$ and letting the embedding correct *only* luminance, freeing contrast/structure to supervise geometry directly.
 - **No dynamic-object handling.** All floaters are assumed to come from appearance drift, not from moving cars/pedestrians. DroneSplat-style distractor masking would be complementary.
 
+## Pipeline contribution
+
+- **Airspace-aware visibility criterion for partitioning (N1)** — visibility defined over full ground-to-sky axis-aligned bounding box, not surface convex hull. candidate thread: [[radiance-field-evolution]] city-scale · stage: *cell construction for partitioned training* · replaces/augments: *surface-convex-hull visibility* · expected gain: prevents floaters from filling sky; PSNR delta 26.81 → 24.54 in airspace-agnostic ablation (visible 2+ dB regression when disabled).
+- **Progressive 4-step partition (region div → position-based → visibility-based → coverage-based) (N2)** — builds per-cell training sets with principled overlap. candidate thread: [[radiance-field-evolution]] city-scale · stage: *data-partition pipeline* · replaces/augments: *uniform spatial cropping (Mega-NeRF)* · expected gain: seamless merge without post-hoc blending; 10× shorter training vs Mega-NeRF.
+- **Decoupled appearance modeling via 2D transformation map (N3)** — per-image CNN transforms rendered target; appearance discarded at inference. candidate thread: [[radiance-field-evolution]] · stage: *appearance drift compensation* · replaces/augments: *NeRF-W GLO embeddings on the representation* · expected gain: 3DGS-compatible (rasterization-native), no runtime overhead, +1.7 dB PSNR on Sci-Art.
+- **Synthesis-bet enabler**: VastGaussian's decoupled appearance module is explicitly combined with CoMe's SSIM decoupling in the downstream [[come-integration-nerfstudio]] design. The composition is a concrete novel-pipeline implementation of a Batch-1 synthesis pattern.
+
 ## Downstream in this wiki
 
 - The decoupled appearance module is ported into the visiofacto/nerfstudio design at [[come-integration-nerfstudio]] (Part 7), combined with CoMe's SSIM decoupling so the per-image embedding compensates only for luminance.

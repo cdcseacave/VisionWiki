@@ -43,6 +43,14 @@ Standard [[3d-gaussian-splatting]] struggles with outdoor large-scale scenes bec
 
 EA-3DGS addresses the practical deployment challenges of Gaussian splatting for real-world outdoor and aerial reconstruction. The mesh-guided initialization is particularly significant for UAV photogrammetry where low-texture regions (roads, rooftops, terrain) are common. The compression via vector quantization makes large-scale models feasible for storage and streaming, bridging the gap between research quality and production deployment.
 
+## Pipeline contribution
+
+- **Adaptive tetrahedral-mesh initialization (N1)** — Delaunay tetrahedralization of COLMAP sparse points; Gaussians spawned on triangular faces with local-geometry refinement. candidate thread: [[radiance-field-evolution]] city-scale · stage: *Gaussian initialization* · replaces/augments: *COLMAP-sparse-point direct init* · expected gain: coverage in textureless regions (roads, rooftops, terrain) where sparse points are absent.
+- **Contribution-aware pruning via GS Score (N2)** — per-Gaussian score from ray-intersection counts + opacity + blending weight; low-contribution pruned. candidate thread: [[radiance-field-evolution]] · stage: *densification control* · replaces/augments: *gradient-magnitude pruning* · expected gain: kills redundant Gaussians while preserving rendered contribution.
+- **Structure-aware densification via curvature (N3)** — eigenvalue-ratio $\rho = \lambda_0/(\lambda_0+\lambda_1+\lambda_2)$ identifies low-curvature regions needing more Gaussians. candidate thread: [[radiance-field-evolution]] · stage: *densification target selection* · replaces/augments: *gradient-magnitude-only densification* · expected gain: preserves geometric structure under bulk densification.
+- **Codebook vector quantization on non-position attributes (N4)** — learned codebook, 5.2× compression. candidate thread: [[radiance-field-evolution]] city-scale · stage: *storage/deployment* · replaces/augments: *LightGaussian / C3DGS approaches* · expected gain: 1.8 GB → 345 MB at 0.37 dB cost.
+- **Role**: EA-3DGS is the **compression leg** of the three-way city-scale stack (partition [[lin2024_vastgaussian]] / incremental [[deng2026_vpgs-slam]] / compress EA-3DGS). Orthogonal to the other two; layering them is the open synthesis bet.
+
 ## Relation to prior work
 
 - Builds on [[3d-gaussian-splatting]] (Kerbl et al., 2023) and addresses its limitations for outdoor scenes.

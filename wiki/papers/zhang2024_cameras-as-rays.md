@@ -49,6 +49,14 @@ Estimating camera poses from sparsely sampled views (<10 images) is challenging 
 
 This work fundamentally rethinks camera pose representation for learning-based estimation. The ray bundle representation is naturally suited for transformers (each ray maps to a patch token), enables tight coupling with spatial image features, and can encode non-perspective cameras (e.g., catadioptric, orthographic). The idea of distributed camera representations has influenced subsequent works like [[dust3r|DUSt3R]] and [[Pow3R]] which also use per-pixel geometric predictions rather than global camera parameters.
 
+## Pipeline contribution
+
+- **Plucker ray-bundle camera representation (N1)** — each image patch gets a 6D ray; distributed over-parameterized alternative to (R,t,K). candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *camera parameterization for transformer regression* · replaces/augments: *global (R,t,K) heads* · expected gain: +13% rotation @15°, +23% center @0.1 on CO3D over PoseDiffusion.
+- **Regression over ray tokens (N2)** — transformer processes $N \cdot p^2$ tokens; L2 on rays. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *pose head* · expected gain: even regression-only beats prior diffusion-based SOTA.
+- **RayDiffusion (denoising over ray bundles) (N3)** — diffusion posterior captures symmetry/partial-observation ambiguities. candidate thread: [[feed-forward-structure-from-motion]] Tier 3 · stage: *uncertainty-aware pose output* · expected gain: multi-modal pose distributions under ambiguous inputs.
+- **Role**: conceptual ancestor of [zhao2025_diffusionsfm]'s ray-origin+endpoint parameterization; the ray-bundle idea propagated into DUSt3R/MASt3R/VGGT's per-pixel geometric predictions. Directly grounds [[foundation-features-for-geometry]]'s "distributed, frozen-DINOv2-fed task head" template.
+- **Synthesis-bet candidate**: *ray-bundle regression head on top of DINOv3* (replacing DINOv2) + *RoMa v2 dense matching initialization as a diffusion-conditioning signal*. Combines this paper's N1/N3 with [simeoni2025_dinov3] + [edstedt2025_roma-v2]. No paper does this.
+
 ## Relation to prior work
 
 - Contrasts with global pose prediction in [[RelPose]], [[RelPose++]], [[SparsePose]], and [[PoseDiffusion]]

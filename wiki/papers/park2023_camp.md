@@ -41,6 +41,12 @@ CamP proposes a simple yet effective preconditioning technique for joint camera 
 
 CamP demonstrates that a principled numerical technique (preconditioning) can substantially improve joint camera-scene optimization in neural rendering, without architectural changes or additional training costs. This is broadly applicable to any [[differentiable-rendering]] pipeline and is especially important for making [[nerf|NeRF]] practical with imperfect camera poses from mobile devices or challenging capture conditions.
 
+## Pipeline contribution
+
+- **Per-camera Jacobian-based whitening preconditioner (N1)** — proxy Jacobian $J$ of projection residuals w.r.t. camera params; $P$ = Cholesky of $J^\top J$; optimize $\phi$ where $\theta = P\phi + \theta_0$. candidate thread: [[radiance-field-evolution]] NeRF-family lane · stage: *joint camera + radiance optimization* · replaces/augments: *scheduled frequency (BARF) or raw joint BA* · expected gain: 67% RMSE reduction vs. non-optimizing; 29% over prior camera-optimizing NeRF; recovers from ~0.4° orientation error to near-COLMAP accuracy.
+- **Representation-agnostic mechanism (N2)** — preconditioner depends only on the camera-projection Jacobian. candidate thread: [[radiance-field-evolution]] · stage: *joint camera + 3DGS optimization* · synthesis-bet: *port CamP preconditioner to 3DGS pose-refinement residual*. No paper has done this; paper explicitly flags as open.
+- **Role**: CamP is the recipe for joint pose+radiance optimization. Its absence from every 3DGS paper is a tell — the 3DGS community uses COLMAP poses and stops there. When a 3DGS paper does try joint optimization (BARF-like), CamP's preconditioning is the standard trick that's missing.
+
 ## Relation to prior work
 
 - Builds on [[Zip-NeRF]] (Barron et al., 2023) as the base NeRF model.

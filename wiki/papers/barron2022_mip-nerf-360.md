@@ -58,6 +58,14 @@ Mip-NeRF 360 is the scene dataset and the architectural recipe that virtually ev
 
 Its intellectual value is also distinct from its metric value: the scene contraction and the distortion regularizer are **first-principles fixes to ambiguity**, not just empirical tricks. That's rarer than it should be.
 
+## Pipeline contribution
+
+- **Piecewise non-linear scene contraction (N1)** — maps $\mathbb{R}^3$ → ball of radius 2, distant content proportional to disparity. candidate thread: [[radiance-field-evolution]] · stage: *scene parameterization* · replaces/augments: *bounded-box coordinates / NDC* · expected gain: enables unbounded 360° reconstruction at all; every unbounded radiance-field paper since inherits this.
+- **Proposal network + online distillation (N2)** — small proposal MLP distilled from large NeRF MLP's weight histogram via upper-envelope matching loss. candidate thread: [[radiance-field-evolution]] · stage: *importance sampling* · replaces/augments: *coarse/fine two-MLP rendering* · expected gain: higher-capacity NeRF at moderate-cost; carried forward into Zip-NeRF unchanged.
+- **Distortion regularizer (N3)** — first-principles penalty on spread-out per-ray weight. candidate thread: [[radiance-field-evolution]] · stage: *regularization* · replaces/augments: *engineering-taste floater-suppression heuristics* · expected gain: rare principled ambiguity fix; directly reusable in 3DGS / sparse-voxel renderers (not yet ported).
+- **The Mip-NeRF 360 scene benchmark** — now the canonical outdoor NVS benchmark for every radiance-field paper. Thread-level evidence.
+- **Synthesis-bet candidate**: *port the distortion regularizer to 3DGS / SVRaster*. Mechanism is representation-agnostic — it acts on per-ray weights — but no 3DGS paper has replicated it. Likely helps in regions where 3DGS currently produces floaters.
+
 ## Relation to prior work
 
 - Direct successor to Mip-NeRF (Barron et al. 2021); itself a successor to [[nerf|NeRF]] (Mildenhall et al. 2020).

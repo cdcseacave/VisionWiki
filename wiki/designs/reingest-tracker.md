@@ -75,20 +75,20 @@ Primary threads: `feed-forward-structure-from-motion`, `gpu-native-sfm`, `mono-d
 
 Primary thread: `foundation-features-for-geometry`
 
-- ☐ zhang_2024_cameras-as-rays
+- ✓ zhang_2024_cameras-as-rays
 
 ## Batch 6 — Radiance fields core
 
 Primary thread: `radiance-field-evolution`
 
-- ☐ barron_2022_mip-nerf-360
-- ☐ barron_2023_zip-nerf
-- ☐ park_2023_camp
-- ☐ lin_2024_vastgaussian
-- ☐ sun_2025_sparse-voxels-rasterization
-- ☐ guo_2025_ea-3dgs
-- ☐ kim_2025_multiview-geometric-gs
-- ☐ tang_2025_dronesplat
+- ✓ barron_2022_mip-nerf-360
+- ✓ barron_2023_zip-nerf
+- ✓ park_2023_camp
+- ✓ lin_2024_vastgaussian
+- ✓ sun_2025_sparse-voxels-rasterization
+- ✓ guo_2025_ea-3dgs
+- ✓ kim_2025_multiview-geometric-gs
+- ✓ tang_2025_dronesplat
 
 ## Batch 7 — Gaussian → Mesh & SDF hybrids
 
