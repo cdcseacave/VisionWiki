@@ -261,3 +261,13 @@ Entry prefixes are grep-friendly: `grep "^## \[" log.md | tail -20`.
 - Pipeline impact: foundation-features-for-geometry: backbone stage formalized (DINOv3 default) + 1 synthesis bet · open-vocab-2d-composition: 3 pipelines formalized + 3 synthesis bets · Pass B on all 9 papers.
 - Synthesis bets proposed: DINOv3 self-attention → SD-RPN-style denoised spatial signal · TTT3R closed-form LR applied to RoMa v2 dense matching · RADIOv2.5-into-LangSplat per-Gaussian distillation · SAM 3 instance IDs replace Gaussian Grouping cross-view association.
 - Notable: CLIP explicitly excluded from foundation-features-for-geometry (text-aligned/spatially weak); SigLIP flagged as highest-priority missing stub.
+
+## [2026-04-15] reingest-batch | Batch 2 — Classical primitives & benchmarks (5 papers)
+- Re-ingested: curless1996_tsdf, schonberger2016_colmap-sfm, schonberger2016_colmap-mvs, yao2018_mvsnet, knapitsch2017_tanks-and-temples
+- Added `## Pipeline contribution` to each; for the benchmark paper (T&T) the section describes its role in defining success criteria, not components.
+- Threads augmented with new sections:
+  - gpu-native-sfm: Goal & success criteria, Current SOTA pipeline, Pipeline lineage (2016 COLMAP → 2024 GLOMAP → 2026 InstantSfM / CuSfM), Candidate components (learned feature frontends, Pow3R conditioning), synthesis bets (differentiable SfM+radiance-field backprop; CuSfM two-stage factor graph on non-driving; multi-prior Jacobian fusion), Contradictions.
+  - gaussian-to-mesh-pipelines: three Current SOTA pipelines (regularized-3DGS+TSDF / mesh-in-loop / natively-extractable), lineage, three synthesis bets (CoMe confidence as TSDF fusion weight; PGSR+VA-GS+CoMe+COLMAP-MVS stack; GeoSVR+confidence+MVS supervision), Contradictions (external-vs-self-supervised depth).
+- Pipeline impact: gpu-native-sfm: baseline formalized + 3 bets · gaussian-to-mesh-pipelines: 3 pipelines formalized + 3 bets · Pass B on all 5 papers.
+- Synthesis bets proposed: CoMe-confidence as TSDF fusion weight · PGSR+VA-GS+CoMe stacked regularization · MILo + CoMe hybrid · differentiable joint SfM+3DGS training · MVSNet learned-MVS inside CoMe pipeline.
+- Notable: explicit "external vs. self-supervised depth" contradiction flagged in gaussian-to-mesh-pipelines — unresolved; candidate for a future thread-level resolution.

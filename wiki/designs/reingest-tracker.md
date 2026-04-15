@@ -40,11 +40,11 @@ Primary threads: `foundation-features-for-geometry`, `open-vocab-2d-composition`
 
 Primary threads: `gpu-native-sfm`, `gaussian-to-mesh-pipelines`, and all benchmark references.
 
-- ☐ curless_1996_tsdf
-- ☐ schonberger_2016_colmap-sfm
-- ☐ schonberger_2016_colmap-mvs
-- ☐ yao_2018_mvsnet
-- ☐ knapitsch_2017_tanks-and-temples
+- ✓ curless_1996_tsdf
+- ✓ schonberger_2016_colmap-sfm
+- ✓ schonberger_2016_colmap-mvs
+- ✓ yao_2018_mvsnet
+- ✓ knapitsch_2017_tanks-and-temples
 
 ## Batch 3 — Feature matching & dense matching
 

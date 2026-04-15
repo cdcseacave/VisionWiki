@@ -42,6 +42,13 @@ TSDF is the **canonical bridge between depth observations and surfaces**. Downst
 - Modern [[3d-gaussian-splatting|3DGS]]-to-mesh pipelines (see [[gaussian-to-mesh-pipelines]]): render depths, fuse into TSDF, extract via marching cubes.
 - Dense counterpart to neural [[signed-distance-field|SDF]] representations — both target the same function, explicit vs. implicit.
 
+## Pipeline contribution
+
+- **Incremental weighted-average signed-distance fusion (N1)** — per-voxel running `(weighted_sum, weight_sum)` updated by each new range image. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *depth-map → surface fusion* · replaces/augments: *no cheaper alternative exists* · expected gain: this is the bottom of Paradigm A's mesh-extraction stack; every method that renders depths from Gaussians + runs TSDF + marching cubes (VA-GS, Kim 2025, SOF, MILo as baseline) is using this algorithm.
+- **Truncation band (N2)** — signed distances stored only in a narrow band around the zero level set. candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *memory layout for surface representation* · expected gain: constant-memory-per-surface-area, enables hierarchical/sparse variants (VDB, voxel hashing) that every large-scale TSDF system (KinectFusion, BundleFusion, 3DGS-to-mesh on city scenes) relies on.
+- **Confidence-weighted averaging (N3)** — per-voxel weights from sensor confidence (incidence angle, range). candidate thread: [[gaussian-to-mesh-pipelines]] · stage: *depth fusion weighting* · synthesis-bet: *use [[radl2026_confidence-mesh-3dgs|CoMe]]'s per-Gaussian confidence as the TSDF fusion weight when rendering 3DGS depths*, rather than the default uniform weighting most pipelines use today. No paper does this explicitly; the mechanism already exists on both sides.
+- **Not a component of radiance-field rendering** — TSDF is pure geometry; appearance lives elsewhere. This partitions the mesh-pipeline cleanly: render-appearance (3DGS) + render-geometry (TSDF fusion) + extract (marching cubes).
+
 ## Relation to prior work
 
 - Succeeds zippered meshes (Turk & Levoy 1994) as the Stanford-group fusion method.

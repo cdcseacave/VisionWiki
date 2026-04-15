@@ -135,3 +135,40 @@ grabs the attention, Tier 1 is where production SfM is heading because:
 - [[radiance-field-evolution]] — InstantSfM specifically targets 3DGS/NeRF
   pipelines as its downstream consumer.
 
+---
+
+## Goal & success criteria
+
+Produce a posed-3D reconstruction at COLMAP-grade metric accuracy (pose AUC, Chamfer, T&T F-score) at 10×–40× the throughput. "Better" = same or better accuracy *and* ≥10× wall-clock speedup *and* drop-in replacement for COLMAP in downstream pipelines (3DGS / NeRF / robotics). Calibration-grade poses are the non-negotiable floor — trade-offs of accuracy for speed are out of scope for this thread.
+
+## Current SOTA pipeline (as of 2026-04-15)
+
+Stage-by-stage for a general-purpose GPU-native SfM:
+
+1. **Feature extraction**: external — RootSIFT (InstantSfM) or ALIKED via TensorRT (CuSfM). Paper: [zhong2026_instantsfm] / [yu2025_cusfm]. Open: does replacing SIFT with DINOv3-head matcher (RoMa v2 frontend) shift the speed/accuracy frontier?
+2. **Matching + geometric verification**: multi-model RANSAC, scene-graph augmentation. Paper: [schonberger2016_colmap-sfm]'s N1 carried forward unchanged.
+3. **Global positioning + depth-constrained Jacobian BA**: PyTorch GPU sparse ops. Paper: [zhong2026_instantsfm]. Or two-stage factor-graph (robust → stringent) for rig-with-prior-trajectory workloads. Paper: [yu2025_cusfm].
+4. **Iterative triangulation + BA loop**: Paper: [schonberger2016_colmap-sfm]'s N3 — still required for final polish.
+
+## Pipeline lineage
+
+- 2016 · baseline: COLMAP CPU SfM. Driver: [schonberger2016_colmap-sfm] + [schonberger2016_colmap-mvs].
+- 2024 · accuracy twin on GPU: GLOMAP replaces incremental loop with global rotation averaging at COLMAP accuracy. Driver: [pan2024_glomap].
+- 2026 · general-purpose GPU: InstantSfM 1.5×–40× over COLMAP, 12× over GLOMAP via depth-constrained Jacobians. Driver: [zhong2026_instantsfm].
+- 2025 · domain-specialized GPU: CuSfM 6× over COLMAP on driving with prior SLAM trajectory. Driver: [yu2025_cusfm].
+
+## Candidate components / not yet integrated
+
+- **Learned feature frontend** (RoMa v2 on DINOv3, LoFTR) in place of RootSIFT — appears in research matchers but not yet inside a GPU-native classical SfM. Blocked on: speed parity; no clean benchmark.
+- **Pow3R conditioning** as an auxiliary prior into BA — [jang2025_pow3r] injects partial priors into DUSt3R; adapting to classical BA is untried.
+
+## Open questions & synthesis bets
+
+- Can InstantSfM's PyTorch-native design enable end-to-end differentiation through SfM? No 2026 paper exploits this yet. **Synthesis bet**: *backprop a rendering loss (3DGS PSNR) through InstantSfM poses — joint SfM+radiance-field training in one graph.* Mixes [zhong2026_instantsfm] + any 3DGS method.
+- **Synthesis bet**: *CuSfM's SLAM-prior two-stage factor graph applied to drone / phone scans* — idea generalizes beyond driving; no paper tested outside cars.
+- **Multi-prior fusion**: MP-SfM uses depth+normal; InstantSfM uses depth; CuSfM uses SLAM-poses+features. No consensus. **Synthesis bet**: *combine mono depth + mono normal + DINOv3 dense-matching confidence into a single Jacobian augmentation* — each prior informs a different residual axis.
+
+## Contradictions & tensions
+
+- Feed-forward pointmap methods ([vggt], [dust3r]) claim parity with COLMAP on some benchmarks but lag on calibration-grade outdoor metrics. Thread-position: GPU-native classical remains the reference; feed-forward is not yet a drop-in replacement for calibration workflows.
+

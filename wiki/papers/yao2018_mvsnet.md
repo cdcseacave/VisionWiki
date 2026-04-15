@@ -37,6 +37,13 @@ Classical PatchMatch MVS (e.g. [[colmap|COLMAP]]'s MVS stage) was the accuracy l
 
 MVSNet defined the learned MVS template: **features → plane-sweep cost volume → 3D-CNN regularization → depth regression**. Every subsequent learned MVS (R-MVSNet, CasMVSNet, UCSNet, PatchmatchNet, etc.) is a variation on this skeleton. Also an important conceptual precursor to depth-map based radiance-field methods and to feed-forward pointmap methods like [[dust3r|DUSt3R]] that abandon explicit cost volumes.
 
+## Pipeline contribution
+
+- **Differentiable plane-sweep cost volume with variance aggregation (N1)** — N warped feature volumes reduced to one by per-voxel variance, permutation-invariant in N. candidate thread: *learned MVS* (no dedicated thread; referenced in [[mono-depth-estimation]] and [[gaussian-to-mesh-pipelines]]) · stage: *N-view feature aggregation* · replaces/augments: *classical PatchMatch multi-view score* · expected gain: GPU-friendly, arbitrary-N inputs; the template every learned-MVS paper inherits.
+- **3D-CNN depth regularization → soft-argmin regression (N2)** — volumetric smoothing on the cost volume, then expected-depth regression. candidate thread: *learned MVS* · stage: *cost-volume → depth conversion* · expected gain: smooth depths with subpixel precision vs. PatchMatch's discrete search.
+- **Color-guided refinement (N3)** — reference image guides a residual depth-refinement stage. candidate thread: *MVS depth as prior* · expected gain: edge-aligned depths usable as [[gaussian-to-mesh-pipelines]] geometry supervision (Kim 2025 uses exactly this kind of external MVS depth).
+- **Role in the wiki**: MVSNet is the *conceptual ancestor* of DUSt3R / MASt3R / VGGT — the paper that proved "learned MVS > classical PatchMatch" on DTU and T&T. It's not in any thread's Current SOTA pipeline today (dominated by pointmap methods), but its cost-volume template still appears in feed-forward 3DGS papers ([MVSplat], [MVSGaussian]).
+
 ## Relation to prior work
 
 - Learned replacement for [[colmap|COLMAP]]'s PatchMatch MVS.

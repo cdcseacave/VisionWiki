@@ -40,6 +40,14 @@ A re-audit of the incremental SfM pipeline with targeted improvements at every s
 
 COLMAP *is* the de facto SfM baseline. Nearly every 2017–2025 reconstruction paper — NeRF, 3DGS, MVS, feed-forward 3D — reports "ground-truth poses from COLMAP." Replacing COLMAP is an explicit goal of recent work: [[pan2024_glomap|GLOMAP]] (global), [[zhong2026_instantsfm|InstantSfM]] (GPU), [[dust3r|DUSt3R]]/[[mast3r|MASt3R]]/[[vggt|VGGT]] (feed-forward).
 
+## Pipeline contribution
+
+- **Multi-model geometric verification (N1)** — RANSAC over homography + epipolar models to catch panorama/planar degeneracies. candidate thread: [[gpu-native-sfm]] · stage: *geometric verification* · replaces/augments: *single-model F-matrix RANSAC* · expected gain: robustness on internet photo collections; directly inherited by InstantSfM and CuSfM.
+- **Expected-gain next-best-view selection (N2)** — picks the next camera by predicted reconstruction gain, not match count. candidate thread: [[gpu-native-sfm]] · stage: *incremental registration scheduling* · expected gain: avoids wasted BA cycles on redundant views; the scheduling heuristic that makes incremental SfM tractable.
+- **Iterative triangulation + BA loop (N3)** — re-triangulates as BA refines poses, recovering tracks lost to initial noise. candidate thread: [[gpu-native-sfm]] · stage: *refinement loop* · expected gain: higher completeness on degenerate configurations; this loop *is* the accuracy reference every faster SfM paper measures against.
+- **Role in the wiki**: COLMAP SfM is the **Current SOTA pipeline baseline** in [[gpu-native-sfm]] — not a component to swap but the target every Tier-1 paper reimplements. The swap axis is *implementation* (CPU → GPU), not *math* — which is the core thesis of the thread.
+- **Ground-truth pose source** for [[radiance-field-evolution]], [[gaussian-to-mesh-pipelines]], most 3DGS benchmarks. COLMAP poses are the coordinate frame of every published reconstruction number.
+
 ## Relation to prior work
 
 - Builds on Bundler (Snavely 2006) and VisualSFM (Wu 2011); supersedes both.

@@ -49,6 +49,15 @@ The paper reports F-scores for the major pipelines of the era — COLMAP, MVE, O
 
 These numbers are primarily historical now; what matters is that the *framework* survived — every subsequent paper reports T&T F-scores using the same protocol.
 
+## Pipeline contribution
+
+Benchmark papers don't contribute pipeline *components* but they define the *success criteria* the pipelines are tuned to. Concrete contributions to the wiki's threads:
+
+- **F-score evaluation protocol (precision + recall, per-scene $\tau$)** — the metric that every [[gaussian-to-mesh-pipelines]] and [[radiance-field-evolution]] paper's "Current SOTA pipeline" is optimized against. Without precision + recall, "better" collapses to Chamfer and the thin-but-accurate degenerate optimum is rewarded.
+- **Intermediate vs. Advanced split** — defines two different "better" targets. Intermediate split is saturating (F>0.5 common); Advanced split remains unsolved and is where synthesis bets should be aimed.
+- **Submillimeter GT precision** → the benchmark won't saturate from GT noise. Synthesis bets that claim +X F-score on Advanced are measurable and credible.
+- **Successor candidates**: DTU (smaller, lab), ETH3D (smaller outdoor), ScanNet (indoor RGB-D). For [[gaussian-to-mesh-pipelines]] the current SOTA-pipeline goal statements should name T&T (Intermediate + Advanced) + DTU as the dual benchmarks; neither alone is sufficient.
+
 ## Why it matters
 
 Tanks and Temples is **the reason we can compare reconstruction papers across a decade**. Its longevity comes from three design choices that have aged remarkably well:
