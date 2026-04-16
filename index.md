@@ -144,8 +144,10 @@ _(empty)_
 - [Nerfstudio + gsplat Codebase](wiki/threads/nerfstudio.md) — local visiofacto fork architecture: pipelines, models, gsplat rendering internals · _updated 2026-04-13_
 
 ## Designs
+- [Language-Grounded 3DGS 2026 — Research-Synthesis Design](wiki/designs/language-grounded-3dgs-2026.md) — composes SAM 3 native IDs + RADIOv2.5 unified features + LangSVR geometric-prior objective on a 3DGS substrate, with a precomputed interaction layer (click <5 ms, text <100 ms at 1 M Gaussians) and a densify/prune invariant · _2026-04-15_
+- [Language-Grounded 3DGS — Nerfstudio / Visiofacto Implementation Plan](wiki/designs/language-grounded-3dgs-nerfstudio.md) — 9-phase buildable plan for the design above; `visiofacto-lang` method, offline preprocessing CLI, subclass extension pattern · _2026-04-15_
 - [CoMe Integration into Nerfstudio/Visiofacto](wiki/designs/come-integration-nerfstudio.md) — implementation blueprint for CoMe's confidence + variance losses + VastGaussian-derived appearance module with CoMe SSIM decoupling · _updated 2026-04-14_
 
 ---
 
-_Last rebuilt: 2026-04-15 · 53 papers, 14 methods, 15 concepts, 9 threads, 1 design_
+_Last rebuilt: 2026-04-15 · 53 papers, 14 methods, 15 concepts, 9 threads, 3 designs_

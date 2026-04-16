@@ -4,7 +4,7 @@ type: thread
 tags: [3dgs, sam, clip, dino, segmentation, open-vocabulary, scene-editing]
 created: 2026-04-15
 updated: 2026-04-15
-sources: [wiki/papers/ye2024_gaussian-grouping.md, wiki/papers/qin2024_langsplat.md, wiki/papers/jiao2025_clip-gs.md, wiki/papers/bao2025_seg-wild.md, wiki/papers/kim2026_gauss-explorer.md, wiki/papers/chen2025_sam-3d.md, wiki/papers/carion2026_sam-3.md, wiki/papers/jatavallabhula2023_conceptfusion.md, wiki/papers/wu2026_langsvr.md]
+sources: [wiki/papers/ye2024_gaussian-grouping.md, wiki/papers/qin2024_langsplat.md, wiki/papers/jiao2025_clip-gs.md, wiki/papers/bao2025_seg-wild.md, wiki/papers/kim2026_gauss-explorer.md, wiki/papers/chen2025_sam-3d.md, wiki/papers/carion2026_sam-3.md, wiki/papers/jatavallabhula2023_conceptfusion.md, wiki/papers/wu2026_langsvr.md, wiki/designs/language-grounded-3dgs-2026.md]
 status: draft
 ---
 
@@ -135,6 +135,7 @@ Produce a 3D representation (Gaussian, voxel, TSDF, or implicit) whose primitive
 - **RADIOv2.5 as the per-Gaussian feature source** ([[heinrich2025_radiov25]]) instead of raw CLIP — one backbone distillation replaces CLIP + DINO + SAM leg-by-leg.
 - **DINOv3 spatial coherence** for the LangSplat autoencoder's regularization slot (LangSplat explicitly dropped DINO; re-adding DINOv3 might revert that choice).
 - **TTT3R-style per-token update** applied to LangSplat's autoencoder training — per-embedding learning rate from render-confidence.
+- **Pipeline IX proposal — feature-augmented 3DGS with 2026-stack lifting** ([[language-grounded-3dgs-2026]]) — full pipeline that composes the four candidate components above ([[carion2026_sam-3|SAM 3]] native track-IDs + [[heinrich2025_radiov25|RADIOv2.5]] unified features + [[simeoni2025_dinov3|DINOv3]] depth/normal priors + LangSplat-style per-scene autoencoder) into a one-stage 3DGS training recipe, plus two contributions no single paper provides: (a) a densification/pruning invariant rule set (NULL_ID sentinel, entropy-gated splits, boundary-Gaussian protection, no-reset on opacity-reset) that keeps per-primitive identity and language fields coherent under the standard 3DGS training loop; (b) a precomputed interaction layer (VQ codebook + CSR identity hash + per-instance mean latents + FAISS IVF-PQ fallback) targeting click < 5 ms and text < 100 ms at 1 M Gaussians. **Kept in candidates** — not promoted to the Current SOTA pipelines — until Build-Sequence verification passes (see design §Verification Plan). Nerfstudio / visiofacto implementation plan: [[language-grounded-3dgs-nerfstudio]].
 
 ## Open questions & synthesis bets
 
