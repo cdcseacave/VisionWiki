@@ -3,10 +3,24 @@ title: Radiance Field Evolution
 type: thread
 tags: [nerf, 3dgs, differentiable-rendering, novel-view-synthesis, sparse-voxels]
 created: 2026-04-11
-updated: 2026-04-15
+updated: 2026-04-18
 sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md]
+operating_points: [op:quality-per-scene, op:city-scale, op:neural-free]
 status: draft
 ---
+
+## Goal
+
+Produce a radiance field from posed images that balances **rendering quality** (PSNR/SSIM/LPIPS), **rendering speed** (FPS at 1080p), **training cost** (per-scene wall-clock), and **scalability** (memory at city-scale). No single component dominates all four; the thread tracks per-operating-point winners.
+
+## Goal contract (optional, structured)
+
+```yaml
+metric: [PSNR, SSIM, LPIPS, inference-FPS@1080p, train-time-min, peak-memory-GB]
+target_regime: [posed-images, bounded | unbounded, object-or-room | city-scale, static-scene-default]
+constraints: [per-scene-optimization-acceptable, gpu-available, commercial-license-preferred]
+required_capabilities: [novel-view-synthesis, geometry-extraction-optional, appearance-decoupling]
+```
 
 ## Working hypothesis
 
@@ -111,58 +125,108 @@ stacked.
 
 ---
 
-## Goal & success criteria
+## SOTA pipelines
 
-Produce a radiance field from posed images that balances **rendering quality** (PSNR / SSIM / LPIPS on Mip-NeRF 360 + T&T), **rendering speed** (FPS at 1080p), **training cost** (per-scene wall-clock), and **scalability** (memory at city-scale). No single component dominates all four; the thread tracks per-regime winners.
+### op:quality-per-scene (object / room scale, PSNR-dominant)
 
-## Current SOTA pipelines (as of 2026-04-15)
-
-**Object / room scale (PSNR-dominant)**: 3DGS primitives + MVS-depth geometry regularization + decoupled appearance module.
+3DGS primitives + MVS-depth geometry regularization + decoupled appearance:
 - Primitive: 3DGS (Kerbl 2023).
 - Geometry regularization: multiview-depth + median-depth relative loss. Paper: [[kim2025_multiview-geometric-gs]].
 - Appearance decoupling: per-image CNN transforming target, not representation. Paper: [[lin2024_vastgaussian]] (generalized from NeRF-W).
 - SfM/pose source: COLMAP (or InstantSfM when speed matters); CamP preconditioning when poses are noisy. Paper: [[park2023_camp]].
 
-**City / aerial scale**: 3DGS + spatial partitioning + decoupled appearance + optional compression.
+### op:city-scale (aerial / city; scaling-dominant)
+
+3DGS + spatial partitioning + decoupled appearance + optional compression:
 - Partition: airspace-aware `m×n` ground-plane cells with visibility-based camera selection. Paper: [[lin2024_vastgaussian]].
 - Compression: codebook vector quantization + tetrahedral-mesh init. Paper: [[guo2025_ea-3dgs]]. Orthogonal to partitioning; stackable.
 - Drone specifics: adaptive local-global distractor masking + MVS-voxel-guided sparse-view regularization. Paper: [[tang2025_dronesplat]].
+- Incremental capture: voxel-based progressive 3DGS SLAM with loop closure. Paper: [[deng2026_vpgs-slam]].
 
-**NeRF-family alternative (reflective / unbounded quality ceiling)**: Zip-NeRF stack.
-- Scene contraction + proposal network + distortion regularizer. Paper: [[barron2022_mip-nerf-360]].
-- Hash-grid + multisample anti-aliasing + Z-aliasing normalization. Paper: [[barron2023_zip-nerf]].
-- Camera preconditioning. Paper: [[park2023_camp]].
+### op:neural-free (sparse-voxel rasterization; natively mesh-extractable)
 
-**Neural-free alternative**: sparse-voxel rasterization.
 - Adaptive sparse voxels + Morton-ordered CUDA rasterizer + post-activation density. Paper: [[sun2025_sparse-voxels-rasterization]].
-- Natively mesh-extractable (see [[gaussian-to-mesh-pipelines]] Paradigm C).
+- Natively mesh-extractable (see [[gaussian-to-mesh-pipelines]] `op:natively-extractable`).
+
+> **Note on the NeRF-family ceiling (Zip-NeRF stack).** The MipNeRF 360 + Zip-NeRF + CamP stack represents the implicit-NeRF quality ceiling — still load-bearing for reflective / unbounded benchmarks. After this migration it lives in `## Candidate components` rather than as its own OP, since the field has hand-ed off to 3DGS on edit-ability and real-time rendering. Re-promote to its own OP if a new implicit-NeRF paper moves the ceiling.
 
 ## Pipeline lineage
 
-- 2020 · baseline: volumetric rendering via MLP. Driver: NeRF.
-- 2022 · unbounded scenes: contract + proposal + distortion. Driver: [[barron2022_mip-nerf-360]].
-- 2023 · speed: hash-grid + anti-aliased cone. Driver: [[barron2023_zip-nerf]].
-- 2023 · implicit-NeRF ceiling: per-frame pose preconditioning. Driver: [[park2023_camp]].
-- 2023 · representation switch: implicit MLP → explicit Gaussians. Driver: Kerbl (3DGS).
-- 2024 · city scale: partition + airspace-aware visibility + 2D-transform appearance. Driver: [[lin2024_vastgaussian]].
-- 2025 · geometry: external MVS depth + median-depth relative loss. Driver: [[kim2025_multiview-geometric-gs]].
-- 2025 · compression: tetra-mesh init + codebook VQ. Driver: [[guo2025_ea-3dgs]].
-- 2025 · aerial robustness: adaptive masking + MVS-voxel regularization. Driver: [[tang2025_dronesplat]].
-- 2025 · alternative primitive: sparse voxel rasterizer. Driver: [[sun2025_sparse-voxels-rasterization]].
-- 2026 · city-scale SLAM: progressive voxel-GS with submaps + loop closure. Driver: [[deng2026_vpgs-slam]].
+- 2020 · all OPs · baseline: volumetric rendering via MLP. Driver: NeRF.
+- 2022 · (historical / NeRF-ceiling reference) · unbounded scenes: contract + proposal + distortion. Driver: [[barron2022_mip-nerf-360]].
+- 2023 · (historical / NeRF-ceiling reference) · speed: hash-grid + anti-aliased cone. Driver: [[barron2023_zip-nerf]].
+- 2023 · (historical / NeRF-ceiling reference) · implicit-NeRF ceiling: per-frame pose preconditioning. Driver: [[park2023_camp]].
+- 2023 · op:quality-per-scene · representation switch: implicit MLP → explicit Gaussians. Driver: Kerbl (3DGS).
+- 2024 · op:city-scale · new OP: partition + airspace-aware visibility + 2D-transform appearance. Driver: [[lin2024_vastgaussian]].
+- 2025 · op:quality-per-scene · geometry: external MVS depth + median-depth relative loss. Driver: [[kim2025_multiview-geometric-gs]].
+- 2025 · op:city-scale · compression: tetra-mesh init + codebook VQ. Driver: [[guo2025_ea-3dgs]].
+- 2025 · op:city-scale · aerial robustness: adaptive masking + MVS-voxel regularization. Driver: [[tang2025_dronesplat]].
+- 2025 · op:neural-free · new OP: sparse voxel rasterizer. Driver: [[sun2025_sparse-voxels-rasterization]].
+- 2026 · op:city-scale · progressive voxel-GS with submaps + loop closure. Driver: [[deng2026_vpgs-slam]].
 
 ## Candidate components / not yet integrated
 
-- **Per-pixel confidence from CoMe** as an alternative to SSIM in VastGaussian's decoupled appearance module. Proposed in [[radl2026_confidence-mesh-3dgs]] discussion; no paper merges them.
-- **Pow3R-style prior injection** (intrinsics / poses / sparse depth) into a 3DGS training frontend. No paper does this yet; 3DGS is still COLMAP-posed.
-- **Feed-forward 3DGS initialization** (PixelSplat, MVSplat, NoPoSplat) replacing COLMAP-SfM in the per-scene pipeline.
+- **NeRF-family ceiling (Zip-NeRF stack)** — MipNeRF 360 contraction + Zip-NeRF hash-grid + CamP preconditioning. Parked here rather than as its own OP; still the quality ceiling on reflective / unbounded benchmarks. Papers: [[barron2022_mip-nerf-360]], [[barron2023_zip-nerf]], [[park2023_camp]].
+- **Per-pixel confidence from CoMe** as an alternative to SSIM in VastGaussian's decoupled appearance module. Proposed in [[radl2026_confidence-mesh-3dgs]] discussion; no paper merges them. Target OP: `op:quality-per-scene`.
+- **Pow3R-style prior injection** (intrinsics / poses / sparse depth) into a 3DGS training frontend. No paper does this yet; 3DGS is still COLMAP-posed. Target OP: all.
+- **Feed-forward 3DGS initialization** (PixelSplat, MVSplat, NoPoSplat) replacing COLMAP-SfM in the per-scene pipeline. Target OP: `op:quality-per-scene`.
 - **Foundation-feature distillation into per-Gaussian features** — tracked under [[lifting-foundation-models-to-3d]] but not yet in any Current-SOTA radiance pipeline.
 
 ## Open questions & synthesis bets
 
-- Is SVRaster's sparse-voxel approach a serious competitor to Gaussians? **Synthesis bet**: *SVRaster primitives + CoMe confidence + MVS-depth supervision*. Combines [[sun2025_sparse-voxels-rasterization]] + [[radl2026_confidence-mesh-3dgs]] + [[schonberger2016_colmap-mvs]]. Could beat all 3DGS-based pipelines on geometry without losing render speed.
-- City-scale (km²): VastGaussian for partitioning, EA-3DGS for compression, VPGS-SLAM for incremental capture. **Synthesis bet**: *all three layered* — partition at capture time (VPGS-SLAM submaps), compress per submap (EA-3DGS codebooks), merge at render time. No paper composes the three.
-- Can CamP's preconditioning idea port to 3DGS? Paper explicitly leaves it open. **Synthesis bet**: *CamP-style Jacobian preconditioner on the 3DGS pose-refinement residual* (when poses are jointly optimized with Gaussians). Generic preconditioning is representation-agnostic; needs a 3DGS paper to try.
+### Bet #001 — SVRaster + CoMe confidence + MVS-depth supervision
+status: proposed
+combines: [[sun2025_sparse-voxels-rasterization]], [[radl2026_confidence-mesh-3dgs]], [[schonberger2016_colmap-mvs]]
+stage_target: radiance-fields.rendering
+op_target: op:neural-free
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: SVRaster primitives paired with CoMe's per-primitive self-supervised confidence + external MVS depth could beat all 3DGS-based pipelines on geometry without losing render speed.
+expected_gain: PSNR parity with op:quality-per-scene on NeRF-Synthetic / T&T + >0.03 F1 gain on geometry benchmarks, at SVRaster's render speed.
+risk: CoMe's confidence is Gaussian-covariance-based; porting to voxel primitives requires a different uncertainty formulation. External MVS may conflict with voxel-native geometry.
+validating_experiment: Drop-in CoMe-style confidence onto SVRaster; ablate with/without external MVS depth on T&T Intermediate. Compare vs. SVRaster baseline and 3DGS+CoMe baseline.
+triggers: [ingest-of-idea:confidence-weighted-voxel-depth, benchmark:svraster-coome-ablation]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #002 — VastGaussian + EA-3DGS + VPGS-SLAM layered for city-scale
+status: proposed
+combines: [[lin2024_vastgaussian]], [[guo2025_ea-3dgs]], [[deng2026_vpgs-slam]]
+stage_target: radiance-fields.partitioning
+op_target: op:city-scale
+confidence: med
+magnitude: substantial
+cost: months
+breakage_risk: med
+hypothesis: Partition at capture time (VPGS-SLAM submaps), compress per submap (EA-3DGS codebooks), merge at render time. No paper composes the three.
+expected_gain: True km²-scale capture with render-time memory lower than any single-method approach; SSIM/LPIPS parity with VastGaussian on aerial benchmarks.
+risk: Codebook quantization interacts badly with submap merging boundaries; may introduce visible seams. Loop-closure-driven submap edits invalidate codebooks.
+validating_experiment: Sequential capture on UrbanScene3D (aerial); compare {Vast-only, Vast+EA, Vast+VPGS, Vast+EA+VPGS} on SSIM + memory + training time.
+triggers: [ingest-of-idea:submap-boundary-codebook-alignment]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #003 — CamP-style Jacobian preconditioner on 3DGS joint pose-refinement
+status: proposed
+combines: [[park2023_camp]], [[zhong2026_instantsfm]]
+stage_target: radiance-fields.pose-joint-refine
+op_target: op:quality-per-scene
+confidence: high
+magnitude: incremental
+cost: days
+breakage_risk: low
+hypothesis: CamP's per-frame whitening of the camera Jacobian is representation-agnostic; applying it to 3DGS joint pose + Gaussians BA residual should give the same ~50% RMSE reduction CamP gave NeRF.
+expected_gain: Reduced pose-refinement RMSE on noisy-pose datasets (e.g. Mip-NeRF 360 with synthetic pose jitter); +0.3–0.8 PSNR in the joint regime.
+risk: 3DGS uses a different parameterization; whitening may conflict with the existing splatting gradient flow. CamP's Hessian-like conditioning cost may dominate the cheap 3DGS step.
+validating_experiment: Implement whitening on InstantSfM's BA step with 3DGS downstream; ablate vs. un-preconditioned joint optimization. Report PSNR + pose-AUC.
+triggers: [ingest-of-idea:3dgs-joint-ba-paper]
+created: 2026-04-15 · updated: 2026-04-18
+
+## Capability gaps
+
+- **3DGS + joint BA pose refinement** — CamP's preconditioning trick has no 3DGS analog. Would unlock: robust per-scene 3DGS under noisy poses without leaning on COLMAP. Search target: 3DGS papers that jointly optimize camera + Gaussians with Jacobian preconditioning.
+- **Automatic operating-point selector** — right now the user picks the OP (quality / city-scale / neural-free) by hand. Would unlock: one pipeline, adaptive partitioning. Search target: meta-papers that pick partitioning strategy from the input scene.
+- **City-scale + compression + SLAM layered** — VastGaussian + EA-3DGS + VPGS-SLAM all exist, no paper composes the three. Would unlock: true km²-scale capture. Search target: any 2026 paper doing partition-while-capturing-while-compressing.
 
 ## Contradictions & tensions
 

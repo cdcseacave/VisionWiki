@@ -3,10 +3,24 @@ title: GPU-Native SfM (Tier 1 — Accelerated Classical)
 type: thread
 tags: [sfm, gpu-acceleration, bundle-adjustment, colmap, glomap, cuda, pytorch]
 created: 2026-04-12
-updated: 2026-04-15
+updated: 2026-04-18
 sources: [papers/zhong2026_instantsfm.md, papers/yu2025_cusfm.md]
+operating_points: [op:general-purpose, op:sequential-slam-prior]
 status: draft
 ---
+
+## Goal
+
+Produce posed-3D reconstruction at COLMAP-grade metric accuracy at 10×–40× COLMAP's throughput. Better = same or better accuracy *and* ≥10× wall-clock speedup *and* drop-in-compatible with downstream pipelines (3DGS / NeRF / robotics). Calibration-grade poses are the non-negotiable floor; trading accuracy for speed is out of scope for this thread.
+
+## Goal contract (optional, structured)
+
+```yaml
+metric: [pose-AUC@5deg, chamfer, T&T-F-score, wall-clock-speedup-vs-COLMAP]
+target_regime: [posed-output, metric-scale, general-image-collections | sequential-video]
+constraints: [colmap-grade-accuracy-floor, gpu-available, drop-in-replacement-for-colmap]
+required_capabilities: [robust-outlier-handling, scale-to-thousands-of-images, graceful-on-bad-priors]
+```
 
 ## Working hypothesis
 
@@ -137,25 +151,32 @@ grabs the attention, Tier 1 is where production SfM is heading because:
 
 ---
 
-## Goal & success criteria
+## SOTA pipelines
 
-Produce a posed-3D reconstruction at COLMAP-grade metric accuracy (pose AUC, Chamfer, T&T F-score) at 10×–40× the throughput. "Better" = same or better accuracy *and* ≥10× wall-clock speedup *and* drop-in replacement for COLMAP in downstream pipelines (3DGS / NeRF / robotics). Calibration-grade poses are the non-negotiable floor — trade-offs of accuracy for speed are out of scope for this thread.
+### op:general-purpose (unordered images, optional priors)
 
-## Current SOTA pipeline (as of 2026-04-15)
+Stage-by-stage for unordered / semi-ordered image collections:
 
-Stage-by-stage for a general-purpose GPU-native SfM:
-
-1. **Feature extraction**: external — RootSIFT (InstantSfM) or ALIKED via TensorRT (CuSfM). Paper: [[zhong2026_instantsfm]] / [[yu2025_cusfm]]. Open: does replacing SIFT with DINOv3-head matcher (RoMa v2 frontend) shift the speed/accuracy frontier?
+1. **Feature extraction**: RootSIFT (InstantSfM default). Paper: [[zhong2026_instantsfm]]. Open: does replacing SIFT with DINOv3-head matcher (RoMa v2 frontend) shift the speed/accuracy frontier?
 2. **Matching + geometric verification**: multi-model RANSAC, scene-graph augmentation. Paper: [[schonberger2016_colmap-sfm]]'s N1 carried forward unchanged.
-3. **Global positioning + depth-constrained Jacobian BA**: PyTorch GPU sparse ops. Paper: [[zhong2026_instantsfm]]. Or two-stage factor-graph (robust → stringent) for rig-with-prior-trajectory workloads. Paper: [[yu2025_cusfm]].
+3. **Global positioning + depth-constrained Jacobian BA**: PyTorch GPU sparse ops. Paper: [[zhong2026_instantsfm]].
 4. **Iterative triangulation + BA loop**: Paper: [[schonberger2016_colmap-sfm]]'s N3 — still required for final polish.
+
+### op:sequential-slam-prior (ordered video + prior trajectory, e.g. autonomous driving)
+
+Stage-by-stage when a coarse SLAM trajectory is already available:
+
+1. **Feature extraction**: ALIKED via TensorRT. Paper: [[yu2025_cusfm]].
+2. **Non-redundant data association**: minimal view graph built from the prior trajectory. Paper: [[yu2025_cusfm]].
+3. **Two-stage factor-graph optimization**: robust-loss warmup → stringent-outlier final pass. Paper: [[yu2025_cusfm]].
+4. **Multi-camera rig refinement**: joint pose + extrinsic calibration. Paper: [[yu2025_cusfm]].
 
 ## Pipeline lineage
 
-- 2016 · baseline: COLMAP CPU SfM. Driver: [[schonberger2016_colmap-sfm]] + [[schonberger2016_colmap-mvs]].
-- 2024 · accuracy twin on GPU: GLOMAP replaces incremental loop with global rotation averaging at COLMAP accuracy. Driver: [[pan2024_glomap]].
-- 2026 · general-purpose GPU: InstantSfM 1.5×–40× over COLMAP, 12× over GLOMAP via depth-constrained Jacobians. Driver: [[zhong2026_instantsfm]].
-- 2025 · domain-specialized GPU: CuSfM 6× over COLMAP on driving with prior SLAM trajectory. Driver: [[yu2025_cusfm]].
+- 2016 · op:general-purpose · baseline: COLMAP CPU SfM. Driver: [[schonberger2016_colmap-sfm]] + [[schonberger2016_colmap-mvs]].
+- 2024 · op:general-purpose · accuracy twin on GPU: GLOMAP replaces incremental loop with global rotation averaging at COLMAP accuracy. Driver: [[pan2024_glomap]].
+- 2026 · op:general-purpose · general-purpose GPU: InstantSfM 1.5×–40× over COLMAP, 12× over GLOMAP via depth-constrained Jacobians. Driver: [[zhong2026_instantsfm]].
+- 2025 · op:sequential-slam-prior · domain-specialized GPU: CuSfM 6× over COLMAP on driving with prior SLAM trajectory. Driver: [[yu2025_cusfm]].
 
 ## Candidate components / not yet integrated
 
@@ -164,9 +185,59 @@ Stage-by-stage for a general-purpose GPU-native SfM:
 
 ## Open questions & synthesis bets
 
-- Can InstantSfM's PyTorch-native design enable end-to-end differentiation through SfM? No 2026 paper exploits this yet. **Synthesis bet**: *backprop a rendering loss (3DGS PSNR) through InstantSfM poses — joint SfM+radiance-field training in one graph.* Mixes [[zhong2026_instantsfm]] + any 3DGS method.
-- **Synthesis bet**: *CuSfM's SLAM-prior two-stage factor graph applied to drone / phone scans* — idea generalizes beyond driving; no paper tested outside cars.
-- **Multi-prior fusion**: MP-SfM uses depth+normal; InstantSfM uses depth; CuSfM uses SLAM-poses+features. No consensus. **Synthesis bet**: *combine mono depth + mono normal + DINOv3 dense-matching confidence into a single Jacobian augmentation* — each prior informs a different residual axis.
+### Bet #008 — End-to-end-differentiable InstantSfM with 3DGS rendering loss
+status: proposed
+combines: [[zhong2026_instantsfm]], [[lin2024_vastgaussian]]
+stage_target: sfm.pose
+op_target: op:general-purpose
+confidence: med
+magnitude: paradigm
+cost: months
+breakage_risk: high
+hypothesis: InstantSfM is PyTorch-native; no 2026 paper has backpropped a downstream render loss through it. Joint SfM + 3DGS in one graph could let pose quality be driven by rendering PSNR directly, not reprojection error.
+expected_gain: PSNR gain on noisy-pose datasets (e.g. Mip-NeRF 360 with synthetic jitter); potentially 0.5–2 PSNR improvement over two-stage COLMAP → 3DGS.
+risk: The BA solve is non-differentiable at the inner Schur step; naive backprop may be unstable or require implicit-differentiation tricks. Memory blowup at 1K+ images.
+validating_experiment: Implement differentiable outer loop through InstantSfM's BA; compare vs. frozen-pose 3DGS baseline on synthetic-jitter Mip-NeRF 360.
+triggers: [ingest-of-idea:implicit-differentiation-through-ba]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #009 — CuSfM's SLAM-prior two-stage factor graph applied to drone / phone
+status: proposed
+combines: [[yu2025_cusfm]]
+stage_target: sfm.pose
+op_target: op:sequential-slam-prior
+confidence: high
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: CuSfM's "refine a coarse SLAM trajectory" approach is domain-agnostic; applying it to drone / phone / AR captures (which also have coarse IMU/SLAM trajectories) should give similar speedups + accuracy gains without car-specific assumptions.
+expected_gain: ~6× speedup over COLMAP + sub-meter pose accuracy on drone / phone datasets with ORB-SLAM2 as prior.
+risk: Phone IMU is noisier than car IMU; the prior-trajectory assumption may degrade. Rig refinement is irrelevant for handheld.
+validating_experiment: Run CuSfM with ORB-SLAM2 prior on drone (UrbanScene3D) + phone (ScanNet++) captures; measure ATE and speedup.
+triggers: [ingest-of-idea:non-automotive-slam-prior-sfm]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #010 — Multi-prior Jacobian fusion (depth + normal + DINOv3 match confidence)
+status: proposed
+combines: [[zhong2026_instantsfm]], [[pataki2025_mp-sfm]], [[edstedt2025_roma-v2]]
+stage_target: sfm.pose
+op_target: op:general-purpose
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: MP-SfM uses depth+normal; InstantSfM uses depth; CuSfM uses SLAM+features. No paper fuses all three modality families. Each prior informs a different residual axis — depth constrains global position, normal constrains local tangent, DINOv3 match confidence downweights bad correspondences.
+expected_gain: Improved pose accuracy on sparse-view / textureless benchmarks where any single prior is weak; ~20–40% error reduction on MP-SfM's sparse-view benchmarks.
+risk: Three-prior weight tuning is empirical; over-regularization can degrade accuracy on dense captures. Prior conflicts must be handled (e.g. depth contradicting normal).
+validating_experiment: Implement three Jacobian augmentations as separate residual blocks in InstantSfM; ablate on sparse-view drone + dense office captures.
+triggers: [ingest-of-idea:principled-prior-weighting-ba]
+created: 2026-04-15 · updated: 2026-04-18
+
+## Capability gaps
+
+- **Learned feature frontend with proven speed parity** (RoMa v2 on DINOv3, LoFTR) — would unlock backbone-level accuracy gains without giving up speed. Search target: matcher papers with RootSIFT-quality metric-pose results at equal throughput.
+- **End-to-end differentiable SfM through PyTorch** — InstantSfM enables the graph but no paper backprops a downstream render loss through it yet. Search target: papers training 3DGS/NeRF jointly with pose refinement.
+- **Multi-prior Jacobian fusion scheme** (depth + normal + DINOv3 confidence + SLAM-poses) — no consensus. Search target: ablation papers that vary the prior mix on one benchmark.
 
 ## Contradictions & tensions
 

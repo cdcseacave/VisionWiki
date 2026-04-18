@@ -3,10 +3,31 @@ title: Monocular Depth Estimation
 type: thread
 tags: [depth-estimation, monocular, metric-depth, relative-depth, foundation-model]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-18
 sources: [papers/pataki2025_mp-sfm.md, papers/zhong2026_instantsfm.md, papers/li2025_megasam.md, papers/tang2025_dronesplat.md, papers/kim2025_multiview-geometric-gs.md, papers/chebbi2025_multiview-dense-matching.md]
+operating_points: [op:default]
 status: draft
 ---
+
+## Goal
+
+Deliver monocular depth that actually improves downstream 3D pipelines — SfM, 3DGS, MVS, feed-forward reconstruction — without over-constraining the geometry. The thread tracks mono depth as a *load-bearing prior*, not a standalone task: success is measured by the downstream metric gain when the prior is injected, not by the depth's own absolute error.
+
+## Goal contract (optional, structured)
+
+```yaml
+metric: [downstream-pose-AUC-gain, downstream-chamfer-reduction, prior-injection-robustness]
+target_regime: [single-image, posed | unposed, static | dynamic, metric-scale | relative-scale]
+constraints: [no-per-scene-training-on-depth, graceful-degradation-when-prior-wrong]
+required_capabilities: [metric-depth, scale-consistency-across-frames, uncertainty-estimate]
+# to be filled: preferred benchmark suite once the field coalesces
+```
+
+## Capability gaps
+
+- **Calibrated per-pixel uncertainty** from mono depth — would let classical BA downweight uncertain regions automatically. Search target: diffusion-depth papers that expose variance; discriminative heads with explicit epistemic outputs.
+- **Principled fusion of mono depth + mono normal + sparse-point priors** into one residual — no consensus. Search target: papers that ablate prior-combination strategies on the same benchmark.
+- **Mono depth that composes with DUSt3R-style feed-forward depth** without redundancy. Search target: papers comparing mono-depth-as-init vs. DUSt3R-depth-as-init in downstream 3DGS.
 
 ## Working hypothesis
 

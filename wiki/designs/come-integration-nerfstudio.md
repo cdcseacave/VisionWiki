@@ -3,10 +3,14 @@ title: "Design Doc: Integrating CoMe Confidence + Variance Losses into Nerfstudi
 type: design
 tags: [3dgs, mesh-reconstruction, confidence, variance-loss, nerfstudio, gsplat, visiofacto, implementation]
 created: 2026-04-13
-updated: 2026-04-14
+updated: 2026-04-18
 sources:
   - papers/radl2026_confidence-mesh-3dgs.md
   - papers/lin2024_vastgaussian.md
+realizes_bet: none      # direct paper re-implementation, not a synthesis bet
+realizes_ideas: [[per-gaussian-self-supervised-confidence_radl2026]], [[decoupled-appearance-2d-transform_lin2024]]   # idea slugs to be created in Step 6
+outcome: pending
+outcome_date: null
 status: draft
 ---
 

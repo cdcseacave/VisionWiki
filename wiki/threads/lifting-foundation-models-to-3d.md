@@ -3,8 +3,9 @@ title: Lifting Foundation Models to 3D
 type: thread
 tags: [3dgs, sam, clip, dino, segmentation, open-vocabulary, scene-editing]
 created: 2026-04-15
-updated: 2026-04-15
+updated: 2026-04-18
 sources: [wiki/papers/ye2024_gaussian-grouping.md, wiki/papers/qin2024_langsplat.md, wiki/papers/jiao2025_clip-gs.md, wiki/papers/bao2025_seg-wild.md, wiki/papers/kim2026_gauss-explorer.md, wiki/papers/chen2025_sam-3d.md, wiki/papers/carion2026_sam-3.md, wiki/papers/jatavallabhula2023_conceptfusion.md, wiki/papers/wu2026_langsvr.md, wiki/designs/language-grounded-3dgs-2026.md]
+operating_points: [op:per-scene-3dgs, op:zero-shot-3dgs, op:voxel-online]
 status: draft
 ---
 
@@ -76,76 +77,167 @@ These show the lifting pattern is **representation-agnostic**: the same "2D foun
 
 ---
 
-## Goal & success criteria
+## Goal
 
-Produce a 3D representation (Gaussian, voxel, TSDF, or implicit) whose primitives carry foundation-model features sufficient to support open-vocabulary queries (text/image/audio/click), instance segmentation, editing, and VLM reasoning. "Better" = higher 3D-OVS mIoU / instance IoU, lower per-scene training cost, and modularity (new 2D foundation model → drop-in upgrade, no retrain of the 3D pipeline).
+Produce a 3D representation (Gaussian, voxel, TSDF, or implicit) whose primitives carry foundation-model features sufficient to support open-vocabulary queries (text/image/audio/click), instance segmentation, editing, and VLM reasoning. Better = higher 3D-OVS mIoU / instance IoU, lower per-scene training cost, and modularity (new 2D foundation model → drop-in upgrade, no retrain of the 3D pipeline).
 
-## Current SOTA pipelines (as of 2026-04-15)
+## Goal contract (optional, structured)
 
-**Pipeline I — Per-scene CLIP distillation onto 3DGS** (default for NVS-first applications):
+```yaml
+metric: [3d-OVS-mIoU, instance-IoU, per-scene-train-min, query-latency-ms]
+target_regime: [posed-images | RGB-D stream, bounded-scene | room | city, static-or-dynamic]
+constraints: [2d-backbone-upgradeable-without-3d-retrain, commercial-license-preferred]
+required_capabilities: [open-vocab-query, instance-segmentation, scene-editing, foundation-feature-lifting]
+```
+
+## SOTA pipelines
+
+**Migration note (2026-04-18).** The pre-migration thread listed 8 parallel pipelines (I–VIII). The §6.9 Pareto cap limits threads to 3 OPs. This migration consolidated the 3DGS and voxel-lifting pipelines (I, II, III, IV, V) into 3 OPs below. Pipelines VI–VIII split into sibling threads the same day; see "Sibling threads (split 2026-04-18)" below.
+
+### op:per-scene-3dgs (default for NVS-first + editing; consolidates old Pipelines I + II)
+
 1. 3DGS primitives trained per scene.
-2. CLIP embeddings extracted per view via SAM mask hierarchy. Paper: [[qin2024_langsplat]].
-3. Scene-specific autoencoder compresses 512-D CLIP → low-D latent per Gaussian.
-4. Rendering + query by cosine similarity.
+2. Per-Gaussian feature source — choose one:
+   - CLIP embeddings extracted per view via SAM mask hierarchy, compressed via scene-specific autoencoder (→ low-D latent per Gaussian). Paper: [[qin2024_langsplat]] (LangSplat).
+   - SAM-mask-supervised Identity Encoding with cross-view association + 3D spatial-consistency regularization. Paper: [[ye2024_gaussian-grouping]]. In-the-wild extension: multi-dim embeddings + Spiky 3D Gaussian Cutter + transient appearance. Paper: [[bao2025_seg-wild]].
+3. Rendering + query by cosine similarity (for CLIP-latent variant) or instance-ID match (for SAM-identity variant).
 
-**Pipeline II — SAM-mask-lifted per-Gaussian identities** (default for editing):
-1. 3DGS primitives.
-2. Per-Gaussian Identity Encoding supervised by SAM masks with cross-view association + 3D spatial-consistency. Paper: [[ye2024_gaussian-grouping]].
-3. For in-the-wild captures: multi-dim embeddings + Spiky 3D Gaussian Cutter + transient appearance embedding. Paper: [[bao2025_seg-wild]].
+### op:zero-shot-3dgs (default when transfer across scenes matters; old Pipeline III)
 
-**Pipeline III — Scene-level contrastive alignment** (default for zero-shot cross-scene):
 1. 3DGS pre-computed.
 2. GS Tokenizer → transformer init from point-cloud FM → contrastive with CLIP image+text. Paper: [[jiao2025_clip-gs]].
+3. Zero-shot query on unseen scenes via shared embedding space.
 
-**Pipeline IV — Voxel TSDF + multi-modal feature fusion** (default for robotics/online):
-1. RGB-D stream → voxel-hashed TSDF.
-2. Per-frame pixel features from CLIP + DINO + AudioCLIP → per-voxel running weighted average. Paper: [[jatavallabhula2023_conceptfusion]].
+### op:voxel-online (default for robotics / online / multimodal; consolidates old Pipelines IV + V)
+
+1. Primitive: voxel-hashed TSDF (online RGB-D) or SVRaster primitives (batched).
+2. Per-voxel feature fusion — choose one:
+   - Per-frame pixel features from CLIP + DINO + AudioCLIP → per-voxel running weighted average. Paper: [[jatavallabhula2023_conceptfusion]] (ConceptFusion). Online, multimodal.
+   - Four co-trained fields (appearance + density + feature + confidence) with dual distillation (CLIP + monocular-depth geometry FM). Paper: [[wu2026_langsvr]] (LangSVR).
 3. Multimodal query by cosine on shared embedding space.
-
-**Pipeline V — Sparse-voxel one-stage unified (language + geometry distillation)**:
-1. SVRaster primitives. Paper: [[sun2025_sparse-voxels-rasterization]].
-2. Four co-trained fields: appearance + density + feature + confidence. Paper: [[wu2026_langsvr]].
-3. Dual distillation: CLIP features + monocular-depth geometry FM.
-
-**Pipeline VI — Inference-time VLM reasoning** (default for compositional queries):
-1. 3DGS scene + query → view retrieval + novel-view synthesis.
-2. Composite views → pretrained VLM. Paper: [[kim2026_gauss-explorer]].
-
-**Pipeline VII — Single-image generative 3D**:
-1. Single RGB image → latent flow-matching shape gen + layout. Paper: [[chen2025_sam-3d]].
-
-**Pipeline VIII — LLM-native structured indoor understanding**:
-1. Point cloud + Sonata encoder → LLM generating Python-like scene scripts. Paper: [[mao2025_spatiallm]].
 
 ## Pipeline lineage
 
-- 2023 · voxel TSDF lifting of CLIP + DINO + AudioCLIP. Driver: [[jatavallabhula2023_conceptfusion]].
-- 2024 · NeRF-based CLIP field (LERF) → 3DGS CLIP autoencoder distillation. Driver: [[qin2024_langsplat]].
-- 2024 · 3DGS identity encoding from SAM. Driver: [[ye2024_gaussian-grouping]].
-- 2025 · in-the-wild identity segmentation. Driver: [[bao2025_seg-wild]].
-- 2025 · contrastive scene-level alignment (3DGS ↔ CLIP). Driver: [[jiao2025_clip-gs]].
-- 2025 · LLM-native structured indoor modeling. Driver: [[mao2025_spatiallm]].
-- 2025 · single-image generative scene 3D. Driver: [[chen2025_sam-3d]].
-- 2026 · one-stage sparse-voxel unified (language + geometry). Driver: [[wu2026_langsvr]].
-- 2026 · VLM-reasoning-over-3DGS. Driver: [[kim2026_gauss-explorer]].
+- 2023 · op:voxel-online · voxel TSDF lifting of CLIP + DINO + AudioCLIP. Driver: [[jatavallabhula2023_conceptfusion]].
+- 2024 · op:per-scene-3dgs · NeRF-based CLIP field (LERF) → 3DGS CLIP autoencoder distillation. Driver: [[qin2024_langsplat]].
+- 2024 · op:per-scene-3dgs · 3DGS identity encoding from SAM. Driver: [[ye2024_gaussian-grouping]].
+- 2025 · op:per-scene-3dgs · in-the-wild identity segmentation. Driver: [[bao2025_seg-wild]].
+- 2025 · op:zero-shot-3dgs · new OP: contrastive scene-level alignment (3DGS ↔ CLIP). Driver: [[jiao2025_clip-gs]].
+- 2026 · op:voxel-online · one-stage sparse-voxel unified (language + geometry). Driver: [[wu2026_langsvr]].
+- 2026-04-18 · thread-split · Pipelines VI–VIII removed to sibling threads [[vlm-reasoning-over-3d-scenes]], [[generative-3d-from-2d-priors]], [[llm-native-structured-scenes]].
 
 ## Candidate components / not yet integrated
 
-- **SAM 3 masks with native instance IDs** ([[carion2026_sam-3]]) as Gaussian Grouping's supervision — kills the cross-view association module; mechanism is "drop in SAM 3, delete association loop." Highest-priority synthesis bet in the thread.
-- **RADIOv2.5 as the per-Gaussian feature source** ([[heinrich2025_radiov25]]) instead of raw CLIP — one backbone distillation replaces CLIP + DINO + SAM leg-by-leg.
-- **DINOv3 spatial coherence** for the LangSplat autoencoder's regularization slot (LangSplat explicitly dropped DINO; re-adding DINOv3 might revert that choice).
-- **TTT3R-style per-token update** applied to LangSplat's autoencoder training — per-embedding learning rate from render-confidence.
-- **Pipeline IX proposal — feature-augmented 3DGS with 2026-stack lifting** ([[language-grounded-3dgs-2026]]) — full pipeline that composes the four candidate components above ([[carion2026_sam-3|SAM 3]] native track-IDs + [[heinrich2025_radiov25|RADIOv2.5]] unified features + [[simeoni2025_dinov3|DINOv3]] depth/normal priors + LangSplat-style per-scene autoencoder) into a one-stage 3DGS training recipe, plus two contributions no single paper provides: (a) a densification/pruning invariant rule set (NULL_ID sentinel, entropy-gated splits, boundary-Gaussian protection, no-reset on opacity-reset) that keeps per-primitive identity and language fields coherent under the standard 3DGS training loop; (b) a precomputed interaction layer (VQ codebook + CSR identity hash + per-instance mean latents + FAISS IVF-PQ fallback) targeting click < 5 ms and text < 100 ms at 1 M Gaussians. **Kept in candidates** — not promoted to the Current SOTA pipelines — until Build-Sequence verification passes (see design §Verification Plan). Nerfstudio / visiofacto implementation plan: [[language-grounded-3dgs-nerfstudio]].
+- **SAM 3 masks with native instance IDs** ([[carion2026_sam-3]]) as Gaussian Grouping's supervision — kills the cross-view association module; mechanism is "drop in SAM 3, delete association loop." Target OP: `op:per-scene-3dgs`. Highest-priority bet in the thread.
+- **RADIOv2.5 as the per-Gaussian feature source** ([[heinrich2025_radiov25]]) instead of raw CLIP — one backbone distillation replaces CLIP + DINO + SAM leg-by-leg. Target OP: `op:per-scene-3dgs`, `op:voxel-online`.
+- **DINOv3 spatial coherence** for the LangSplat autoencoder's regularization slot (LangSplat explicitly dropped DINO; re-adding DINOv3 might revert that choice). Target OP: `op:per-scene-3dgs`.
+- **TTT3R-style per-token update** applied to LangSplat's autoencoder training — per-embedding learning rate from render-confidence. Target OP: `op:per-scene-3dgs`.
+- **Pipeline IX proposal — feature-augmented 3DGS with 2026-stack lifting** ([[language-grounded-3dgs-2026]]) — full pipeline composing SAM 3 native track-IDs + RADIOv2.5 unified features + DINOv3 depth/normal priors + LangSplat-style per-scene autoencoder into a one-stage 3DGS training recipe, plus two contributions no single paper provides: (a) a densification/pruning invariant rule set (NULL_ID sentinel, entropy-gated splits, boundary-Gaussian protection, no-reset on opacity-reset); (b) a precomputed interaction layer (VQ codebook + CSR identity hash + per-instance mean latents + FAISS IVF-PQ fallback) targeting click < 5 ms and text < 100 ms at 1 M Gaussians. **Kept in candidates** — not promoted to SOTA — until Build-Sequence verification passes (see design §Verification Plan). Target OP: `op:per-scene-3dgs`. Nerfstudio / visiofacto implementation plan: [[language-grounded-3dgs-nerfstudio]].
+
+### Sibling threads (split 2026-04-18)
+
+The 2026-04-18 migration split three structurally distinct task classes out of this thread into their own sibling threads. This thread tracks per-scene lifted-feature 3DGS/voxel methods; the sibling threads track tasks where the primary output is not a feature-augmented radiance field.
+
+- [[vlm-reasoning-over-3d-scenes]] — inference-time VLM reasoning on reconstructed 3D scenes ([[kim2026_gauss-explorer]] / Pipeline VI origin).
+- [[generative-3d-from-2d-priors]] — single-image-to-3D generative scene synthesis ([[chen2025_sam-3d]] / Pipeline VII origin).
+- [[llm-native-structured-scenes]] — point-cloud → LLM-emitted structured scene scripts ([[mao2025_spatiallm]] / Pipeline VIII origin).
+
+Cross-thread synthesis bets connecting this thread to the siblings live in the sibling threads' own "Open questions & synthesis bets" sections (Bets #021, #023, #025).
 
 ## Open questions & synthesis bets
 
-- **Synthesis bet 1**: *Gaussian Grouping with SAM 3 supervision* (identity IDs pre-aligned across views → delete association module). Mixes [[ye2024_gaussian-grouping]] + [[carion2026_sam-3]]. Expected: 5–10% mIoU gain + simpler training.
-- **Synthesis bet 2**: *LangSplat with RADIOv2.5 as the feature source* + *CoMe confidence as the per-Gaussian feature weighting*. Mixes [[qin2024_langsplat]] + [[heinrich2025_radiov25]] + [[radl2026_confidence-mesh-3dgs]]. Unified feature encoder + unified uncertainty.
-- **Synthesis bet 3**: *Wu 2026 LangSVR's one-stage recipe with SAM 3 as the mask source and DINOv3 as the geometry prior*. Mixes [[wu2026_langsvr]] + [[carion2026_sam-3]] + [[simeoni2025_dinov3]]. Every component upgraded to the 2026 state.
-- **Synthesis bet 4**: *ConceptFusion-style online voxel fusion with RADIOv2.5 features + VPGS-SLAM's progressive submaps*. Mixes [[jatavallabhula2023_conceptfusion]] + [[heinrich2025_radiov25]] + [[deng2026_vpgs-slam]]. Online, multimodal, city-scale lifted 3D — no paper does this.
-- **Memory**: per-Gaussian features at scene scale explode memory. Open: distilled / quantized per-primitive features. EA-3DGS-style codebook VQ applied to feature channels? No paper tries this.
-- **3D-native foundation models**: CLIP-GS trains on 3DGS directly. Open question: will the field invert — skip CLIP entirely, pretrain FMs on 3D?
+### Bet #013 — Gaussian Grouping with SAM 3 native instance IDs
+status: proposed
+combines: [[ye2024_gaussian-grouping]], [[carion2026_sam-3]]
+stage_target: lifting-foundation-models.identity-supervision
+op_target: op:per-scene-3dgs
+confidence: high
+magnitude: substantial
+cost: days
+breakage_risk: low
+hypothesis: SAM 3's native cross-view instance IDs obsolete Gaussian Grouping's cross-view association module. Drop in SAM 3, delete the association loss — simpler training, better IDs.
+expected_gain: 5–10% mIoU gain + ~20–30% training-time reduction (no association loss to converge).
+risk: SAM 3 IDs may be unstable under large viewpoint change; some fallback association may still be needed.
+validating_experiment: Replace Gaussian Grouping's mask supervision with SAM 3 outputs; ablate with/without the original association loss on LERF benchmarks.
+triggers: [ingest-of-idea:sam3-id-stability-analysis]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #014 — LangSplat with RADIOv2.5 features + CoMe per-Gaussian weighting
+status: proposed
+combines: [[qin2024_langsplat]], [[heinrich2025_radiov25]], [[radl2026_confidence-mesh-3dgs]]
+stage_target: lifting-foundation-models.feature-source
+op_target: op:per-scene-3dgs
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: Replace CLIP as LangSplat's feature source with RADIOv2.5 (unified backbone, already subsumes CLIP+DINO+SAM) and weight per-Gaussian feature updates by CoMe's self-supervised confidence. Unified feature encoder + unified uncertainty.
+expected_gain: 3D-OVS mIoU gain over LangSplat baseline; cleaner boundaries from CoMe confidence masking out low-confidence Gaussians.
+risk: RADIOv2.5's feature dimension differs from CLIP; autoencoder must be re-tuned. CoMe confidence was designed for geometry, may not map well to semantic features.
+validating_experiment: LangSplat with {CLIP, RADIOv2.5, RADIOv2.5+CoMe-weighting} on LERF 3D-OVS + ScanNet++.
+triggers: [ingest-of-idea:confidence-weighted-semantic-feature-lifting]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #015 — LangSVR with SAM 3 masks + DINOv3 geometry prior
+status: proposed
+combines: [[wu2026_langsvr]], [[carion2026_sam-3]], [[simeoni2025_dinov3]]
+stage_target: lifting-foundation-models.multi-field-training
+op_target: op:voxel-online
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: Wu 2026's one-stage SVRaster + 4-field recipe already distills CLIP + mono-depth. Upgrading every component to the 2026 state — SAM 3 as mask source (was: SAM), DINOv3 as geometry prior (was: unnamed depth FM) — should close the remaining gap vs. Pipeline B (SAM 3) on segmentation + Pipeline I (LangSplat) on OVS.
+expected_gain: ≥3% mIoU + ≥0.3 PSNR over LangSVR baseline on joint benchmarks.
+risk: Already a technical report; architecture may be fragile to component swaps. Multi-teacher distillation may stall.
+validating_experiment: Component-swap ablation {LangSVR, +SAM3, +DINOv3, +both} on ScanNet++ segmentation + LERF OVS.
+triggers: [ingest-of-idea:multi-teacher-voxel-distillation]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #016 — ConceptFusion + RADIOv2.5 + VPGS-SLAM progressive submaps
+status: proposed
+combines: [[jatavallabhula2023_conceptfusion]], [[heinrich2025_radiov25]], [[deng2026_vpgs-slam]]
+stage_target: lifting-foundation-models.online-fusion
+op_target: op:voxel-online
+confidence: low
+magnitude: paradigm
+cost: months
+breakage_risk: high
+hypothesis: ConceptFusion is RGB-D → voxel-TSDF + multimodal features (2023); VPGS-SLAM gives progressive submaps + loop closure (2026); RADIOv2.5 gives unified per-frame features (2025). Composing the three yields an online, multimodal, city-scale lifted 3D representation — no paper does this.
+expected_gain: First demonstration of km²-scale online lifted 3D; qualitative validation on extended indoor+outdoor sequences.
+risk: Loop-closure re-voxelization invalidates accumulated features; no paper handles this. RADIOv2.5 inference cost may dominate the online budget.
+validating_experiment: Build the three-component pipeline; evaluate on extended ScanNet++ sequences + a custom outdoor walk.
+triggers: [ingest-of-idea:feature-preserving-loop-closure]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #020 — Feature-augmented 3DGS with the 2026-stack (Pipeline IX)
+status: in-design
+combines: [[carion2026_sam-3]], [[heinrich2025_radiov25]], [[simeoni2025_dinov3]], [[qin2024_langsplat]], [[ye2024_gaussian-grouping]]
+stage_target: lifting-foundation-models.per-primitive-feature-lifting
+op_target: op:per-scene-3dgs
+confidence: med
+magnitude: substantial
+cost: months
+breakage_risk: med
+hypothesis: Re-compose the 2024-era lifting baselines (LangSplat, Gaussian Grouping, Trident composition) on the 2026 foundation stack (SAM 3 native IDs, RADIOv2.5 unified features, DINOv3 geometric priors), plus two gaps no prior paper covers: (a) densification/pruning invariants (NULL_ID sentinel, entropy-gated splits, boundary-Gaussian protection, no-reset on opacity-reset); (b) precomputed interaction layer (VQ codebook + CSR identity hash + per-instance mean latents + FAISS IVF-PQ fallback) targeting click <5 ms, text <100 ms at 1 M Gaussians.
+expected_gain: LangSplat-quality OVS + Gaussian-Grouping-quality identity + interaction latency at deployment-ready scale. No single paper delivers all three simultaneously.
+risk: Densification invariants are the load-bearing uncertainty — if features don't survive split/clone/prune coherently, the whole pipeline fails silently. Interaction-layer latency claims need real benchmarks.
+validating_experiment: Build-sequence verification per [[language-grounded-3dgs-2026]] §Verification Plan. Phased implementation in [[language-grounded-3dgs-nerfstudio]].
+triggers: [design-outcome:language-grounded-3dgs-2026]
+design: wiki/designs/language-grounded-3dgs-2026.md
+created: 2026-04-15 · updated: 2026-04-18
+
+### Other open questions (not yet bets)
+
+- **Memory**: per-Gaussian features at scene scale explode memory. EA-3DGS-style codebook VQ applied to feature channels? No paper tries this — candidate for a future bet once an explicit codebook-for-semantics paper lands.
+- **3D-native foundation models**: will the field invert — pretrain FMs directly on 3D rather than lift 2D features? CLIP-GS is the first step.
 - **Benchmarks**: 3D-OVS and 3D instance-segmentation benchmarks remain noisy; cross-paper comparison frequently apples-to-oranges.
+
+## Capability gaps
+
+- **Per-primitive feature compression at scene scale** (memory-efficient lifting) — per-Gaussian features explode at city scale. Would unlock: all OPs at larger scales. Search target: codebook-VQ applied to feature channels, quantization, or hashing schemes on lifted features.
+- **Densification / pruning invariants for lifted features** — current 3DGS methods handle this ad hoc; features split/merge incorrectly. Would unlock: robust training dynamics for feature-augmented 3DGS. Search target: densification rules that preserve per-primitive identity and language channels.
+- **Harmonized 3D-OVS benchmark** — cross-paper comparison is noisy. Meta-gap, not a paper target.
 
 ## Contradictions & tensions
 

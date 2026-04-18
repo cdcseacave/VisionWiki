@@ -3,7 +3,7 @@ title: "Language-Grounded 3DGS — Nerfstudio / Visiofacto Implementation Plan"
 type: design
 tags: [3dgs, language-grounded, nerfstudio, visiofacto, implementation, phased-plan, sam3, radio, dinov3]
 created: 2026-04-15
-updated: 2026-04-15
+updated: 2026-04-18
 sources:
   - designs/language-grounded-3dgs-2026.md
   - threads/nerfstudio.md
@@ -15,6 +15,10 @@ sources:
   - papers/simeoni2025_dinov3.md
   - papers/wu2026_langsvr.md
   - papers/kim2026_gauss-explorer.md
+realizes_bet: Bet #020   # same as language-grounded-3dgs-2026; this is the implementation plan
+realizes_ideas: [[sam3-native-video-ids_carion2026]], [[radiov25-agglomerative-distillation_heinrich2025]], [[dinov3-gram-anchoring_simeoni2025]], [[langsplat-per-scene-autoencoder_qin2024]], [[gaussian-grouping-identity-encoding_ye2024]]
+outcome: pending
+outcome_date: null
 status: draft
 ---
 

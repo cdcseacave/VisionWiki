@@ -3,10 +3,27 @@ title: Nerfstudio + gsplat Codebase (Visiofacto Fork)
 type: thread
 tags: [codebase, nerfstudio, gsplat, visiofacto, 3dgs, implementation]
 created: 2026-04-13
-updated: 2026-04-13
+updated: 2026-04-18
 sources: []
+operating_points: [op:default]
 status: draft
 ---
+
+## Goal
+
+Maintain a working map of the local nerfstudio + gsplat + visiofacto codebase sufficient to implement any new 3DGS research idea without re-deriving the file layout each time. This is a **reference thread**, not a research pipeline — success = time-to-implement a new per-Gaussian attribute, loss term, or densification rule stays low as both the codebase and the research frontier evolve.
+
+## Goal contract (optional, structured)
+
+```yaml
+# no structured contract — reference thread, not a pipeline thread
+# track time-to-implement qualitatively in the body
+```
+
+## Capability gaps
+
+- **Unit-test coverage for VisiofactoStrategy's split/clone/prune** — would unlock fearless densification edits (e.g. CoMe-style per-Gaussian gating). Search target: not in papers; is an internal implementation gap.
+- **Benchmark matrix visiofacto-vs-stock-splatfacto** on Mip-NeRF 360 / T&T / DTU — would let any new idea's gain be isolated from the fork's baseline drift.
 
 ## Scope
 

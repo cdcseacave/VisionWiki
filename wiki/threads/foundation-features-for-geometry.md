@@ -3,16 +3,28 @@ title: Foundation Features for Geometry
 type: thread
 tags: [foundation-model, dinov2, dinov3, feature-matching, sfm, frozen-backbone]
 created: 2026-04-15
-updated: 2026-04-15
+updated: 2026-04-18
 sources: [wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/edstedt2025_roma-v2.md, wiki/papers/jang2025_pow3r.md, wiki/papers/zhang2025_feed-forward-3d-survey.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/radford2021_clip.md, wiki/papers/kirillov2023_sam.md]
+operating_points: [op:default]
 status: draft
 ---
 
-## Goal & success criteria
+## Goal
 
-Produce the **feature backbone + task head** pattern that serves as the frontend for geometry problems (matching, pose, mono/multi-view depth, feed-forward pointmaps). "Better" = higher matching recall / lower pose AUC error / lower Chamfer on reconstruction benchmarks *at equal or lower head training cost*, while preserving robustness under the failure modes classical hand-crafted descriptors struggle with (textureless surfaces, illumination/weather changes, repetitive structure).
+Produce the **feature backbone + task head** pattern that serves as the frontend for geometry problems (matching, pose, mono/multi-view depth, feed-forward pointmaps). Better = higher matching recall / lower pose AUC / lower Chamfer on reconstruction benchmarks at equal or lower head training cost, while preserving robustness under the failure modes classical hand-crafted descriptors struggle with (textureless surfaces, illumination/weather changes, repetitive structure).
 
-## Current SOTA pipeline (as of 2026-04-15)
+## Goal contract (optional, structured)
+
+```yaml
+metric: [pose-AUC@5deg, dense-match-AEPE, depth-AbsRel, backbone-training-cost]
+target_regime: [frozen-backbone, head-trainable-hours-to-days-on-1-to-8-GPUs]
+constraints: [backbone-must-stay-frozen, head-inference-<=100ms, graceful-on-low-texture]
+required_capabilities: [patch-level-spatial-consistency, cross-domain-generalization, multi-task-reuse]
+```
+
+## SOTA pipelines
+
+### op:default
 
 Stage-by-stage, for a generic geometry task ("given images, extract features used by a downstream geometric head"):
 
@@ -38,10 +50,43 @@ Stage-by-stage, for a generic geometry task ("given images, extract features use
 
 ## Open questions & synthesis bets
 
-- Calibration-grade poses: feed-forward methods still lag [[colmap]] / GLOMAP on metric accuracy. **Open**: is the gap closable by scaling the frozen backbone, or is classical BA refinement always load-bearing? Current lineage evidence says the latter — every Tier 2 paper in [[feed-forward-structure-from-motion]] keeps BA at the end.
-- **Silent failure modes**: DINO-based geometry fails silently with plausible-but-wrong outputs where SIFT failed loudly. **Synthesis bet**: *combine DINOv3 features with a classical geometric consistency check as a rejection head — use the inconsistency as a self-supervised signal to fine-tune the head.* No paper does this; bridges the backbone-confidence gap that TTT3R opens and uses the "frozen-attention as signal" pattern RoMa v2 + TTT3R both exploit.
-- **Composable frozen signals**: TTT3R shows frozen attention is a training signal, not just features. **Synthesis bet**: *extend TTT3R's closed-form confidence-guided learning rate to RoMa v2's dense matching head — per-match learning rate derived from backbone cross-attention alignment, no retraining.* Mixes [[chen2026_ttt3r]] + [[edstedt2025_roma-v2]].
-- **Multi-task frontend collapse**: RADIOv2.5 distills 4 teachers; geometry downstream consumes features + depth + semantics. **Open**: will geometry-specific downstream heads start distilling DINOv3 + a geometry-specific teacher (e.g. Metric3Dv2 depth head features) into one backbone, repeating the RADIO pattern inside the geometry lane?
+### Bet #011 — DINOv3 features + classical geometric-consistency rejection head
+status: proposed
+combines: [[simeoni2025_dinov3]], [[edstedt2025_roma-v2]]
+stage_target: feature-matching.rejection
+op_target: op:default
+confidence: high
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: DINO-based geometry fails silently with plausible-but-wrong outputs where SIFT failed loudly. Combining DINOv3 features with a classical geometric-cycle-consistency check as a rejection head (and using the inconsistency as a self-supervised fine-tuning signal) bridges the backbone-confidence gap that TTT3R opens.
+expected_gain: 3–8% false-match-rate reduction on low-texture benchmarks; small pose-AUC gain but large qualitative win on silent-failure cases.
+risk: Geometric consistency cost dominates inference; needs a lightweight variant to stay deployable. Rejection thresholds are dataset-dependent.
+validating_experiment: Add cycle-consistency rejection head on top of RoMa v2; ablate vs. RoMa v2 baseline on textureless scenes (MegaDepth-hard, custom indoor textureless).
+triggers: [ingest-of-idea:lightweight-geometric-cycle-consistency]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #012 — TTT3R's closed-form learning rate on RoMa v2's dense matching head
+status: proposed
+combines: [[chen2026_ttt3r]], [[edstedt2025_roma-v2]]
+stage_target: feature-matching.task-head
+op_target: op:default
+confidence: med
+magnitude: incremental
+cost: days
+breakage_risk: low
+hypothesis: TTT3R derives a closed-form confidence-guided per-token learning rate from frozen backbone attention — no retraining needed. Extending the same derivation to RoMa v2's dense matching head gives per-match adaptive learning rates without architectural change.
+expected_gain: Smoother convergence on hard scenes; +0.5–1.0 pose-AUC@5 on MegaDepth / ScanNet.
+risk: RoMa v2 already has a CUDA-optimized inner loop; per-match learning-rate modulation may be hard to integrate without giving up speed.
+validating_experiment: Implement TTT3R-style confidence-guided LR on RoMa v2's head; ablate on MegaDepth + ScanNet.
+triggers: [ingest-of-idea:closed-form-adaptive-lr-for-matching]
+created: 2026-04-15 · updated: 2026-04-18
+
+## Capability gaps
+
+- **Silent-failure rejection signal** — DINO geometry fails plausibly-wrong where SIFT failed loudly. Would unlock: joint DINO+classical-consistency residual bets. Search target: papers that fuse foundation features with geometric-cycle-consistency rejection.
+- **3D-native self-supervised backbone** (video-aware / 4D DINO) — would unlock the next generation of geometry heads. Search target: 2026 SSL papers training on multi-view / video data natively.
+- **Calibration-grade feed-forward poses without classical BA** — would obsolete the hybrid tier. Search target: larger-backbone feed-forward methods with metric-pose claims on outdoor benchmarks.
 
 ## Contradictions & tensions
 

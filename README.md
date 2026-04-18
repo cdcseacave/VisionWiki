@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="Vision Wiki" width="220">
+</p>
+
 # Vision Wiki
 
 A **personal research-synthesis engine** for photogrammetry and machine-learning, maintained collaboratively by a human curator and an LLM that authors and tends the knowledge base.

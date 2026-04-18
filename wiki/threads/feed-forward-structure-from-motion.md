@@ -3,10 +3,30 @@ title: Feed-Forward Structure from Motion
 type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
-updated: 2026-04-12
+updated: 2026-04-18
 sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md]
+operating_points: [op:default]
 status: draft
 ---
+
+## Goal
+
+Replace the classical SfM pipeline (detect → match → verify → triangulate → BA) with learned components, ideally in a single feed-forward pass, while matching COLMAP-grade pose accuracy and scaling to long sequences (hundreds to thousands of frames). The thread tracks the three-tier split: accelerated-classical (see [[gpu-native-sfm]]), classical+learned priors, fully feed-forward.
+
+## Goal contract (optional, structured)
+
+```yaml
+metric: [pose-AUC@5deg, ATE, chamfer, throughput-fps, sequence-length-frames]
+target_regime: [unposed-images, sparse-to-dense views, static | dynamic scenes]
+constraints: [calibration-grade-pose-floor, linear-time-in-sequence-length]
+required_capabilities: [pose-regression, pointmap-prediction, long-context-scaling]
+```
+
+## Capability gaps
+
+- **Calibration-grade outdoor accuracy from fully feed-forward methods** — no Tier-3 paper matches COLMAP on outdoor benchmarks without a BA tail. Search target: 2026 scale-up of DUSt3R/VGGT-family on outdoor training data.
+- **Dynamic-scene handling without heuristic motion masks** — MegaSaM is the best attempt but still relies on learned segmentation. Search target: end-to-end dynamic SfM where motion is inferred implicitly.
+- **Principled fusion of ≥3 learned priors** (depth + normal + correspondence + flow) into classical BA — MP-SfM uses 2; InstantSfM uses 1; no consensus. Search target: ablation-heavy multi-prior-fusion papers.
 
 ## Working hypothesis
 

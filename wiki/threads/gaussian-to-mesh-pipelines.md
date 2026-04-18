@@ -3,10 +3,24 @@ title: Gaussian-to-Mesh Pipelines
 type: thread
 tags: [3dgs, mesh-reconstruction, surface-extraction, marching-cubes, sdf, tsdf]
 created: 2026-04-12
-updated: 2026-04-15
+updated: 2026-04-18
 sources: [papers/li2025_geosvr.md, papers/li2025_va-gs.md, papers/gao2025_anisdf.md, papers/radl2025_sof.md, papers/guedon2025_milo.md, papers/radl2026_confidence-mesh-3dgs.md, papers/elflein2026_vgg-t3.md, papers/kim2025_multiview-geometric-gs.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/chen2024_pgsr.md]
+operating_points: [op:regularized-3dgs, op:mesh-in-loop, op:natively-extractable]
 status: draft
 ---
+
+## Goal
+
+From posed images + 3DGS primitives (or an alternative radiance representation), produce a watertight textured mesh. Better = higher T&T F-score (Intermediate + Advanced), lower DTU Chamfer, reasonable training time (<1h per scene for the lane that cares), no manual cleanup, rendering quality preserved if the method claims a joint appearance+geometry representation.
+
+## Goal contract (optional, structured)
+
+```yaml
+metric: [T&T-F-score-intermediate, T&T-F-score-advanced, DTU-chamfer-mm, train-time-min, mesh-vertex-count]
+target_regime: [posed-images, static-scene, bounded-or-unbounded, dense-to-sparse views]
+constraints: [no-manual-cleanup, rendering-quality-preserved-if-joint, commercial-license-ok-preferred]
+required_capabilities: [watertight-mesh-output, surface-normal-consistency, texture-preservation]
+```
 
 ## Working hypothesis
 
@@ -101,35 +115,35 @@ and C may win long-term (SVRaster, GeoSVR).
 
 ---
 
-## Goal & success criteria
+## SOTA pipelines
 
-From posed images + 3DGS primitives (or alternative), produce a watertight textured mesh. "Better" = higher T&T F-score (Intermediate + Advanced) and lower DTU Chamfer + **reasonable training time** (< 1 h per scene for the lane that cares) + **no manual cleanup** + rendering quality preserved if the method claims a joint appearance+geometry representation.
+### op:regularized-3dgs (most popular; best when rendering quality matters)
 
-## Current SOTA pipeline (as of 2026-04-15)
-
-Three competing pipelines tracked; swap depends on which constraint dominates:
-
-**Pipeline A — Regularized 3DGS → TSDF/MC** (most popular; best when rendering quality matters):
+Regularized 3DGS → TSDF/MC:
 1. 3DGS training with geometric regularization (planar, normal, edge, visibility alignment losses). Paper: [[chen2024_pgsr]] (PGSR), [[li2025_va-gs]] (VA-GS).
 2. External MVS depth supervision (via [[schonberger2016_colmap-mvs]] or learned MVS). Paper: [[kim2025_multiview-geometric-gs]].
 3. Confidence-weighted depth rendering. Paper: [[radl2026_confidence-mesh-3dgs]] (CoMe) — current SOTA on T&T (F1 0.521).
 4. TSDF fusion [[curless1996_tsdf]] + marching cubes.
 
-**Pipeline B — Mesh-in-the-loop** (best when mesh size matters):
+### op:mesh-in-loop (best when mesh size matters)
+
 1. Delaunay triangulation at every step. Paper: [[guedon2025_milo]] (MILo). 10× fewer vertices; comparable/better geometry; 3× longer training than CoMe.
 
-**Pipeline C — Natively mesh-extractable** (best when Gaussians are optional):
+### op:natively-extractable (best when Gaussians are optional)
+
 1. Sparse voxels with uncertainty-weighted depth. Paper: [[li2025_geosvr]] (SOTA DTU Chamfer) or [[sun2025_sparse-voxels-rasterization]] (SVRaster).
 2. Direct marching cubes on the voxel/SDF field. No Gaussians.
 
 ## Pipeline lineage
 
-- 1996 · surface fusion: ad-hoc range-image merging → TSDF weighted-average. Driver: [[curless1996_tsdf]].
-- 2016 · MVS depth source: baseline PatchMatch → COLMAP MVS with per-pixel view selection. Driver: [[schonberger2016_colmap-mvs]].
-- 2018 · MVS depth alternative: classical PatchMatch → learned plane-sweep. Driver: [[yao2018_mvsnet]].
-- 2024 · 3DGS regularization: unregularized splatting → planar-constrained + unbiased depth. Driver: [[chen2024_pgsr]].
-- 2025 · external vs. self-supervised depth: self-supervised wins visually, external MVS wins on geometry. Driver: [[kim2025_multiview-geometric-gs]] → formalized as "external MVS > Gaussian self-supervision for mesh quality".
-- 2026 · confidence weighting: uniform fusion weight → per-Gaussian self-supervised confidence. Driver: [[radl2026_confidence-mesh-3dgs]].
+- 1996 · op:regularized-3dgs · surface fusion: ad-hoc range-image merging → TSDF weighted-average. Driver: [[curless1996_tsdf]].
+- 2016 · op:regularized-3dgs · MVS depth source: baseline PatchMatch → COLMAP MVS with per-pixel view selection. Driver: [[schonberger2016_colmap-mvs]].
+- 2018 · op:regularized-3dgs · MVS depth alternative: classical PatchMatch → learned plane-sweep. Driver: [[yao2018_mvsnet]].
+- 2024 · op:regularized-3dgs · 3DGS regularization: unregularized splatting → planar-constrained + unbiased depth. Driver: [[chen2024_pgsr]].
+- 2025 · op:regularized-3dgs · external vs. self-supervised depth: self-supervised wins visually, external MVS wins on geometry. Driver: [[kim2025_multiview-geometric-gs]] → formalized as "external MVS > Gaussian self-supervision for mesh quality".
+- 2025 · op:mesh-in-loop · new OP: post-hoc TSDF → Delaunay-in-the-loop. Driver: [[guedon2025_milo]].
+- 2025 · op:natively-extractable · new OP: Gaussians → sparse voxels with direct MC. Driver: [[li2025_geosvr]] / [[sun2025_sparse-voxels-rasterization]].
+- 2026 · op:regularized-3dgs · confidence weighting: uniform fusion weight → per-Gaussian self-supervised confidence. Driver: [[radl2026_confidence-mesh-3dgs]].
 
 ## Candidate components / not yet integrated
 
@@ -139,10 +153,76 @@ Three competing pipelines tracked; swap depends on which constraint dominates:
 
 ## Open questions & synthesis bets
 
-- Watertight mesh in one step without a separate extraction: MILo comes closest. **Synthesis bet 1**: *combine CoMe's confidence + MILo's Delaunay-in-the-loop — use confidence as Delaunay vertex weighting*. Mixes [[radl2026_confidence-mesh-3dgs]] + [[guedon2025_milo]]. Expected: MILo's 10× vertex reduction with CoMe's 3× speedup.
-- **Synthesis bet 2**: *Pipeline A with [[schonberger2016_colmap-mvs]]-quality depth used as the supervision source inside a CoMe-trained 3DGS, with PGSR's planar constraint and VA-GS's visibility loss active simultaneously*. All four mechanisms exist; no paper stacks them. Expected: additional +0.02–0.05 F1 on T&T Advanced.
-- **Synthesis bet 3**: *GeoSVR-style sparse voxels with per-Gaussian-equivalent confidence per voxel + external MVS depth supervision*. Mixes [[li2025_geosvr]] + [[kim2025_multiview-geometric-gs]] + [[radl2026_confidence-mesh-3dgs]]. Could put Pipeline C on top of Paradigm A's benchmarks.
-- **Texturing** is still underaddressed — all three pipelines stop at geometry. Bet: *render-then-unwrap from 3DGS/SVRaster with DINOv3 dense features as a seam-minimizer*.
+### Bet #004 — CoMe confidence as Delaunay vertex weighting in MILo
+status: proposed
+combines: [[radl2026_confidence-mesh-3dgs]], [[guedon2025_milo]]
+stage_target: mesh-reconstruction.extraction
+op_target: op:mesh-in-loop
+confidence: high
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: MILo's Delaunay-in-the-loop training produces 10× fewer vertices than TSDF but trains 3× longer than CoMe. Using CoMe's per-Gaussian confidence as Delaunay vertex weighting could preserve MILo's vertex reduction with CoMe's speed.
+expected_gain: MILo-quality geometry (T&T F1 parity) at CoMe-like training time (20 min vs. 60 min), 10× vertex reduction retained.
+risk: Delaunay weighting interacts poorly with CoMe's photometric/geometric balance; may bias vertex density toward high-confidence regions at the cost of thin-structure coverage.
+validating_experiment: Port CoMe's confidence module into MILo's Delaunay trigger; ablate weight scheduling on T&T Intermediate. Compare training time + vertex count vs. MILo baseline.
+triggers: [ingest-of-idea:differentiable-weighted-delaunay]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #005 — Pipeline A with COLMAP-MVS depth + CoMe confidence + PGSR planar + VA-GS visibility
+status: proposed
+combines: [[schonberger2016_colmap-mvs]], [[radl2026_confidence-mesh-3dgs]], [[chen2024_pgsr]], [[li2025_va-gs]]
+stage_target: radiance-fields.regularization
+op_target: op:regularized-3dgs
+confidence: med
+magnitude: incremental
+cost: weeks
+breakage_risk: med
+hypothesis: All four mechanisms exist but no paper stacks them. COLMAP-MVS as supervision, CoMe confidence as per-Gaussian weight, PGSR's planar constraint, and VA-GS's visibility loss each address a different failure mode (depth quality, confidence calibration, surface alignment, occlusion-induced floaters).
+expected_gain: +0.02–0.05 F1 on T&T Advanced over CoMe baseline.
+risk: Loss-term interference — four simultaneous constraints may over-regularize fine detail. Weight tuning is the real engineering cost.
+validating_experiment: Systematic ablation {CoMe, CoMe+MVS, CoMe+PGSR, CoMe+VA-GS, full stack} on T&T Intermediate + Advanced.
+triggers: [ingest-of-idea:multi-loss-3dgs-balance-scheduler]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #006 — GeoSVR + per-voxel CoMe-equivalent confidence + external MVS depth
+status: proposed
+combines: [[li2025_geosvr]], [[kim2025_multiview-geometric-gs]], [[radl2026_confidence-mesh-3dgs]]
+stage_target: mesh-reconstruction.extraction
+op_target: op:natively-extractable
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: Put op:natively-extractable on top of op:regularized-3dgs's benchmarks by lifting CoMe-style confidence into voxels + external MVS depth supervision. GeoSVR already wins DTU Chamfer; adding confidence + external depth could also win T&T.
+expected_gain: DTU Chamfer parity with GeoSVR + T&T F1 parity with CoMe, in a Gaussian-free pipeline.
+risk: GeoSVR's own uncertainty mechanism may conflict with CoMe-style confidence. Depth supervision inside a voxel pipeline is untested.
+validating_experiment: Implement per-voxel confidence field in GeoSVR; ablate with/without external MVS depth on DTU + T&T.
+triggers: [ingest-of-idea:per-voxel-self-supervised-confidence]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #007 — Render-then-unwrap texturing with DINOv3 seam-minimization
+status: proposed
+combines: [[sun2025_sparse-voxels-rasterization]], [[simeoni2025_dinov3]]
+stage_target: mesh-reconstruction.texturing
+op_target: op:natively-extractable
+confidence: med
+magnitude: substantial
+cost: months
+breakage_risk: low
+hypothesis: Every current Gaussian-to-mesh pipeline stops at geometry. Rendering views from the splat/voxel + UV-unwrapping with DINOv3 dense features as a seam-minimization signal could close the "deployment to game engine" gap.
+expected_gain: Textured mesh output from 3DGS / SVRaster with visible seam count reduced vs. naive per-face projection; qualitative evaluation on phone-scan data.
+risk: No standard quantitative metric for texture seam quality; publishable evaluation is hard. DINOv3 features are patch-level; may miss sub-patch seam artifacts.
+validating_experiment: Render-then-unwrap a SVRaster mesh; compare {naive, MRF-smoothing, DINOv3-feature-cost} on visible seam count + perceptual study.
+triggers: [ingest-of-idea:learned-texture-unwrapping]
+created: 2026-04-15 · updated: 2026-04-18
+
+## Capability gaps
+
+- **Watertight mesh in one step without a separate extraction pass** — MILo is closest but 3× slower than TSDF-based. Would unlock: op:one-shot-mesh fourth OP or op:mesh-in-loop becoming the default. Search target: differentiable mesh-head architectures with sub-CoMe training cost.
+- **Principled switch between external-MVS-depth and self-supervised-3DGS-depth** — external wins on controlled capture, self-supervised wins on sparse/textureless. No paper has a confidence-based switch. Search target: depth-reliability estimators that compose with both sources.
+- **Texturing pipeline from splat/voxel to game-engine mesh** — every paper stops at geometry. Would unlock: deployment-ready pipelines. Search target: render-then-unwrap with foundation-feature seam-minimization.
+- **Sparse-view benchmarks** (3–10 views) — most current benchmarks are dense-capture (DTU 49 views). Would unlock: real-world phone-scan regimes. Search target: sparse-view mesh benchmarks (ScanNet++, DL3DV subsets).
 
 ## Contradictions & tensions
 

@@ -2,13 +2,13 @@
 
 This is a **personal research-synthesis engine** for photogrammetry and
 machine-learning. It is not a reading list and not a summarization tool. Its
-end-product is **novel pipelines**: each thread maintains a current
-best-known end-to-end pipeline for a problem, and every ingested paper is
-mined for ideas that could improve that pipeline — either by replacing a
-stage, or by unlocking a *new combination* of ideas that no single paper has
-tried. Deep mechanism-level understanding of each paper, and holistic
-reasoning about how ideas compose across papers, are the two activities the
-wiki exists to support.
+end-product is **novel pipelines**: each thread maintains the current
+best-known end-to-end pipeline(s) for a problem — one per *operating point*
+— and every ingested paper is mined for ideas that could improve those
+pipelines, either by replacing a stage or by unlocking a *new combination*
+of ideas that no single paper has tried. Deep mechanism-level understanding
+of each paper, and holistic reasoning about how ideas compose across
+papers, are the two activities the wiki exists to support.
 
 You (the LLM) are the sole author and maintainer of the `wiki/` layer. The
 human curates sources and asks questions. Never invent citations. A shallow
@@ -16,9 +16,10 @@ summary is worse than useless — if you can't explain the mechanism of a new
 idea, you don't yet understand the paper.
 
 Domain focus: photogrammetry, SfM, MVS, SLAM, NeRF / 3D Gaussian Splatting,
-neural implicit surfaces, feature matching, bundle adjustment, camera calibration,
-point-cloud / mesh processing, depth estimation, pose estimation, and the ML
-methods that power them (transformers, diffusion, self-supervised learning, etc.).
+neural implicit surfaces, feature matching, bundle adjustment, camera
+calibration, point-cloud / mesh processing, depth estimation, pose
+estimation, and the ML methods that power them (transformers, diffusion,
+self-supervised learning, etc.).
 
 ---
 
@@ -29,161 +30,195 @@ VisionWiki/
 ├── CLAUDE.md              # this file — the schema
 ├── index.md               # content-oriented catalog of every wiki page
 ├── log.md                 # chronological append-only activity log
-├── raw/                   # INBOX — drop anything here, emptied on ingest (see §1.1)
-├── papers/                # LOCAL CACHE (git-ignored): PDFs, re-downloadable via url: (see §1.2)
-│   ├── radiance-fields/   # example subfolder — see §1.2 for taxonomy
+├── raw/                   # INBOX — drop anything here, emptied on ingest (§1.1)
+├── papers/                # LOCAL CACHE (git-ignored): PDFs, re-downloadable via url: (§1.2)
+│   ├── radiance-fields/
 │   ├── feature-matching/
 │   └── ...
-├── articles/              # permanent store: blog posts, web articles, notes (see §1.3)
-├── assets/                # LOCAL CACHE (git-ignored): images, figures, diagrams (see §1.4)
+├── articles/              # permanent store: blog posts, web articles, notes (§1.3)
+├── assets/                # LOCAL CACHE (git-ignored): images, figures, diagrams (§1.4)
 └── wiki/                  # LLM-authored, constantly-maintained knowledge base
     ├── papers/            # one page per ingested paper (the "source summary")
-    ├── methods/           # algorithms, architectures, techniques (e.g. `3d-gaussian-splatting.md`)
-    ├── concepts/          # general ideas and primitives (e.g. `bundle-adjustment.md`)
+    ├── ideas/             # atomic novel contributions extracted from papers (§1.6)
+    ├── stages/            # typed pipeline stages — input/output/invariant schemas (§1.7)
+    ├── methods/           # algorithms, architectures, techniques
+    ├── concepts/          # general ideas and primitives
     ├── datasets/          # benchmark + training datasets
     ├── people/            # prolific authors / research groups
-    ├── threads/           # evolving syntheses, open questions, comparisons
-    └── designs/           # implementation design documents (concrete "how to build it" plans)
+    ├── threads/           # evolving per-goal pipelines
+    └── designs/           # concrete "how to build it" plans
 ```
 
 ### 1.1 Inbox (`raw/`)
 
-`raw/` is a **drop zone / inbox**. The user dumps any files here — PDFs, markdown
-clippings, images, blog post exports, screenshots — with whatever messy names
-they have. The LLM never reads directly from `raw/` during queries.
+`raw/` is a **drop zone / inbox**. The user dumps any files here — PDFs,
+markdown clippings, images, screenshots — with whatever messy names they
+have. The LLM never reads directly from `raw/` during queries.
 
 On ingest (bare `ingest` with no arguments), the LLM:
 1. Scans `raw/` recursively for all files.
-2. Classifies each file by type (paper, article, or asset).
-3. Renames and moves it to the appropriate permanent store (`papers/`, `articles/`, or `assets/`).
+2. Classifies each file by type (paper, article, or asset) — §1.5.
+3. Renames and moves it to the appropriate permanent store.
 4. Deletes the original from `raw/`.
 
-**After a complete ingest, `raw/` should be empty.** A non-empty `raw/` means
-there are unprocessed sources waiting. This is the primary signal to the user
-(and the LLM) that work remains.
+**After a complete ingest, `raw/` should be empty.** A non-empty `raw/`
+is the primary signal that work remains.
 
 ### 1.2 Paper storage (`papers/`)
 
-The top-level `papers/` directory is a **local cache** of source papers (PDFs,
-markdown clippings, arXiv HTML exports). It is **not committed to git** (listed
-in `.gitignore`) because PDFs are large and binary. The wiki pages in
-`wiki/papers/` *are* committed — they contain the `url:` field that allows
-any clone to re-download the original paper on demand.
+`papers/` is a **local cache** of source PDFs / markdown / arXiv HTML.
+Git-ignored (PDFs are large + binary). Wiki pages in `wiki/papers/` are
+committed; their `url:` field lets any clone re-download on demand.
 
-The LLM manages this folder — it downloads, renames, and organizes papers here.
+**Cache behavior**: if the local file at `local_paper:` is missing but
+`url:` exists, download it first:
+- arXiv: `curl -L -o <local_paper_path> https://arxiv.org/pdf/<id>`
+- Other: `curl -L -o <local_paper_path> <url>`
 
-**Cache behavior**: when reading a paper (for ingest or query), if the local
-file at `local_paper:` is missing but `url:` exists in the wiki page's
-frontmatter, download the paper from the URL first:
-- arXiv URLs: `curl -L -o <local_paper_path> https://arxiv.org/pdf/<id>`
-- Other URLs: `curl -L -o <local_paper_path> <url>`
-Then proceed normally. This makes the wiki portable — clone the repo, and
-papers are fetched on first access.
+**Naming**: `<FirstAuthor>_<Year>_<Short-Title>.<ext>` (lowercase
+kebab-case short title). E.g. `kerbl_2023_3d-gaussian-splatting.pdf`.
 
-**Naming convention**: `<FirstAuthor>_<Year>_<Short-Title>.<ext>`
-- lowercase, kebab-case for the short title
-- Examples: `kerbl_2023_3d-gaussian-splatting.pdf`,
-  `mildenhall_2020_nerf.pdf`, `wang_2024_dust3r.md`
-
-**Subfolder taxonomy** — organize papers into topic subfolders. Create new
-subfolders as needed; merge or restructure when a subfolder grows past ~20
-files. Current seed taxonomy:
+**Subfolder taxonomy** — create / merge / restructure as volume demands:
 
 | Subfolder | Scope |
 |-----------|-------|
 | `radiance-fields/` | NeRF, 3DGS, neural implicit surfaces, novel-view synthesis |
-| `feature-matching/` | keypoint detection, descriptor learning, matching pipelines |
+| `feature-matching/` | keypoint detection, descriptor learning, matching |
 | `sfm-slam/` | structure from motion, visual SLAM, visual odometry |
-| `mvs-depth/` | multi-view stereo, monocular/stereo depth estimation |
-| `pose-estimation/` | camera pose, object pose, PnP, relative/absolute pose regression |
-| `mesh-reconstruction/` | surface reconstruction, meshing, point-cloud processing |
+| `mvs-depth/` | multi-view stereo, mono/stereo depth |
+| `pose-estimation/` | camera / object pose, PnP |
+| `mesh-reconstruction/` | surface reconstruction, meshing, point-cloud |
 | `fundamentals/` | general ML methods, transformers, diffusion, optimization |
 | `datasets-benchmarks/` | dataset papers, benchmark comparisons |
 
-If a paper spans multiple categories, file it under its **primary contribution**
-and note the cross-topic relevance in the wiki page.
+If a paper spans categories, file under its **primary contribution** and
+note cross-topic relevance in the wiki page.
 
 ### 1.3 Article storage (`articles/`)
 
-Blog posts, web articles, tutorial pages, and non-paper text sources.
-Renamed on ingest to `<source>_<year>_<short-title>.md` (e.g.
-`matthewtancik_2023_nerfstudio-tutorial.md`). Organized in the same topic
-subfolders as `papers/` where applicable, or a flat structure if volume is low.
+Blog posts, tutorials, non-paper text sources. Renamed on ingest to
+`<source>_<year>_<short-title>.md`. Same subfolder taxonomy as `papers/`
+where applicable.
 
 ### 1.4 Asset storage (`assets/`)
 
-Images, figures, diagrams, and screenshots extracted from or related to
-sources. Renamed on ingest to `<paper-or-article-key>_<descriptor>.<ext>`
-(e.g. `kerbl_2023_3dgs_pipeline-overview.png`). Wiki pages reference them as:
-
-```markdown
-![3DGS pipeline](../assets/kerbl_2023_3dgs_pipeline-overview.png)
-```
+Images, figures, diagrams. Renamed to
+`<paper-or-article-key>_<descriptor>.<ext>`. Referenced as
+`![caption](../assets/<file>)`. Never hot-link external URLs.
 
 ### 1.5 Classification rules for ingest
 
 | File type | Destination |
 |-----------|-------------|
-| PDF (research paper, arXiv, conference) | `papers/<subfolder>/` |
-| Markdown / HTML (blog post, tutorial, web clip) | `articles/<subfolder>/` or `articles/` |
-| Image (PNG, JPG, SVG, diagram) | `assets/` |
-| PDF (non-paper: slide deck, report) | `articles/` |
+| PDF (research paper) | `papers/<subfolder>/` |
+| Markdown / HTML (blog / tutorial) | `articles/<subfolder>/` or `articles/` |
+| Image (PNG, JPG, SVG) | `assets/` |
+| PDF (slide deck, report) | `articles/` |
 | Unknown / ambiguous | Ask the user before filing |
+
+### 1.6 Ideas (`wiki/ideas/`)
+
+Ideas are the atomic unit of synthesis. Every distinct novel contribution
+identified in ingest Step 2 becomes a first-class page at
+`wiki/ideas/<slug>.md`. Threads, designs, and synthesis bets reference
+ideas by wikilink — composition questions ("does X compose with Y?",
+"what unlocks stage Z?") become graph queries, not re-derivation from
+prose.
+
+Each idea has structured frontmatter declaring its mechanism, target
+stage(s), I/O types, assumptions, and composition edges (`requires:`,
+`unlocks:`, `co_requires:`, `refines:`, `equivalent_to:`, `contradicts:`).
+See §2.1 Idea page for the template and scope enum.
+
+**Ideas are not always 1:1 stage fillers.** The `scope:` field declares
+whether the idea is drop-in, collapse of several stages, split, topology
+rewrite, new paradigm, or bridge adapter. Ideas that only work jointly
+declare this via `co_requires:` — bundle truth is a property of the idea,
+not of any specific bet.
+
+Naming: `<short-descriptor>_<firstauthor><year>.md`, e.g.
+`anisotropic-gaussians_kerbl2023.md`. Mechanism-focused, not
+marketing-focused.
+
+### 1.7 Stages (`wiki/stages/`)
+
+A stage is a typed slot in a pipeline — e.g. `radiance-fields.rendering`,
+`sfm.initial-pair-selection`. Stage pages declare input/output types,
+invariants, and data regime. Thread SOTA pipelines are DAGs of typed
+stages, filled by ideas whose `stages:` field matches the slot. This
+makes composition type-checkable: an idea producing
+`unposed-images → posed-images` cannot fill a slot requiring
+`posed-images → radiance-field`.
+
+Stage IDs are dotted: `<domain>.<slot>`. Create stage pages
+opportunistically — when a thread references an unbound slot, or when an
+idea's `stages:` introduces a new one. Stage pages stay small
+(≤ half a page); they exist to make the type system legible.
 
 ## 2. Page conventions
 
-Every wiki page is a markdown file with YAML frontmatter:
+Every wiki page has YAML frontmatter:
 
 ```yaml
 ---
 title: <canonical title>
-type: paper | method | concept | dataset | person | thread | design
+type: paper | method | concept | dataset | person | thread | design | idea | stage
 tags: [nerf, differentiable-rendering, ...]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-sources: [papers/kerbl2023_3dgs.md, papers/mildenhall2020_nerf.md]
+sources: [papers/kerbl2023_3dgs.md, ...]
 local_paper: papers/<subfolder>/<filename>.pdf   # paper pages only
-url: https://arxiv.org/abs/XXXX.XXXXX            # paper pages only — external URL
-code: https://github.com/<org>/<repo>            # paper / method / dataset pages — official or canonical implementation; omit if none found at ingest time
-license_paper: CC-BY-4.0                         # paper pages only — paper license (arXiv / conference page); "unknown" if it cannot be determined
-license_code: MIT                                # paper / method / dataset pages — license of the repository at `code:`; omit if `code:` is omitted, "unknown" if repo exists but no LICENSE file
-license_dataset: CC-BY-NC-4.0                    # dataset pages only — data license; "unknown" if not stated
+url: https://arxiv.org/abs/XXXX.XXXXX            # paper pages only
+code: https://github.com/<org>/<repo>            # paper / method / dataset; omit if none found
+license_paper: CC-BY-4.0                         # paper pages only; "unknown" if undeterminable
+license_code: MIT                                # paper / method / dataset; "unknown" if repo has no LICENSE
+license_dataset: CC-BY-NC-4.0                    # dataset pages only
 status: stub | draft | stable | contested
 ---
 ```
 
-**Code and license fields**:
-- `code:` must be an *official* or *canonical community* implementation (authors' own repo, or the most-used community port when authors release none). Do **not** link random forks. If no code can be found after a reasonable search (Google + Papers-with-Code + GitHub search for first-author + title), omit the field — `lint find-code` exists to re-check over time.
-- `license_paper:` usually found at the arXiv abstract page footer (arXiv submission license), on the publisher page (CC-BY / ACM DL / Springer), or in the PDF's first page. Record as SPDX identifier when possible (`CC-BY-4.0`, `CC-BY-NC-4.0`, `arxiv-nonexclusive`, `ACM`, `IEEE`, `Springer`, `unknown`).
-- `license_code:` read from the repo's `LICENSE` / `COPYING` file or the GitHub sidebar badge. SPDX form (`MIT`, `Apache-2.0`, `BSD-3-Clause`, `GPL-3.0`, `AGPL-3.0`, `non-commercial`, `research-only`, `unknown`). **Flag every non-commercial / research-only license explicitly** — these materially affect whether a pipeline component is usable downstream.
-- `license_dataset:` same SPDX discipline; common values `CC-BY-4.0`, `CC-BY-NC-4.0`, `custom-research`, `unknown`.
+Type-specific extensions (`operating_points:` on threads, `scope:` /
+`stages:` / composition edges on ideas, `realizes_bet:` on designs) are
+defined in §2.1.
 
-**`sources:` semantics by page type**:
-- **method / concept / thread / dataset / person pages**: `sources:` lists the wiki paper pages that back the claims on this page. Required, non-empty.
-- **paper pages**: a paper page *is* its own primary source. Leave `sources:` omitted, or use it to list the **prior work this paper builds on** (other paper pages in the wiki). Either is acceptable; an empty `sources: []` on a paper page is not a lint violation.
-- **design pages**: `sources:` lists the wiki pages (any type) that the design rests on.
+**Code & license**:
+- `code:` must be **official** (authors' repo) or **canonical community**
+  (the most-cited community port when authors released none). Do not
+  link random forks. If search finds nothing, omit and write
+  `no code found (<date>)` in the body — `lint find-code` re-checks.
+- `license_paper:` / `license_code:` / `license_dataset:` — SPDX when
+  possible (`CC-BY-4.0`, `MIT`, `Apache-2.0`), otherwise verbatim with a
+  gloss (`arxiv-nonexclusive`, `Gaussian-Splatting-License`,
+  `custom-research`). **Flag non-commercial / research-only / unknown
+  explicitly in the page body** under `## Code & license` — these
+  materially affect downstream usability.
 
-- **Filenames**: lowercase-kebab-case. For papers use `<firstauthor><year>_<slug>.md`
-  (e.g. `kerbl2023_3dgs.md`). For methods/concepts use the canonical name
-  (e.g. `bundle-adjustment.md`, `3d-gaussian-splatting.md`).
-- **Cross-links**: use Obsidian wikilinks `[[3d-gaussian-splatting]]` for
-  concept/method/person/thread links. Use relative markdown links for paper
-  citations, e.g. `[Kerbl et al. 2023](papers/kerbl2023_3dgs.md)`.
-- **Math**: inline `$...$`, display `$$...$$` (MathJax-compatible).
-- **Figures**: reference locally stored images as
-  `![caption](../assets/<file>)`. Never hot-link external URLs.
-- **Citations**: every factual claim on a wiki page must trace back to a
-  specific entry in `sources:` frontmatter. If you can't cite it, flag it with
+**`sources:` semantics**:
+- **method / concept / thread / dataset / person**: paper pages that
+  back claims. Required, non-empty.
+- **paper**: the page *is* the source. Omit, or list prior work the
+  paper builds on. Empty `sources: []` is not a lint violation.
+- **design**: wiki pages (any type) the design rests on.
+
+**Filenames, cross-links, math, figures, citations**:
+- Filenames lowercase-kebab-case. Papers: `<firstauthor><year>_<slug>.md`
+  (e.g. `kerbl2023_3dgs.md`). Methods/concepts: canonical name.
+- Cross-links: Obsidian wikilinks `[[slug]]` for
+  concept/method/person/thread. Relative markdown links for paper
+  citations: `[Kerbl et al. 2023](papers/kerbl2023_3dgs.md)`.
+- Math: inline `$...$`, display `$$...$$` (MathJax).
+- Figures: `![caption](../assets/<file>)`. No external hot-linking.
+- Every factual claim must trace to `sources:`. Unsourceable → mark
   `> [!needs-source]`.
 
-### Page templates
+### 2.1 Page templates
 
-**Paper page** (`wiki/papers/<key>.md`):
+#### Paper page (`wiki/papers/<key>.md`)
+
 ```markdown
 📄 [Full paper](../../papers/<subfolder>/<filename>.pdf) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX) · [code](https://github.com/<org>/<repo>)
 
-_Paper license: `<spdx>` · Code license: `<spdx>`_   <!-- omit code half if no code; write "no code found" if searched and none located -->
-
+_Paper license: `<spdx>` · Code license: `<spdx>`_   <!-- omit code half if no code; "no code found (<date>)" if searched -->
 
 ## TL;DR
 One paragraph. What is the contribution in one breath?
@@ -195,32 +230,34 @@ What limitation of prior work does this address?
 Core technical idea. Math where it clarifies. Pseudocode if useful.
 
 ## Results
-Headline numbers, datasets, comparisons. Only cite numbers that appear in the paper.
+Headline numbers, datasets, comparisons. Only numbers that appear in the paper.
 
 ## Why it matters
 How this fits into the broader [[thread-name]] and what it enables downstream.
 
 ## Pipeline contribution
-For each novel idea from this paper, state how it could plug into a thread's
-SOTA pipeline. One bullet per idea:
+Wikilinks to the idea pages produced in ingest Step 3 — one bullet per idea:
 
-- **<idea name>** — mechanism (1–2 sentences) · candidate thread: [[thread-slug]] · stage: `<pipeline stage>` · replaces/augments: `<current component>` · expected gain: `<metric / ablation that supports this>` · risks / assumptions: `<what must hold>`
+- [[idea-slug]] · candidate thread: [[thread-slug]] · op_target: `op:<name>` (if thread has >1) · one-line mechanism recap · expected gain.
 
-If no thread currently owns the relevant stage, propose whether a new thread
-should exist rather than filing it nowhere.
+Mechanism lives on the idea page; this section is cross-reference only.
 
 ## Relation to prior work
 - Builds on [[method]] / [Author Year](papers/...)
 - Contrasts with [[method]]
 
 ## Open questions / limitations
-Bulleted. Both the paper's stated limitations and your own skepticism.
+Both the paper's stated limitations and your own skepticism.
+
+## Code & license
+Only when non-commercial / research-only / unknown. State what downstream use it blocks.
 
 ## References added to the wiki
 Pages created or meaningfully updated by this ingest.
 ```
 
-**Method page** (`wiki/methods/<name>.md`):
+#### Method page (`wiki/methods/<name>.md`)
+
 ```markdown
 ## What it is
 One-paragraph definition.
@@ -237,546 +274,788 @@ Chronological: origin → notable successors. Link to paper pages.
 ## Key references
 ```
 
-**Thread page** (`wiki/threads/<name>.md`): a *living SOTA pipeline*, not just
-an annotated reading list. A thread exists to answer: "given everything we've
-ingested, what is the current best end-to-end pipeline for this problem, and
-what novel combinations of ideas could beat it?" Example slugs:
-`radiance-field-evolution.md`, `feature-matching-learned-vs-classical.md`.
+#### Thread page (`wiki/threads/<name>.md`)
 
-Required sections:
+A thread is a living per-goal pipeline, not a reading list. **Every new
+thread triggers the goal-proposal workflow in §3.3** — the LLM drafts
+`## Goal` + optional `## Goal contract` from seed papers and presents
+both to the user for edit before commit.
+
+Frontmatter:
+
+```yaml
+---
+title: ...
+type: thread
+tags: [...]
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+sources: [papers/...]
+operating_points: [op:default]        # 1–3 entries; cap at 3 (Hard Rule §6.9)
+status: stub | draft | stable | contested
+---
+```
+
+Body:
 
 ```markdown
-## Goal & success criteria
-What the pipeline is trying to do. What "better" means — metric(s), dataset(s),
-or qualitative target. This is what every component swap is judged against.
+## Goal
+One-paragraph plain-language goal. Broad is fine — e.g. "reconstruct the
+best possible mesh from a 3DGS scene." Required.
 
-## Current SOTA pipeline (as of YYYY-MM-DD)
-Stage-by-stage — numbered list or diagram. For each stage name:
-- the current best component,
-- the paper it comes from (linked),
-- the measured / claimed gain over the prior choice,
-- known failure modes or assumptions it imposes on neighbouring stages.
+## Goal contract (optional, structured)
+```yaml
+metric: [chamfer-mm, normal-consistency, fps@inference]
+target_regime: [posed | unposed, sparse-view | dense-view, bounded | unbounded]
+constraints: [no-per-scene-fitting, ≤1-A100-train, commercial-license-ok]
+required_capabilities: [view-synthesis, geometry-extraction, relighting]
+```
+Filled when known. Lints needing a contract skip threads without one.
+
+## SOTA pipelines
+
+One subsection per operating point. With only `op:default`, a single
+flat section is fine.
+
+### op:<name> (short qualifier — e.g. "offline, ≥1 GPU-hour")
+
+The pipeline is a DAG of **nodes**. Each node has a thread-local stable
+ID (`n1`, `n2`, ...); IDs never reused — a deleted node's ID retires.
+
+Format:
+- **n<id>** · stage(s): `[[<domain>.<slot>]]` (≥1 wikilink) · filler: `[[idea-slug]]` · source: `[Author Year](wiki/papers/<key>.md)` · gain over prior: `<specific benchmark / ablation>` · upstream: `[n<id>, ...]` · downstream: `[n<id>, ...]` · edge types: `<in: X, Y; out: Z>`.
+
+- **Composite nodes** (`scope: multi-stage-collapse`): list every stage in `stages:`, not just one.
+- **Bundle nodes** (filler has `co_requires:`): every co_required idea must appear as the filler of some node in *this* pipeline (§6.14).
+- **Bridge nodes** (`scope: bridge`): marked `(bridge)` after the ID; one-line rationale for the neighbor-mismatch they resolve.
 
 ## Pipeline lineage
-Chronological record of component swaps and pipeline-level redesigns.
-Format: `YYYY-MM-DD · <stage>: <old> → <new>` · driver: [paper link] · rationale.
-Prior pipelines are preserved (strikethrough or collapsed) — never silently
-rewritten (Hard Rule §6.3).
+Chronological record of swaps and redesigns, per OP:
+
+- **filler-swap**: `YYYY-MM-DD · op:<name> · filler-swap · n<id>: [[old-idea]] → [[new-idea]]` · driver: [paper link] · gain: `<benchmark>` · rationale: ...
+- **topology-change**: `YYYY-MM-DD · op:<name> · topology-change · scope: <multi-stage-collapse | stage-split | topology-rewrite | new-paradigm> · nodes removed: [n<id>, ...] · nodes introduced: [n<id>, ...] · edges rewired: [n<id>→n<id>, ...]` · driver · rationale.
+
+Prior pipelines preserved (strikethrough or collapsed `<details>` block)
+— never silently rewritten (§6.3). When a topology-change lands, the
+superseded sub-DAG is preserved as a collapsed `<details>` block below
+the new pipeline.
 
 ## Candidate components / not yet integrated
-Ideas from ingested papers that look promising but haven't been promoted into
-the pipeline. Each entry: component · source paper · which stage it targets ·
-why it's not yet in (needs ablation, incompatible assumptions, untested
-combination, waiting on a prerequisite idea, etc.).
+Promising ideas that didn't beat SOTA (on any OP). Each: `[[idea-slug]]`
+· source paper · target stage · OP considered · why it lost · what
+condition could make it win.
 
 ## Open questions & synthesis bets
-Where the LLM proposes *novel combinations* not tried in any single paper.
-Each bet: hypothesis · ideas being combined (≥2 papers) · expected gain · risk ·
-what experiment would validate it. This section is the project's research
-agenda — keep it alive.
+Structured queue, not prose. See §2.2 for the bet template. This is the
+research agenda — keep it alive.
+
+## Capability gaps
+What the SOTA pipeline(s) lack. Each gap = capability + which bets it
+would unlock + what to look for next ingest. The shopping list for
+ingest. Refreshed every Pass B (§3.1 Step 5).
+
+- **<capability>** — would unlock Bets #NNN, #MMM. Search target: <what kind of paper supplies this>.
 
 ## Contradictions & tensions
-Places where ingested papers disagree. The thread's current resolution and
-confidence level. Link the conflicting sources.
+Where ingested papers disagree. Current resolution and confidence.
+
+## Shelved bets / known non-compositions
+Bets refuted / superseded / infeasible. Each: `Bet #NNN` · final status ·
+short reason · `triggers:` that would revive it. Pass B consults this
+before emitting new bets.
 
 ## Sources
 (populated from frontmatter `sources:`)
 ```
 
-Reread and revise on every relevant ingest. The "Current SOTA pipeline" and
-"Open questions & synthesis bets" sections together are the thread's reason
-to exist — if an ingest touches a thread without updating at least one of
-them (or explicitly noting "no change warranted"), the synthesis step was
-skipped.
+Reread on every relevant ingest. If an ingest touches a thread without
+updating at least one of {SOTA pipelines, Candidate components, Open
+questions & synthesis bets, Capability gaps} (or explicitly saying "no
+change warranted"), synthesis was skipped.
+
+#### Idea page (`wiki/ideas/<slug>.md`)
+
+Frontmatter (structured and lint-parsed):
+
+```yaml
+---
+title: <short human-readable name>
+type: idea
+source_paper: wiki/papers/<key>.md
+also_in: [wiki/papers/<key>.md, ...]
+
+# pipeline shape
+scope: drop-in | stage-swap | multi-stage-collapse | stage-split | topology-rewrite | new-paradigm | bridge
+stages: [<domain>.<slot>, ...]             # ≥1 stage this idea fills or affects
+collapses: [<domain>.<slot>, ...]          # stages subsumed (scope: multi-stage-collapse)
+splits_into: [<new-stage-slug>, ...]       # sub-stages introduced (scope: stage-split)
+rewrites: {replaces: [...], introduces: [...]}   # scope: topology-rewrite
+
+# type contracts
+inputs: [...]
+outputs: [...]
+assumptions: [static-scene, known-intrinsics, bounded-volume]   # see §7 conflict registry
+requires_upstream_property: [...]
+requires_downstream_property: [...]
+learned_params: [...]
+failure_modes: [...]
+
+# composition graph
+requires: [idea-slug, ...]
+unlocks:  [idea-slug, ...]
+co_requires: [idea-slug, ...]               # bundle truth
+bridges: [idea-slug, ...]
+equivalent_to: []
+refines: [idea-slug]
+contradicts: [idea-slug]
+
+# housekeeping
+tags: [...]
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+status: unclaimed | adopted-by:<thread-slug>:<op> | shelved | refuted
+validated_in: [design-slug, ...]            # populated when a design built on this idea closes out
+---
+```
+
+**`scope:` enum** — pick the smallest honest scope:
+
+| scope | meaning |
+|---|---|
+| `drop-in` | same stage, same types, strictly better |
+| `stage-swap` | same stage, compatible types, different mechanism |
+| `multi-stage-collapse` | one idea subsumes ≥2 adjacent stages (list in `collapses:`) |
+| `stage-split` | decomposes one stage into sub-stages (list in `splits_into:`; create stage pages) |
+| `topology-rewrite` | replaces an M-node subgraph with an N-node subgraph (use `rewrites:`) |
+| `new-paradigm` | changes thread goal/representation such that most prior stages no longer apply |
+| `bridge` | adapter whose sole job is to convert one stage's output into another's input |
+
+Coercing a collapse into a stage-swap is the most common schema-integrity
+failure — flag rather than flatten. `co_requires:` is a property of the
+idea (not of any specific bet); bets inherit it.
+
+Body:
+
+```markdown
+## Mechanism
+One paragraph. What gradient flows through what? What is frozen? What
+invariance is imposed by which construction? If you can't fill this
+without re-reading the paper, you haven't understood the idea yet.
+
+## Why it wins
+Causal story + specific ablation / table / number isolating this idea's
+contribution. If no ablation isolates it, say so — evidence is weaker
+and downstream bets must acknowledge it.
+
+## Preconditions & compatibility
+Upstream outputs consumed, downstream assumptions imposed, known
+compositions (→ `unlocks:` / `requires:`), bundle constraints
+(→ `co_requires:`).
+
+## Pipeline-shape implications
+Required for `scope` ∈ {multi-stage-collapse, stage-split,
+topology-rewrite, new-paradigm}. State which nodes merge/split/rewire
+and the resulting subgraph. Adopting threads must match this topology.
+
+## Trade-offs vs. the decomposed pipeline
+Required for `multi-stage-collapse` and `topology-rewrite`. What did the
+decomposed pipeline offer that the fused one loses? (Per-stage
+interpretability, ability to swap an internal stage, failure-mode
+isolation, mid-stage priors, graceful degradation.) Without this
+section a fused idea is systematically over-valued.
+
+## Open questions
+Things the paper did not answer that any adopting thread will have to.
+```
+
+#### Stage page (`wiki/stages/<slug>.md`)
+
+```yaml
+---
+title: <human name>
+type: stage
+slug: <domain>.<slot>
+consumes: [type, ...]                      # direct I/O input types
+produces: [type, ...]                      # direct I/O output types
+invariants: [scale, permutation-of-views, ...]
+provides_properties: [metric-scale, per-pixel-uncertainty, ...]   # nonlocal properties the output carries
+requires_upstream_properties: [...]        # nonlocal properties the stage assumes on inputs
+data_regime: [bounded-scene, posed | unposed, static | dynamic, ...]
+tags: [...]
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+---
+```
+
+Body: short description, example filler ideas, notes on valid fillers.
+Keep under half a page. `consumes:` / `produces:` are direct I/O types;
+`provides_properties:` / `requires_upstream_properties:` are nonlocal
+contracts catching the failure mode where types match but an upstream
+assumption is silently broken.
+
+#### Design page (`wiki/designs/<slug>.md`)
+
+```yaml
+---
+title: ...
+type: design
+tags: [...]
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+sources: [...]
+realizes_bet: Bet #042                       # the bet this design implements
+realizes_ideas: [[idea-a]], [[idea-b]]       # ideas this design validates
+outcome: pending | succeeded | failed | partial
+outcome_date: YYYY-MM-DD
+status: draft | in-progress | tested | archived
+---
+```
+
+Body is implementation-specific. See `wiki/designs/` for examples.
+When `outcome:` flips off `pending`, also update the source bet's
+`outcome:` + `status:` and each realized idea's `validated_in:`.
+`lint design-closure` catches drift.
+
+### 2.2 Synthesis bet lifecycle
+
+Threads' "Open questions & synthesis bets" is a typed queue:
+
+```markdown
+### Bet #042 — <short hypothesis>
+status: proposed | feasible | in-design | tested | validated | refuted | superseded
+combines: [[[idea-a]], [[idea-b]], ...]     # ≥2 ideas, cross-paper
+stage_target: <domain>.<slot>
+op_target: op:<name>                        # which operating point this bet aims at
+confidence: low | med | high                # likelihood it works
+magnitude:  incremental | substantial | paradigm
+cost:       hours | days | weeks | months
+breakage_risk: low | med | high
+hypothesis: ...
+expected_gain: ... (tie to a benchmark)
+risk: ...
+validating_experiment: ...
+triggers: [ingest-of-idea:<slug>, benchmark:<name>, ...]
+design: wiki/designs/<slug>.md              # populated at status >= in-design
+outcome: ...                                # populated at tested/validated/refuted
+created: YYYY-MM-DD · updated: YYYY-MM-DD
+```
+
+When a bet reaches `feasible`, producing a design page is mandatory
+before promoting to `in-design`. When an idea is ingested whose slug
+appears in a shelved bet's `triggers:`, `lint unlocks-fired` surfaces
+it. `lint bets` sorts the queue by
+`magnitude × confidence ÷ cost ÷ breakage_risk`; bets missing rubric
+fields are flagged.
 
 ## 3. Workflows
 
 ### 3.1 Ingest
 
-The user can trigger an ingest in four ways:
+The user triggers an ingest in four ways:
 
 | Invocation | Behavior |
 |------------|----------|
-| **`ingest`** (no arguments) | **Batch mode.** Scan `raw/` for all unprocessed files (PDFs, markdown, HTML). Process each one through Steps 0–8. This is the default workflow — drop files into `raw/`, then say "ingest". |
-| **`ingest <URL>`** | Download the paper, then process through Steps 0–8. |
-| **`ingest <local-path>`** | Process an existing local file through Steps 0–8. |
-| **`ingest papers/<subfolder>/<file>`** | Re-ingest an already-stored paper (skip Step 0 download/rename/move). |
+| **`ingest`** | **Batch mode.** Scan `raw/` for all unprocessed files; process each through Steps 0–8. |
+| **`ingest <URL>`** | Download, then Steps 0–8. |
+| **`ingest <local-path>`** | Process local file through Steps 0–8. |
+| **`ingest papers/<subfolder>/<file>`** | Re-ingest stored paper (skip Step 0 download/rename). |
 
 #### Step 0 — Acquire the paper(s)
 
-**Batch mode** (no arguments):
-1. List all files in `raw/` recursively.
-2. Classify each file per §1.5 (paper → `papers/`, article → `articles/`,
-   image → `assets/`, ambiguous → ask user).
-3. Present the user with a numbered list before proceeding:
-   _"Found N files in raw/. Plan: 1. <filename> → papers/radiance-fields/
-   2. <filename> → assets/ …"_
-4. On approval, process each: rename, move to permanent store, run
-   single-paper acquisition below for papers/articles. Images just get
-   renamed and moved to `assets/`.
-5. After all files are processed, `raw/` should be empty.
+**Batch mode**: list all files in `raw/`; classify per §1.5; present
+numbered plan ("Found N files. 1. <name> → papers/<sub>/..."); on
+approval, rename + move each per §1.2/§1.3/§1.4. Images just move.
+After batch, `raw/` must be empty.
 
-**Single-paper acquisition** (URL or local file):
+**Single-paper acquisition**:
 
 | Input | Action |
 |-------|--------|
-| **arXiv URL** (abs or pdf) | Download the PDF via `curl -L` to a temp location. If an arXiv HTML version is available (`/html/<id>`), prefer downloading that as markdown (better for reading). |
-| **Direct PDF URL** | Download via `curl -L`. |
-| **Project page / blog URL** | Use WebFetch or curl to grab the page content. If a PDF link is found, download that too. |
-| **Local file in `raw/`** | Process in place (will be moved out of `raw/` after). |
-| **Local file elsewhere** | No download needed. |
+| **arXiv URL** | `curl -L` PDF; if `/html/<id>` exists, prefer it as markdown. |
+| **Direct PDF URL** | `curl -L`. |
+| **Project page / blog** | WebFetch. Follow PDF links. |
+| **Local file in `raw/`** | Process in place (moves out after). |
+| **Local file elsewhere** | No download. |
 
-After acquiring:
-1. **Determine the canonical title, first author, and year** from the paper
-   content or arXiv metadata.
-2. **Classify** the file per §1.5 (paper, article, or asset).
-3. **Rename** per the target store's convention (§1.2, §1.3, or §1.4).
-4. **Move** the file into the appropriate permanent store (`papers/<subfolder>/`,
-   `articles/`, or `assets/`). Create subfolders as needed.
-5. **If the source came from `raw/`**: the move itself empties it from the
-   inbox. Verify `raw/` is clean after batch ingest.
-6. **Find the code** (papers / datasets only). Search in this order:
-   a. the paper's abstract / conclusion / footnotes / GitHub badge;
-   b. the project page (if the URL is a project page, not arXiv);
-   c. Papers-with-Code entry for the title;
-   d. GitHub search for `<first-author> <short-title>` and `<short-title>` in the paper's topic area.
-   Accept only the **official** repo (authors' own) or, if authors released none, the **canonical** community implementation most cited / forked in follow-up work. Record as `code:` in frontmatter. If the search returns nothing, omit the field — do **not** guess; `lint find-code` will re-check later.
-7. **Identify the licenses**:
-   - `license_paper:` — read from arXiv (submission license at the abstract-page footer), or the publisher page / PDF first page for conference versions. Record SPDX-style.
-   - `license_code:` — if `code:` is set, read the repo's `LICENSE` file or the GitHub sidebar license badge. If a repo exists but has no detectable license, record `unknown` (this is an actual signal — unlicensed code is effectively all-rights-reserved and needs flagging).
-   - `license_dataset:` — for dataset pages only; read the dataset's release page / README / `LICENSE`.
-   Flag non-commercial, research-only, and `unknown` license-code results explicitly in the paper-page body under *"Code & license"* (see template) — these materially affect downstream usability and must not be buried in frontmatter.
-8. Report the final path to the user (e.g. "Saved to
-   `papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf` · code: `github.com/graphdeco-inria/gaussian-splatting` · paper license: `arxiv-nonexclusive` · code license: `non-commercial`").
+After acquiring, do all of:
+
+1. Determine canonical title, first author, year from content / arXiv
+   metadata.
+2. Classify per §1.5.
+3. Rename per §1.2/§1.3/§1.4.
+4. Move to the permanent store (create subfolders as needed).
+5. If source came from `raw/`, the move empties it. Verify clean.
+6. **Find code** (papers/datasets). Search order: paper body → project
+   page → Papers-with-Code → GitHub search `<first-author> <short-title>`.
+   Accept only **official** or **canonical community** repos. If
+   nothing found, omit `code:` and write `no code found (<today>)` in
+   the body — do not guess.
+7. **Identify licenses**. `license_paper:` from arXiv footer / publisher
+   page / PDF first page. `license_code:` from `LICENSE` file or GitHub
+   badge. `license_dataset:` from release page. SPDX when possible,
+   verbatim + gloss otherwise. Non-commercial / research-only / unknown
+   → flag in body under `## Code & license`.
+8. Report path + code + licenses.
 
 #### Step 1 — Read the source
 
-**Cache check**: if the local file at `local_paper:` does not exist but the
-wiki page has a `url:` field, download the paper first:
-- arXiv: `curl -L -o <local_paper_path> https://arxiv.org/pdf/<id>`
-- Other: `curl -L -o <local_paper_path> <url>`
-Create any missing subdirectories under `papers/` before downloading.
+Cache check: if `local_paper:` missing but `url:` set, download first
+(curl per §1.2). Read fully — for PDFs, all pages; for markdown, the
+whole file. Don't skim.
 
-Read the source fully. For PDFs, read all pages. For arXiv markdown,
-read the whole file. Don't skim.
+#### Step 2 — Deep analysis (hard gate before writing)
 
-#### Step 2 — Deep analysis (hard gate before any writing)
+Shallow summaries pollute the wiki and block synthesis. Produce this
+analysis *before* writing any file and present to the user:
 
-Understanding a paper is the whole point of this project. A shallow summary is
-worse than useless — it pollutes the wiki and blocks synthesis. Before any
-file is written, produce a structured analysis and present it to the user for
-review. This is the hard gate between reading and writing.
-
-Required analysis artifacts:
-
-1. **Goal.** What problem does the paper attack, in the paper's own framing?
-   What does "solved" look like for them?
-2. **Foundations.** Which prior methods / concepts / datasets does it rest on?
-   Link every foundation to an existing wiki page. Flag gaps where a load-bearing
-   foundation has no page yet (candidate for a Step 4 stub).
-3. **Novel contributions — enumerated.** List each *distinct* new idea /
-   feature / method / architectural choice separately. For each:
+1. **Goal.** What problem in the paper's own framing? What does "solved"
+   look like?
+2. **Foundations.** Which prior methods / concepts / datasets does it
+   rest on? Link every foundation to an existing wiki page; flag gaps
+   where a load-bearing foundation has no page (candidate for a Step 4
+   stub).
+3. **Novel contributions — enumerated as idea candidates.** Each
+   enumerated item is a candidate `wiki/ideas/<slug>.md` for Step 3:
+   - **Proposed slug** (`<descriptor>_<firstauthor><year>`).
    - **What it is** (one line).
-   - **How it works at mechanism level** — not "they use contrastive loss" but
-     *what* is contrasted against *what*, under *which* invariance, driven by
-     *which* signal. Math or pseudocode where it clarifies. If you can't
-     explain the mechanism, you don't yet understand the paper — read again.
-4. **Why it wins.** For each novel contribution, give the causal story linking
-   it to the headline result: which ablation / table / comparison in the paper
-   actually supports the claim, and what the measured effect is. If no
-   ablation isolates the contribution, say so — that's a weakness worth
-   flagging.
-5. **Relation map.** For each contribution, how does it relate to existing
-   wiki pages? Extends / replaces / contradicts / is orthogonal to. Cite the
-   wiki pages.
-6. **Pipeline contribution candidates.** For each novel contribution, which
-   existing thread's SOTA pipeline could absorb it, at which stage, and what
-   it would replace or augment? If no thread owns the stage, propose whether
-   a new thread should exist. This feeds directly into Step 5.
+   - **Mechanism** — not "they use contrastive loss" but *what* vs
+     *what*, under *which* invariance, driven by *which* signal. Math
+     or pseudocode where it clarifies. If you can't explain the
+     mechanism, you haven't understood the paper.
+   - **Structured fields draft**: `scope`, `stages`, `inputs`,
+     `outputs`, `assumptions`, `requires_upstream_property`,
+     `requires_downstream_property`, `learned_params`, `failure_modes`,
+     `co_requires`. Missing fields allowed but noted as open questions
+     on the idea page.
+   - **Scope classification** (load-bearing). Pick the smallest honest
+     scope. Subsumes prior stages → `multi-stage-collapse` (fill
+     `collapses:`). Rewires → `topology-rewrite` (fill `rewrites:`).
+     Coercing a collapse into a stage-swap is the most common
+     schema-integrity failure — flag rather than flatten.
+   - **Bundle detection.** Relies on another idea (same paper or
+     elsewhere) not yet absorbed? List under `co_requires:`.
+   - **Bridge detection.** `outputs:` don't match the next stage's
+     `consumes:`? Retype the idea, retype the stage, or propose a
+     first-class bridge idea. Never hand-wave.
+   - **Equivalence / refinement check.** Does this idea already exist
+     in `wiki/ideas/`? If yes, extend `also_in:` / `refines:` rather
+     than duplicate.
+4. **Why it wins.** For each contribution: causal story + specific
+   ablation / table / number isolating the claim. If no ablation
+   isolates it, say so — evidence is weaker and worth flagging.
+5. **Relation map.** Each contribution extends / replaces / contradicts
+   / is orthogonal to which existing wiki pages? Cite them.
+6. **Pipeline contribution candidates.** For each contribution, which
+   existing thread's SOTA pipeline could absorb it, at which stage,
+   at which **operating point** (if the thread has >1), and replacing
+   what? If no thread owns the stage, propose whether a new thread
+   should exist — this may trigger §3.3 thread creation.
 
-Present the analysis to the user. Ask whether anything should be emphasized,
-reframed, or deepened before pages are written. Do not proceed to Step 3
-until the user has reviewed the analysis or explicitly waived review.
+Present to the user. Ask for anything to emphasize / reframe / deepen
+before writing. Do not proceed to Step 3 until the user approves or
+waives review.
 
-#### Step 3 — Write the paper page
+#### Step 3 — Write paper page + idea pages + any new stage pages
 
-Create `wiki/papers/<key>.md` using the paper template from §2. In the
-frontmatter, populate the resource and license fields found in Step 0.6–0.7:
+First, `wiki/papers/<key>.md` using the §2.1 paper template. Then for
+each enumerated idea from Step 2:
 
-```yaml
-local_paper: papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf
-url: https://arxiv.org/abs/2308.14737
-code: https://github.com/graphdeco-inria/gaussian-splatting
-license_paper: arxiv-nonexclusive
-license_code: non-commercial
-```
+1. **No equivalent idea exists** → create `wiki/ideas/<slug>.md` per
+   §2.1. Populate all structured frontmatter (leave `requires:` /
+   `unlocks:` as `[]` — Pass B fills them). Set `status: unclaimed`.
+2. **Equivalent exists** → add this paper to `also_in:`, extend
+   `failure_modes:` / `assumptions:` if this paper surfaces new ones,
+   bump `updated:`. If strictly better, create a new idea page with
+   `refines: [old-slug]`.
+3. **Idea references an unbound stage slug** → create a stage stub at
+   minimum (consumes, produces, invariants, one-line description).
+   Orphaned stage IDs break the type system.
 
-In the body, include the resource + license strip at the top:
-```
-📄 [Full paper](../../papers/<subfolder>/<filename>) · [arXiv](https://arxiv.org/abs/XXXX.XXXXX) · [code](https://github.com/<org>/<repo>)
+The paper page's "Pipeline contribution" lists wikilinks to the
+created/updated idea pages — mechanism lives on the idea, paper page is
+source record. Populate frontmatter (`local_paper`, `url`, `code`,
+`license_paper`, `license_code`) from Step 0.6–0.7. Include the resource
++ license strip at the top of the body (template §2.1).
 
-_Paper license: `arxiv-nonexclusive` · Code license: `non-commercial`_
-```
+If a license is restrictive (non-commercial / research-only / unknown),
+add `## Code & license` calling out what downstream use it blocks.
 
-If no code was found, replace the `[code]` link with `no code found (<date>)` so `lint find-code` has a timestamp to compare against. If a license is restrictive (non-commercial, research-only, unknown), add a `## Code & license` short section to the body calling out what downstream use it blocks — do not bury this information in frontmatter alone.
+**Finding the URL**: if the user provided one, use it. If the paper was
+a local drop, search the web for title + "arXiv" for the canonical URL.
+No guessing — omit if not found.
 
-**Finding the URL**: if the user provides a URL, use it. If the paper was
-dropped as a local file, search the web for the paper title + "arXiv" to find
-the canonical URL. If no URL can be found, omit the `url:` field and the
-arXiv link — don't guess.
+**Hard rule**: every novel contribution from Step 2 must produce or
+update an idea page here — no back-fill escape hatch (§6.11).
 
 #### Step 4 — Cascade updates
 
-For each concept/method/person mentioned:
-- If a page exists: update it (add a bullet, refine a claim, extend the
-  lineage, flag a contradiction if the new source disagrees).
-- If it doesn't exist but it's load-bearing (appears in method / results /
-  related-work): create a stub with at minimum a TL;DR and the `sources:`
-  backlink. Mark `status: stub`.
-- Do not create a page for every name dropped — only things material to the
-  paper's contribution or to an existing thread.
+For each concept / method / person mentioned:
+- Page exists → update (bullet, claim refinement, lineage, contradiction
+  flag).
+- Load-bearing and missing (appears in method / results / related-work)
+  → create a stub (TL;DR + `sources:` backlink + `status: stub`).
+- Not load-bearing → skip. A name-drop is not a page.
 
-When referencing the paper from any wiki page, link to both the wiki
-summary and the local source:
-`[Kerbl et al. 2023](papers/kerbl2023_3dgs.md) · [pdf](../../papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf)`
+Cross-reference format:
+`[Kerbl et al. 2023](papers/kerbl2023_3dgs.md) · [pdf](../../papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf)`.
 
 #### Step 5 — Evolve affected threads (two passes)
 
-Threads are living SOTA pipelines, not reading lists. Every ingest runs two
-passes on every thread flagged by Step 2's "Pipeline contribution candidates"
-(and any other thread where the new paper is clearly relevant).
+For every thread flagged in Step 2 (and any other clearly relevant
+thread), run both passes.
 
-**Pass A — Local, per-stage evaluation.** For each pipeline-contribution
-candidate from Step 2:
+**Pass A — per-OP, per-stage evaluation.** For each idea created or
+updated in Step 3:
 
-1. Open the target thread. Re-read its "Goal & success criteria", "Current
-   SOTA pipeline", and "Candidate components".
-2. Does the new component **beat** the current SOTA pipeline's corresponding
-   stage on the thread's stated success criteria (accuracy, speed, robustness,
-   data requirements, assumptions)?
-3. If yes: update "Current SOTA pipeline" to use the new component. Supersede
-   the prior entry with strikethrough + a "superseded by" note per Hard Rule
-   §6.3. Record the swap in "Pipeline lineage" with driver paper + rationale.
-4. If no but the contribution is interesting: add it to "Candidate components
-   / not yet integrated" with a note on *why* it lost (and under what
-   conditions it might win later).
-5. If the paper *contradicts* a current pipeline choice (claims it's wrong,
-   not just worse): flag in "Contradictions & tensions" and require explicit
-   user review before changing the pipeline.
-6. If the paper opens a stage or problem no thread currently covers: propose
-   (don't silently create) a new thread.
+1. Find threads whose SOTA pipeline contains `idea.stages`. Open each.
+   Re-read Goal, Goal contract (if present), SOTA pipelines, Capability
+   gaps, Candidate components.
+2. **Type + contract check**: does `idea.inputs/outputs` match stage
+   `consumes/produces`? Do upstream `provides_properties:` satisfy
+   `idea.requires_upstream_property:`? Do downstream satisfy
+   `requires_downstream_property:`? Mismatch → retype the idea, swap
+   neighbors (defer to Pass B), or insert a bridge idea.
+3. **Assumption check** (§7 conflict registry): idea's `assumptions:`
+   must not conflict with the union of already-adopted assumptions on
+   any OP where you're considering adoption.
+4. **Scope branch**:
+   - `drop-in` / `stage-swap` → single node re-filled.
+   - `multi-stage-collapse` → merge nodes into a composite; record a
+     topology-change lineage entry.
+   - `stage-split` → decompose target into sub-stages before filling.
+   - `topology-rewrite` → apply `rewrites: {replaces, introduces}`
+     exactly.
+   - `new-paradigm` → propose (don't silently create) a new thread or
+     a parallel variant; trigger §3.3.
+   - `bridge` → adopt only to resolve a specific neighbor-mismatch;
+     note which neighbors.
+5. **Bundle check**: `co_requires:` ideas must all be adoptable in this
+   pipeline (already present or promotable together). Partial adoption
+   is a type-check failure (§6.14).
+6. **Per-OP evaluation**: for each operating point of the thread, does
+   the new idea **beat** the SOTA pipeline's corresponding region on
+   that OP's success criteria (metric from Goal contract, or Goal
+   qualitative target)? An idea may win on one OP and lose on others —
+   file to the winning OP only. For `multi-stage-collapse`, consult
+   "Trade-offs vs. the decomposed pipeline" — a headline win that
+   loses a load-bearing decomposed capability is not automatically
+   adopted; flag for user review.
+7. **If wins on OP X**: update that OP's SOTA pipeline to reference
+   `[[idea-slug]]`. Apply the scope-appropriate DAG change. Supersede
+   prior entries with strikethrough + "superseded by" (§6.3). Set
+   idea's `status: adopted-by:<thread-slug>:<op>`; same on every
+   `co_required` idea that travels with it. Record a lineage entry
+   prefixed with `op:<name>`.
+8. **If doesn't win**: add to Candidate components as `[[idea-slug]]`
+   with note on *why* it lost and which OP was evaluated. If failed on
+   bundle-incompleteness, list missing siblings — natural `triggers:`
+   for future bets.
+9. **If contradicts a current choice**: flag in Contradictions &
+   tensions; require user review. Set `contradicts:` on the idea page.
+10. **If opens an uncovered stage/problem**: propose a new thread
+    (don't silently create — trigger §3.3). Add a stage page if
+    warranted.
 
-**Pass B — Holistic synthesis (mandatory, even when Pass A changed nothing).**
-Step back from stage-by-stage substitution and reason about the pipeline as a
-whole system. The core ambition of this project — finding *novel* combinations
-of ideas that beat any single paper's pipeline — lives entirely in this pass.
-For each affected thread, write answers to:
+**Pass B — holistic synthesis (mandatory, even when Pass A changed
+nothing).** The project's core ambition — novel combinations that beat
+any single paper's pipeline — lives here. Per affected thread:
 
-1. **Do any ideas compose?** Does this paper's contribution unlock, strengthen,
-   or get unlocked by an *existing* candidate in this thread's backlog (or in
-   another thread)? Example: a new uncertainty estimator may make a
-   previously-shelved refinement method viable. Say so explicitly, or say
-   "nothing composes" explicitly.
-2. **Cross-stage interactions.** Does the new component change *assumptions*
-   of upstream or downstream stages in a way that invites redesigning those
-   stages too? Locally neutral swaps can be globally beneficial when they
-   remove a constraint elsewhere. Locally beneficial swaps can be globally
-   harmful if they break a downstream assumption.
-3. **New combinations not proposed in any single paper.** Propose at least one
-   *novel* pipeline variant that mixes ideas across ≥2 papers (including this
-   one) in a configuration none of them proposed. State hypothesis, ideas
-   combined, expected gain, risk, and what experiment would validate it. Add
-   to "Open questions & synthesis bets".
-4. **Cross-thread transfer.** Could an idea from this paper, or any candidate
-   in this thread's backlog, improve a *different* thread's pipeline? File a
-   cross-thread note in both threads if so.
-5. **Verdict on the SOTA pipeline as a whole.** After the above, decide
-   whether the pipeline should be revised as a *coherent whole* — not just
-   one stage swapped, but possibly several stages redesigned together.
-   Propose the revised pipeline, preserve the prior one via "Pipeline
-   lineage", and record the cross-stage rationale.
+1. **Do any ideas compose?** Traverse `requires:` / `unlocks:` /
+   `refines:` of the new idea(s) against every existing idea. Does the
+   new idea unlock a prerequisite of a shelved bet? Refine an adopted
+   idea? Update `requires:` / `unlocks:` edges when new compositions
+   become visible. Also surface any **orphan ideas** (ideas with 0
+   referencing bets older than 30 days) whose `stages:` overlap this
+   thread — these are mechanisms the wiki understands but has never
+   tried to combine; propose combinations involving them. Say "nothing
+   composes" only after actual enumeration.
+2. **Cross-stage interactions.** Does the new component change upstream
+   or downstream **assumptions** in a way that invites redesigning
+   those stages too? Locally neutral swaps can be globally beneficial;
+   locally beneficial swaps can be globally harmful.
+3. **New combinations not proposed in any single paper.** Propose ≥1
+   novel pipeline variant mixing ideas across ≥2 papers in a
+   configuration none of them proposed. Write as a structured bet
+   (§2.2) — assign `Bet #NNN`, fill `combines:`, `stage_target:`,
+   `op_target:`, the rubric fields (`confidence`, `magnitude`, `cost`,
+   `breakage_risk`), and `triggers:`. For non-drop-in scope, the bet
+   body must state the topology change explicitly: nodes
+   merged/split/rewired, edges appearing/disappearing, every
+   neighboring node's contract re-checked. Hand-waved topology bets
+   rejected. Check Shelved bets before proposing to avoid
+   re-proposing known non-compositions.
+4. **Cross-thread transfer.** Could this idea, or any backlog
+   candidate, improve a *different* thread's pipeline? Note in both.
+5. **Capability gaps refresh.** Regenerate the thread's `## Capability
+   gaps` section from current shelved-bet `triggers:` and unmet
+   upstream properties. This is enforced in Pass B (there is no `lint
+   capability-gaps` — freshness is maintained at write-time).
+6. **Verdict on the pipeline as a whole.** Should it be revised as a
+   coherent whole (several stages redesigned together, not one swap)?
+   If yes, propose the revised pipeline, preserve the prior via
+   Pipeline lineage, record cross-stage rationale.
 
 If Pass B produces nothing — no compositions, no novel combinations, no
-cross-thread transfer — state this explicitly in the ingest report. A silent
-Pass B almost always means it was skipped.
+cross-thread transfer — state it explicitly in the ingest report.
+Silent Pass B almost always means it was skipped.
 
-Preserve prior hypotheses with strikethrough or "superseded by" — don't
-silently rewrite history (Hard Rule §6.3).
+Preserve prior hypotheses with strikethrough / "superseded by" — don't
+rewrite (§6.3).
 
 #### Step 6 — Update `index.md`
 
-Add new pages; bump `updated:` dates on touched ones.
+Add new pages; bump `updated:` on touched ones.
 
 #### Step 7 — Append to `log.md`
 
-Use the format in §5. Include the `local_paper:` path in the log entry.
+Format per §5. Include `local_paper:` path.
 
 #### Step 8 — Report back
 
-List of files created/modified (with link syntax), the local paper path,
-and any contradictions or open questions the ingest surfaced.
+Files created/modified (link syntax), local paper path, contradictions
+or open questions surfaced.
 
-**Budget**: a single ingest typically touches 5–15 wiki pages. More than 20 is
-a smell — you're probably creating pages for trivia. Fewer than 3 is a smell
-too — you're probably missing cascade updates.
+**Budget**: a single ingest typically touches 5–15 wiki pages. More
+than 20 is a smell (creating pages for trivia). Fewer than 3 is a smell
+too (missing cascade updates).
 
-A good ingest also produces:
-- at least one concrete pipeline-contribution evaluation (Pass A), even if
-  the verdict is "does not improve any current SOTA pipeline";
-- an explicit Pass B holistic-synthesis note on every affected thread, even
-  if that note concludes "no new combinations surfaced this round".
+A good ingest produces:
+- ≥1 concrete Pass A per-OP pipeline evaluation (even if "does not
+  beat any SOTA");
+- an explicit Pass B note per affected thread (even if "no new
+  combinations surfaced this round");
+- updated Capability gaps on every thread touched in Pass B.
 
-An ingest that adds a paper page without writing anything in any thread's
-"Current SOTA pipeline", "Candidate components", or "Open questions &
-synthesis bets" section is a smell: deep analysis (Step 2) or holistic
-synthesis (Step 5 Pass B) was skipped.
+A paper page without writing anything in any thread's SOTA pipelines,
+Candidate components, Open questions & synthesis bets, or Capability
+gaps is a smell: Step 2 or Step 5 was skipped.
 
 ### 3.2 Query
 
-When the user asks a question:
+1. Read `index.md` first; then read relevant pages. Don't grep raw
+   sources unless the wiki clearly doesn't cover it. If a source is
+   needed and the local file is missing, do the cache check from
+   §3.1 Step 1 first.
+2. Answer with citations (relative links to wiki pages).
+3. If the wiki is insufficient, say so: "the wiki doesn't cover X —
+   want me to ingest a source on it?"
+4. If the answer is substantive (comparison, synthesis, new
+   connection), offer to file it: "save as `wiki/threads/<slug>.md`?"
+   Good answers are wiki material, not chat fluff.
 
-1. **Read `index.md` first** to locate relevant pages. Then read those pages.
-   Don't grep the raw sources unless the wiki clearly doesn't cover it.
-   If you need to read a source paper and the local file is missing, use
-   the cache-check from Step 1 of §3.1 to download it first.
-2. **Answer with citations** using relative links to paper/method pages.
-3. **If the wiki is insufficient**, say so explicitly: "the wiki doesn't
-   cover X — want me to ingest a source on it?"
-4. **Offer to file the answer back.** If the answer is substantive (a
-   comparison, a synthesis, a new connection), ask: "should I save this as
-   `wiki/threads/<slug>.md`?" Good answers are wiki material, not chat fluff.
+### 3.3 Thread creation (goal-first)
 
-### 3.3 Lint
+Any workflow that creates a new thread — ingest Step 5 proposing one,
+user requesting one, `lint stage-coverage` suggesting one — **must** run
+this before writing the file:
 
-`lint` is the single entry point for wiki health. Bare `lint` diagnoses;
-`lint <action>` fixes a specific category of issues.
+1. **Propose goal.** From the seed paper(s), draft a one-paragraph
+   `## Goal` capturing what the thread is trying to do.
+2. **Propose contract** (optional). Draft a `## Goal contract` YAML
+   block with best-guess `metric:`, `target_regime:`, `constraints:`,
+   `required_capabilities:`. Any field the seed doesn't determine,
+   leave blank or comment `# to be filled`. The contract is optional
+   — if the seed doesn't support a meaningful contract, omit it.
+3. **Propose operating points.** Default `[op:default]`. If the seed
+   clearly implies distinct regimes (speed vs. quality, object vs.
+   scene, offline vs. realtime), propose up to 3 OPs with short
+   qualifiers.
+4. **Present to the user for edit.** Show goal + contract + OP list +
+   frontmatter stub. User accepts / edits / rejects. Do not commit the
+   thread file until explicit approval.
+5. **Cap check**: ≥4 proposed OPs → hard fail (§6.9). Split into two
+   threads.
 
-#### Bare `lint` — diagnose (read-only)
+### 3.4 Lint
 
-When the user says "lint" or "health check":
+Bare `lint` diagnoses (read-only). `lint <action>` fixes a specific
+category with per-item approval.
 
-Scan the wiki and report (do not auto-fix — present a list for human approval):
+#### Bare `lint` — diagnose
+
+Scan and report (don't auto-fix):
 - **Contradictions**: pages making incompatible claims.
-- **Stale claims**: older pages whose claims a newer source has superseded.
-- **Orphans**: pages with zero inbound references. A reference is **either** an Obsidian wikilink (`[[slug]]` or `[[slug|alias]]`) **or** a relative markdown link to a wiki page (`[text](../papers/<slug>.md)`, `(wiki/methods/<slug>.md)`, etc.). Per §2, concept/method/thread pages are linked as wikilinks while paper citations use relative markdown links — the detector must count both, or every paper cited only via markdown links will be falsely flagged as an orphan.
-- **Missing pages**: concepts/methods referenced ≥3 times with no own page.
-- **Broken links**: wikilinks pointing to non-existent pages.
-- **Frontmatter drift**: missing `updated:` dates, empty `sources:`, etc.
-- **Stale threads**: threads whose `updated:` predates the `updated:` date of at least one paper page in their own `sources:` list — the narrative hasn't absorbed what its own citations now say. See `lint stale-threads` for the remediation action.
-- **Missing papers**: wiki pages with a `url:` field but no local file at `local_paper:`.
-- **Missing code**: paper / method / dataset pages with no `code:` field *and* no "no code found (<date>)" marker in the body — these have never been searched. Also flag pages whose "no code found" marker is older than 6 months — time to re-check. Remediation: `lint find-code`.
-- **Missing license**: paper pages without `license_paper:`, or with `code:` set but `license_code:` missing, or dataset pages without `license_dataset:`. Remediation: `lint licenses`.
-- **Restrictive licenses**: paper / method / dataset pages whose `license_code:` is `non-commercial` / `research-only` / `unknown`, or `license_dataset:` is `non-commercial` / `custom-research` — report these as a *usability map* (which pipeline components are actually redistributable), not as a fix target. No `lint` action; this is informational.
+- **Stale claims**: older pages whose claims a newer source superseded.
+- **Orphans**: pages with zero inbound references. A reference is an
+  Obsidian wikilink (`[[slug]]`) **or** a relative markdown link to a
+  wiki page. Per §2, concept/method/thread pages are linked as
+  wikilinks while paper citations use markdown links — count both.
+- **Missing pages**: concepts/methods referenced ≥3 times with no page.
+- **Broken links**: wikilinks to non-existent pages.
+- **Frontmatter drift**: missing `updated:`, empty `sources:`, etc.
+- **Stale threads**: `thread.updated <` any `source.updated` — narrative
+  hasn't absorbed its own citations (remedy: `lint stale-threads`).
+- **Missing papers**: `url:` set but no local file (remedy: `lint fetch`).
+- **Missing code**: no `code:` and no `no code found (<date>)` body
+  marker, or marker older than 6 months (remedy: `lint find-code`).
+- **Missing license**: `url:` without `license_paper:`, `code:` without
+  `license_code:`, dataset without `license_dataset:` (remedy: `lint
+  licenses`).
+- **Restrictive licenses** (informational): `license_code:` in
+  {non-commercial, research-only, unknown} or `license_dataset:` in
+  {non-commercial, custom-research}. Usability map, not a fix target.
 - **Investigation suggestions**: 3–5 follow-up questions or source hunts.
 
 #### `lint <action>` — targeted fixes
 
-After reviewing a lint report, the user can run `lint <action>` to fix a
-specific category. Each action targets exactly one diagnostic and requires
-user approval before making changes.
-
-| Command | What it fixes | Writes to |
-|---------|---------------|-----------|
-| `lint fetch` | Downloads all missing papers (wiki pages with `url:` but no local file). | `papers/` cache only (wiki-read-only) |
-| `lint frontmatter` | Fills in missing `updated:` dates, empty `sources:` arrays, and other frontmatter drift. | `wiki/` pages |
+| Command | What it does | Writes |
+|---------|--------------|--------|
+| `lint fetch` | Downloads papers with `url:` but no local file (after `git clone`, after cache wipe). | `papers/` cache only |
+| `lint frontmatter` | Fills missing `updated:`, empty `sources:`, drift. | `wiki/` pages |
 | `lint orphans` | Proposes inbound wikilinks for orphan pages. | `wiki/` pages |
-| `lint stale-threads` | Identifies threads whose narrative has fallen behind their own cited sources; proposes a targeted re-cascade. | `wiki/threads/*.md` (after per-thread approval) |
-| `lint find-code` | Re-searches for code implementations for paper / method / dataset pages that currently have no `code:` field. Populates `code:` + `license_code:` on hits. | `wiki/papers/*.md`, `wiki/methods/*.md`, `wiki/datasets/*.md` (after per-page approval) |
-| `lint licenses` | Fills in missing `license_paper:`, `license_code:`, `license_dataset:` on pages that have the underlying resource (`url:`, `code:`, or dataset reference) but no license recorded yet. | `wiki/papers/*.md`, `wiki/methods/*.md`, `wiki/datasets/*.md` (after per-page approval) |
+| `lint stale-threads` | Threads behind their own cited sources → targeted re-cascade. | `wiki/threads/*.md` |
+| `lint find-code` | Re-searches for official/canonical code on pages without it (or with `no code found` >6 months old). Fills `code:` + `license_code:`. | `wiki/papers,methods,datasets/*.md` |
+| `lint licenses` | Fills missing `license_paper:` / `license_code:` / `license_dataset:` on pages whose underlying resource exists. | `wiki/papers,methods,datasets/*.md` |
+| `lint idea-duplicates` | Candidate duplicate ideas (same stage + overlapping mechanism tokens) for manual merge via `equivalent_to:` / `refines:`. | `wiki/ideas/*.md` |
+| `lint unlocks-fired` | New ideas whose slugs match a shelved bet's `triggers:` → surface for re-evaluation. | read-only |
+| `lint stage-coverage` | Stages referenced with no page, or stage pages with no fillers; idea-by-stage × thread matrix. | read-only |
+| `lint synthesis-pressure` | Per thread: ingests vs. new Pass B bets over trailing N days. Low ratio = regressing to reading-list mode. | read-only |
+| `lint type-check` | Per-node I/O compat, `co_requires:` bundle presence, **assumption-vector compatibility** against §7 registry. | read-only |
+| `lint topology-drift` | Thread SOTA nodes/edges vs. cumulative Pipeline lineage — node without lineage entry, or lineage referencing no current/retired node. | read-only |
+| `lint bridge-coverage` | Thread nodes with incompatible-I/O neighbors and no bridge → candidate bridge-idea stubs. | `wiki/ideas/*.md` stubs |
+| `lint bets` | Sorts bets by `magnitude × confidence ÷ cost ÷ breakage_risk`; flags bets missing rubric fields; surfaces bets with `status: proposed` >30 days old. | read-only |
+| `lint design-closure` | Three-way reconciliation: designs with non-pending `outcome:` and bet still `in-design`; validated bets whose combined ideas lack `validated_in:`; orphan designs (no `realizes_bet:`). | read-only |
+| `lint orphan-ideas` | Ideas referenced by 0 bets older than 30 days. | read-only |
 
-New actions can be added as patterns emerge. The contract: **bare `lint` is
-always safe and read-only; `lint <action>` may write but always asks first.**
+Contract: **bare `lint` is always read-only; `lint <action>` may write
+but always asks first.** Enforced-in-workflow (not lints): goal contract
+presence (§3.3), capability gaps freshness (§3.1 Pass B), Pareto cap
+≤3 OPs (§6.9).
 
-#### `lint fetch` procedure
+#### 3.4.1 Lint action procedures
 
-1. **Scan** all wiki paper pages (`wiki/papers/**/*.md`) and extract
-   `local_paper:` and `url:` from frontmatter.
-2. **Filter** to papers where `local_paper:` is set, `url:` is set, and
-   the local file does **not** exist on disk.
-3. **Present** a numbered list to the user:
-   _"Found N papers with missing local files. Will download:
-   1. `papers/radiance-fields/kerbl_2023_3d-gaussian-splatting.pdf` ← arXiv 2308.14737
-   2. `papers/sfm-slam/schonberger_2016_sfm.pdf` ← arXiv 1604.03637
-   …"_
-4. On approval, **download** each paper:
-   - Create any missing subdirectories under `papers/`.
-   - arXiv URLs: `curl -fL -o <local_paper_path> https://arxiv.org/pdf/<id>`
-   - Other URLs: `curl -fL -o <local_paper_path> <url>`
-   - Use `-f` so HTTP errors fail the command instead of writing an HTML error page to disk.
-   - If a download fails, delete any partial file at `<local_paper_path>` before moving on.
-5. **Report** results: how many succeeded / failed, and list any failures
-   with their URLs so the user can investigate manually (paywalled, dead link,
-   moved, etc.).
-6. **Append to `log.md`**.
+All action lints share the same 5-step shape:
 
-**Notes on `lint fetch`**:
-- Wiki-read-only — never creates, modifies, or deletes wiki pages.
-- Papers without a `url:` field are silently skipped (listed separately in the report so the user can add URLs later).
-- If all local files already present: "All N papers present — nothing to download."
-- **Primary use case**: after a fresh `git clone`, run `lint fetch` to repopulate the `papers/` cache (which is git-ignored) from each wiki page's `url:` field.
+1. **Scan** — enumerate candidate pages per the action's selector.
+2. **Filter** — reduce to the subset actually needing action.
+3. **Present** — numbered table to the user, with per-page evidence.
+4. **On per-item approval, apply** — make the write.
+5. **Report** — counts + list of items touched + failures. Append to
+   `log.md`.
 
-#### `lint stale-threads` procedure
+Action-specific notes:
 
-A thread is **stale** when its narrative hasn't kept up with its own cited sources. The check is deterministic: compare a thread's `updated:` date against the most recent `updated:` date among the paper pages it lists in `sources:`. If a thread predates any of its sources, the thread body has not absorbed whatever those papers contributed.
-
-1. **Scan** all `wiki/threads/*.md`. For each thread, parse the `updated:` date and the `sources:` list from frontmatter.
-2. **Compute staleness** for each thread:
-   - `thread_updated` = thread's `updated:` date.
-   - `source_newest` = `max(source.updated:)` across every paper page listed in the thread's `sources:` (resolve relative paths; skip sources that don't exist on disk and flag them separately).
-   - Thread is **stale** if `thread_updated < source_newest`, with lag = `source_newest − thread_updated` days.
-3. **Present** a table per stale thread:
-   _"Thread `[[foundation-features-for-geometry]]` last updated 2026-04-15, lag 4 days.
-   Newer sources not yet reflected:
-   - `papers/chen2026_ttt3r.md` (updated 2026-04-19, added [TL;DR in 1 line])
-   - `papers/zhang2025_loger.md` (updated 2026-04-18, added [TL;DR in 1 line])
-   Suggest: reread these two papers and update the `### Feed-forward 3D reconstruction` and `## Outstanding hypotheses` sections."_
-4. On per-thread approval, **do a targeted re-cascade** (mirroring Step 5 of §3.1 ingest): reread each newer source, update the thread body where those papers advance, contradict, or extend the existing narrative, bump `updated:`. Do **not** auto-rewrite without approval — the whole point of the stale signal is that only a human-in-the-loop synthesis is trustworthy.
-5. **Report** per-thread: which sections changed, and any contradictions surfaced that warrant updates to other threads.
-6. **Append to `log.md`**.
-
-**Notes on `lint stale-threads`**:
-- **Only flags real staleness, not bureaucratic staleness**: a thread whose last `updated:` is old but whose sources are also old is not stale — its narrative is caught up with what's in the wiki.
-- **False negatives possible**: if a paper was ingested but never added to any thread's `sources:`, stale-threads won't catch it. That's what `lint orphans` is for.
-- **Ingest hygiene complement**: after a batch ingest that touches many threads, run `lint stale-threads` to find the cascade updates you missed. Step 5 of §3.1 says to update threads during ingest — this is the safety net for when that step gets rushed.
-- **Lag threshold tuning**: by default every non-zero lag counts. If that's too noisy on a large wiki, filter to threads with lag ≥ N days (user-specified) — but err on reporting more.
-
-#### `lint find-code` procedure
-
-Code releases lag papers by months or years — a paper ingested in 2024 with
-no official code may have gained an official or canonical community
-implementation by 2026. `lint find-code` re-searches for those.
-
-1. **Scan** all `wiki/papers/**/*.md`, `wiki/methods/**/*.md`, and
-   `wiki/datasets/**/*.md`. Select pages where **either**:
-   - the `code:` field is absent/empty, **or**
-   - the body contains `no code found (<date>)` and that date is older than
-     6 months from today.
-2. **For each selected page, search** in the same order as ingest Step 0.6:
-   paper body mentions → project page → Papers-with-Code → GitHub search for
-   `<first-author> <short-title>`. Accept only official or canonical
-   community implementations — same rule as ingest.
-3. **Present** a table to the user per found candidate:
-   _"Page `wiki/papers/kerbl2023_3dgs.md` — candidate: `github.com/graphdeco-inria/gaussian-splatting`
-   (first-author repo, 18.2k stars, last commit 2026-02-14, LICENSE: Gaussian-Splatting-License (non-commercial research only))._"
-   For each, state: **repo URL · why it's canonical · LICENSE file contents (SPDX if possible) · last-commit date · star count**. The LICENSE readout is critical — an unreadable license kills the candidate.
-4. **On per-page approval**, update frontmatter: set `code:`, set
-   `license_code:`, update the resource strip in the body. If the repo has
-   a restrictive license (non-commercial / research-only / unknown), also
-   add or update the `## Code & license` body section flagging downstream
-   implications.
-5. **For pages with no candidate found**, refresh the `no code found
-   (<date>)` marker in the body with today's date so the next
-   `lint find-code` run 6 months from now has a correct timestamp.
-6. **Append to `log.md`** with counts: pages searched, pages newly linked,
-   pages refreshed with no-code marker, restrictive-license flags raised.
-
-**Notes on `lint find-code`**:
-- Never overwrites an existing `code:` entry — if you think the current code
-  link is wrong or stale (e.g. repo deleted), that's a separate manual fix,
-  not automation.
-- Non-commercial licenses are valid results (3DGS, several large-model
-  papers) — do not reject a canonical repo because its license is
-  restrictive. Record faithfully and flag downstream.
-- Respect rate limits on GitHub / Papers-with-Code; batch queries and back
-  off on 429s rather than hammering.
-
-#### `lint licenses` procedure
-
-Separate from `lint find-code` because some papers have no code but still
-need a paper license recorded, and some have code but no code-license yet.
-
-1. **Scan** all `wiki/papers/**/*.md`, `wiki/methods/**/*.md`, and
-   `wiki/datasets/**/*.md`. Select pages where:
-   - `url:` is set but `license_paper:` is missing, **or**
-   - `code:` is set but `license_code:` is missing, **or**
-   - page type is `dataset` and `license_dataset:` is missing.
-2. **Resolve each**:
-   - `license_paper:` via arXiv abstract page scrape (submission license
-     footer) or publisher page. If ambiguous, record `unknown` rather than
-     guessing.
-   - `license_code:` via the repo's `LICENSE` file (raw.githubusercontent.com
-     fetch) or GitHub's `license` API endpoint. Map to SPDX when possible.
-   - `license_dataset:` via the dataset's release page / README / LICENSE
-     file.
-3. **Present** a table of proposed fills per page, with the evidence source
-   (URL, API response, file path). User can approve-all or per-page.
-4. **On approval**, update frontmatter and refresh the resource strip in
-   the body. Non-SPDX licenses (`arxiv-nonexclusive`, `Gaussian-Splatting-License`,
-   `custom-research`) should be recorded verbatim with a short gloss in the
-   body `## Code & license` section.
-5. **Append to `log.md`**.
-
-**Notes on `lint licenses`**:
-- Wiki-write-only; never fetches / modifies / deletes files in `papers/`
-  or `articles/` caches.
-- `unknown` is a legitimate value and must remain visible — downstream
-  readers need to know when a license is ambiguous rather than missing.
+- **`lint fetch`** — use `curl -fL` (fails on HTTP errors rather than
+  writing error pages to disk). Delete partial files on failure. arXiv:
+  `curl -fL -o <local_paper_path> https://arxiv.org/pdf/<id>`. Papers
+  without `url:` are silently skipped (listed separately so the user
+  can add URLs). **Primary use case**: after a fresh `git clone`,
+  repopulate the `papers/` cache.
+- **`lint stale-threads`** — staleness = `thread.updated <
+  max(source.updated)`. Deterministic; flag with lag in days. Do
+  **not** auto-rewrite — the targeted re-cascade requires per-thread
+  approval. False negative: a paper ingested but not in any thread's
+  `sources:` won't be caught here — `lint orphans` covers that.
+- **`lint find-code`** — same search order as ingest Step 0.6. The
+  LICENSE readout is critical; unreadable license kills the candidate.
+  Non-commercial is a valid result (e.g. 3DGS). Refresh the `no code
+  found (<date>)` marker on misses so the 6-month cadence stays
+  honored. Never overwrites an existing `code:` (stale repo links are
+  a manual fix). Respect GitHub / Papers-with-Code rate limits.
+- **`lint licenses`** — `unknown` is a legitimate value (ambiguous ≠
+  missing). Non-SPDX values recorded verbatim with gloss. Wiki-write
+  only.
+- **`lint type-check`** — **assumption-vector sub-check**: compute the
+  union of `assumptions:` across every adopted idea per OP; flag any
+  conflicting pair from the §7 registry.
+- **`lint bets`** — also surfaces bets where `op_target:` references an
+  OP not declared in the thread's `operating_points:` (stale bet).
+- **`lint design-closure`** — reports three categories separately
+  (outcome-drift, missing-validated_in, orphan-design) so fixes are
+  independent.
 
 ## 4. `index.md` format
 
 Grouped by category. Each line:
 `- [<title>](<relative-path>) — <one-line hook> · _updated YYYY-MM-DD_`
 
-Keep it navigable by a human. If the index grows past ~300 lines, split into
-sub-indexes (`index-papers.md`, `index-methods.md`) and have `index.md` link
-to them.
+Keep human-navigable. If the index grows past ~300 lines, split into
+sub-indexes (`index-papers.md`, `index-methods.md`) linked from
+`index.md`.
 
 ## 5. `log.md` format
 
-Append-only, chronological, newest at bottom. Every entry starts with a
-consistent prefix so `grep "^## \[" log.md | tail -20` works:
+Append-only, chronological, newest at bottom. Every entry starts with
+a consistent prefix so `grep "^## \[" log.md | tail -20` works:
 
 ```
 ## [YYYY-MM-DD] ingest | <paper short title>
-- Created: wiki/papers/<key>.md, wiki/methods/<new>.md
-- Updated: wiki/threads/<thread>.md (added lineage entry), wiki/methods/<x>.md (contradiction flagged)
-- Pipeline impact: <thread>: <stage> updated (<old> → <new>) · <thread>: N candidates queued · <thread>: Pass B — no change warranted
-- Synthesis bet: <one-line novel combination proposed, if any, and where filed>
-- Notable: <one-line interesting finding or open question>
+- Created: wiki/papers/<key>.md, wiki/ideas/<slug>.md, wiki/stages/<slug>.md
+- Updated: wiki/threads/<thread>.md (op:<name> lineage entry)
+- Pipeline impact: <thread>:<op>: <stage> updated (<old> → <new>) · <thread>: Pass B — no change warranted
+- Synthesis bet: Bet #NNN filed — <one-line novel combination>
+- Notable: <interesting finding or open question>
 
 ## [YYYY-MM-DD] query | <short question>
 - Touched: <pages read>
 - Filed as: wiki/threads/<slug>.md (if saved)
 
 ## [YYYY-MM-DD] lint
-- Contradictions: 2 · Orphans: 1 · Missing pages: 3 · Stale: 0
-- Followups suggested: see log entry body
+- Contradictions: 2 · Orphans: 1 · Stale: 0
+- Followups suggested: see entry body
 
-## [YYYY-MM-DD] lint fetch
-- Downloaded: N papers (M already present, K failed)
-- Failures: <list of failed URLs if any>
-
-## [YYYY-MM-DD] lint find-code
-- Pages searched: N (P papers + M methods + D datasets)
-- Newly linked: K pages (list top 3 or so: `wiki/papers/<key>.md` → `<repo>` [license])
-- No-code-marker refreshed: R pages
-- Restrictive licenses flagged: <count> (list categories: non-commercial / research-only / unknown)
-
-## [YYYY-MM-DD] lint licenses
-- Filled: N paper-licenses, M code-licenses, D dataset-licenses
-- Unknowns retained: K (list brief reasons if interesting)
+## [YYYY-MM-DD] lint <action>
+- <action-specific counts>
 ```
 
 ## 6. Hard rules
 
-1. **Never edit source papers.** Files in `papers/` and `raw/` are read-only
-   after placement (renaming/moving during ingest is allowed, content edits are not).
-2. **Never invent citations.** If you don't have the source, mark `[!needs-source]`.
-3. **Never silently overwrite a contradicted claim.** Preserve the prior
-   position with strikethrough or a "superseded by" note and link to the new source.
-4. **Stay in scope.** Photogrammetry + ML research. If the user drops something
-   off-topic, ask before filing.
-5. **Don't over-create pages.** A name-drop is not a page. A page must have a
-   defensible reason to exist (referenced by ≥2 other pages, or materially
-   advances a thread).
-6. **Cite down to the page.** When making a factual claim in a wiki page,
-   the `sources:` frontmatter must include the paper(s) that back it.
-7. **Obsidian is the read-side UI.** Wikilinks, frontmatter, and relative paths
-   should all "just work" in Obsidian without plugins beyond Dataview.
+1. **Never edit source papers.** Files in `papers/` and `raw/` are
+   read-only after placement (renaming/moving during ingest is allowed).
+2. **Never invent citations.** Unsourceable → `[!needs-source]`.
+3. **Never silently overwrite a contradicted claim.** Preserve the
+   prior position (strikethrough / "superseded by") with a link to
+   the new source.
+4. **Stay in scope.** Photogrammetry + ML research. Off-topic → ask.
+5. **Don't over-create pages.** A name-drop is not a page. A page must
+   be referenced by ≥2 others or materially advance a thread.
+6. **Cite down to the page.** Factual claims trace to `sources:`
+   frontmatter entries.
+7. **Obsidian is the read-side UI.** Wikilinks, frontmatter, relative
+   paths must work without plugins beyond Dataview.
 8. **No emojis in wiki content** unless the user asks.
+9. **Pareto cap**: a thread has ≤3 operating points. Need a 4th → split
+   the thread. Enforced at thread creation and edit.
+10. **Goal first.** Every thread has a `## Goal`; `## Goal contract`
+    is optional but proposed at creation and user-approved before
+    commit (§3.3).
+11. **Ideas are first-class.** Every novel contribution lives in
+    `wiki/ideas/<slug>.md`; threads and bets reference by wikilink
+    (§1.6, §2.1). No back-fill escape hatch on ingest.
+12. **Type-check compositions.** Filler idea's I/O must be compatible
+    with the node's stage (§2.1 stage page); upstream
+    `provides_properties:` must satisfy the filler's
+    `requires_upstream_property:`. Mismatches → retype or add a bridge.
+13. **Topology honesty.** `multi-stage-collapse` / `stage-split` /
+    `topology-rewrite` / `new-paradigm` ideas are not 1:1 stage
+    fillers. The thread pipeline reflects the actual DAG change,
+    recorded as a topology-change lineage entry (§2.1).
+14. **Bundles travel together.** `co_requires:` ideas must all be
+    present as fillers in the same pipeline — partial adoption is a
+    type-check failure.
+15. **Licenses never block bets or SOTA choices.** License info is informational — tracked in frontmatter and in [License Audit](wiki/meta/license-audit.md) for implementation-time planning. Bet adoption, `confidence`, `status`, and SOTA-pipeline composition are decided on mechanism merit alone.
 
-## 7. Co-evolution
+## 7. Assumption conflict registry
 
-This file is not frozen. When the user develops a workflow that works (or
-catches one that doesn't), update this schema. Log schema changes under a
-`## [YYYY-MM-DD] schema-change` entry in `log.md`.
+Closed-world list of assumption pairs that cannot co-exist in one
+pipeline. Used by `lint type-check`'s assumption-vector sub-check.
+Editable as new conflicts emerge — append a row and bump `updated:`
+on any thread whose SOTA pipeline then fails the check.
+
+| Left | Right |
+|------|-------|
+| `static-scene` | `dynamic-objects` |
+| `bounded-scene` | `unbounded-scene` |
+| `posed-input` | `unposed-input` |
+| `metric-scale` | `up-to-scale` |
+| `known-intrinsics` | `uncalibrated-input` |
+| `calibrated-photometric` | `raw-exposure-unknown` |
+| `realtime-inference` | `per-scene-optimization-required` |
+| `surface-primitive` | `volumetric-primitive` |
+| `single-camera` | `multi-rig-synchronized` |
+
+## 8. Co-evolution
+
+This file is not frozen. When the user develops a workflow that works
+(or catches one that doesn't), update the schema. Log schema changes
+under a `## [YYYY-MM-DD] schema-change` entry in `log.md`.

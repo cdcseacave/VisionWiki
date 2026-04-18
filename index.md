@@ -133,21 +133,36 @@ see [CLAUDE.md](CLAUDE.md).
 _(empty)_
 
 ## Threads
-- [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS (Gaussian Grouping, LangSplat, CLIP-GS, Seg-Wild, SAM 3D) · _2026-04-15_
-- [Foundation Features for Geometry](wiki/threads/foundation-features-for-geometry.md) — frozen DINO backbones replacing SIFT across SfM / matching / depth · _2026-04-15_
-- [Open-Vocab 2D Composition](wiki/threads/open-vocab-2d-composition.md) — CLIP + DINO + SAM as complementary backbones (Trident, SAM 3, RADIO) · _2026-04-15_
-- [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, representations, speed/quality tradeoffs · _updated 2026-04-14_
-- [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting usable meshes from Gaussian splats, 4 competing paradigms · _updated 2026-04-13_
-- [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — replacing iterative SfM: accelerated classical → hybrid → fully learned · _updated 2026-04-12_
-- [GPU-Native SfM (Tier 1)](wiki/threads/gpu-native-sfm.md) — accelerated classical SfM: InstantSfM vs CuSfM deep dive · _updated 2026-04-12_
-- [Monocular Depth Estimation](wiki/threads/mono-depth-estimation.md) — mono depth as load-bearing prior for SfM/3DGS/MVS · _updated 2026-04-12_
-- [Nerfstudio + gsplat Codebase](wiki/threads/nerfstudio.md) — local visiofacto fork architecture: pipelines, models, gsplat rendering internals · _updated 2026-04-13_
+- [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS/voxel primitives, 3 OPs · _updated 2026-04-18_
+- [Foundation Features for Geometry](wiki/threads/foundation-features-for-geometry.md) — frozen DINO backbones replacing SIFT across SfM / matching / depth · _updated 2026-04-18_
+- [Open-Vocab 2D Composition](wiki/threads/open-vocab-2d-composition.md) — CLIP + DINO + SAM as complementary backbones (Trident, SAM 3, RADIO), 3 OPs · _updated 2026-04-18_
+- [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, 3 OPs (quality-per-scene / city-scale / neural-free) · _updated 2026-04-18_
+- [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting meshes from Gaussian splats, 3 OPs (regularized-3dgs / mesh-in-loop / natively-extractable) · _updated 2026-04-18_
+- [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — three-tier SfM taxonomy: classical → hybrid → fully feed-forward · _updated 2026-04-18_
+- [GPU-Native SfM (Tier 1)](wiki/threads/gpu-native-sfm.md) — 2 OPs (general-purpose InstantSfM / sequential-slam-prior CuSfM) · _updated 2026-04-18_
+- [Monocular Depth Estimation](wiki/threads/mono-depth-estimation.md) — mono depth as load-bearing prior for SfM/3DGS/MVS · _updated 2026-04-18_
+- [Nerfstudio + gsplat Codebase](wiki/threads/nerfstudio.md) — local visiofacto fork architecture reference · _updated 2026-04-18_
+- [VLM Reasoning over 3D Scenes](wiki/threads/vlm-reasoning-over-3d-scenes.md) — inference-time VLM reasoning on reconstructed 3DGS scenes (GaussExplorer) · _2026-04-18_
+- [Generative 3D from 2D Priors](wiki/threads/generative-3d-from-2d-priors.md) — single-image generative 3D (SAM 3D, latent flow-matching) · _2026-04-18_
+- [LLM-Native Structured Scenes](wiki/threads/llm-native-structured-scenes.md) — point-cloud → LLM-emitted structured scene scripts (SpatialLM) · _2026-04-18_
 
 ## Designs
-- [Language-Grounded 3DGS 2026 — Research-Synthesis Design](wiki/designs/language-grounded-3dgs-2026.md) — composes SAM 3 native IDs + RADIOv2.5 unified features + LangSVR geometric-prior objective on a 3DGS substrate, with a precomputed interaction layer (click <5 ms, text <100 ms at 1 M Gaussians) and a densify/prune invariant · _2026-04-15_
-- [Language-Grounded 3DGS — Nerfstudio / Visiofacto Implementation Plan](wiki/designs/language-grounded-3dgs-nerfstudio.md) — 9-phase buildable plan for the design above; `visiofacto-lang` method, offline preprocessing CLI, subclass extension pattern · _2026-04-15_
-- [CoMe Integration into Nerfstudio/Visiofacto](wiki/designs/come-integration-nerfstudio.md) — implementation blueprint for CoMe's confidence + variance losses + VastGaussian-derived appearance module with CoMe SSIM decoupling · _updated 2026-04-14_
+- [Language-Grounded 3DGS 2026 — Research-Synthesis Design](wiki/designs/language-grounded-3dgs-2026.md) — realizes Bet #020; composes SAM 3 + RADIOv2.5 + DINOv3 + LangSplat-style autoencoder on a 3DGS substrate · _updated 2026-04-18_
+- [Language-Grounded 3DGS — Nerfstudio / Visiofacto Implementation Plan](wiki/designs/language-grounded-3dgs-nerfstudio.md) — 9-phase build plan for Bet #020; `visiofacto-lang` method · _updated 2026-04-18_
+- [CoMe Integration into Nerfstudio/Visiofacto](wiki/designs/come-integration-nerfstudio.md) — direct CoMe re-implementation (no bet); confidence + variance losses + appearance module · _updated 2026-04-18_
+- [Re-ingest tracker](wiki/designs/reingest-tracker.md) — workflow tracker (meta; not a pipeline design) · _updated 2026-04-18_
+
+## Ideas
+
+74 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#025: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, plus 64 more.
+
+## Stages
+
+84 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (12), `feed-forward-sfm.*` (15), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (2), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. Browse the directory or query via `lint stage-coverage`.
+
+## Meta
+- [License Audit](wiki/meta/license-audit.md) — commercial-use readiness of all 55 wiki papers; bet-level commercial-readiness table; remediation checklist · _2026-04-18_
 
 ---
 
-_Last rebuilt: 2026-04-15 · 53 papers, 14 methods, 15 concepts, 9 threads, 3 designs_
+_Last rebuilt: 2026-04-18 · 55 papers, 14 methods, 15 concepts, 12 threads, 4 designs, 74 ideas, 84 stages, 1 meta_

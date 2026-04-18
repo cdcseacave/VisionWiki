@@ -3,41 +3,52 @@ title: Open-Vocabulary 2D Composition (CLIP + DINO + SAM)
 type: thread
 tags: [open-vocabulary, segmentation, foundation-model, training-free, composition]
 created: 2026-04-15
-updated: 2026-04-15
+updated: 2026-04-18
 sources: [wiki/papers/shi2024_open-vocab-segmentation.md, wiki/papers/carion2026_sam-3.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/radford2021_clip.md, wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/kirillov2023_sam.md, wiki/papers/shi2026_self-distilled-roi.md]
+operating_points: [op:modular-training-free, op:unified-promptable, op:distilled-single-pass]
 status: draft
 ---
 
-## Goal & success criteria
+## Goal
 
-Segment or label arbitrary concepts in a 2D image without per-class training, using frozen foundation models. "Better" = higher open-vocabulary mIoU / AP at equal or lower inference cost, robust across closed-vocab → open-vocab shift, and **modular** enough to absorb a new frontier backbone without retraining.
+Segment or label arbitrary concepts in a 2D image without per-class training, using frozen foundation models. Better = higher open-vocabulary mIoU / AP at equal or lower inference cost, robust across closed-vocab → open-vocab shift, and **modular** enough to absorb a new frontier backbone without retraining.
 
-## Current SOTA pipeline (as of 2026-04-15)
+## Goal contract (optional, structured)
 
-Three *parallel* pipelines are viable — the thread hasn't collapsed to one:
+```yaml
+metric: [open-vocab-mIoU, per-image-inference-ms, cross-vocab-robustness]
+target_regime: [static-image | video, any-prompt-type text | exemplar | click]
+constraints: [zero-per-class-training, frozen-backbones-only-for-training-free-lane, commercial-license-ok]
+required_capabilities: [semantic-alignment, spatial-coherence, mask-boundary-precision]
+```
 
-**Pipeline A — Training-free Trident composition** (current default when modularity matters):
+## SOTA pipelines
+
+### op:modular-training-free (current default when modularity matters; cost = 3 ViT passes)
+
 1. **Semantic alignment**: frozen CLIP (OpenCLIP ViT-L/14 @ 336 is the de-facto choice) produces text-aligned per-region similarity scores from text prompts. Paper: [[radford2021_clip]]. Failure mode: image-level training → weak on spatial precision.
 2. **Spatial coherence / affinity**: frozen DINO self-similarity propagates the semantic signal to spatially coherent regions. Paper: [[oquab2023_dinov2]] → [[simeoni2025_dinov3]] (DINOv3 is the upgraded default). Gain: DINOv3 Gram anchoring gives cleaner patch affinities at high res.
 3. **Mask quality**: frozen SAM snaps the aggregated signal to clean mask boundaries. Paper: [[kirillov2023_sam]].
 4. **Aggregation**: Trident's "Feature Splicing → Spatial Correlation → Global Aggregation". Paper: [[shi2024_open-vocab-segmentation]]. Cost: three ViT forward passes per image.
 
-**Pipeline B — Unified promptable-concept model** (current default when inference latency matters and video support is needed):
+### op:unified-promptable (current default when inference latency matters and video support is needed)
+
 1. **Single SAM 3 forward pass** takes text prompts (noun phrases) or image exemplars and emits masks + instance IDs + video tracks. Paper: [[carion2026_sam-3]]. Trained on SA-Co (4M concept labels). Collapses CLIP + SAM into one backbone with tracking built in.
 
-**Pipeline C — Distilled unified backbone** (current default when inference budget is tightest):
+### op:distilled-single-pass (current default when inference budget is tightest)
+
 1. **Single RADIOv2.5 forward pass** — outputs subsume DFN-CLIP + SigLIP + DINOv2 + SAM teacher capabilities. Paper: [[heinrich2025_radiov25]]. Task head on the unified features. Trade: capability frozen at distillation time.
 
 ## Pipeline lineage
 
-- 2021 · semantic alignment: task-specific classifiers → CLIP zero-shot · driver: [[radford2021_clip]].
-- 2023 · mask quality: Mask R-CNN class-specific masks → SAM prompt-conditioned masks · driver: [[kirillov2023_sam]].
-- 2023 · spatial coherence: hand-crafted affinity / GrabCut → DINOv2 self-similarity · driver: [[oquab2023_dinov2]].
-- 2024 · aggregation: per-paper bespoke fusion → Trident three-stage pipeline · driver: [[shi2024_open-vocab-segmentation]].
-- 2025 · spatial coherence: DINOv2 → DINOv3 · driver: [[simeoni2025_dinov3]].
-- 2025 · compute profile: three-ViT inference → single distilled backbone · driver: [[heinrich2025_radiov25]] (Pipeline C split off).
-- 2026 · unified promptable segmentation: CLIP + SAM separate → SAM 3 single model · driver: [[carion2026_sam-3]] (Pipeline B split off).
-- 2026 · zero-label RoI selection: external proposer → MLLM self-distilled attention · driver: [[shi2026_self-distilled-roi]] (adjacent pattern; not yet in the main pipelines).
+- 2021 · op:modular-training-free · semantic alignment: task-specific classifiers → CLIP zero-shot · driver: [[radford2021_clip]].
+- 2023 · op:modular-training-free · mask quality: Mask R-CNN class-specific masks → SAM prompt-conditioned masks · driver: [[kirillov2023_sam]].
+- 2023 · op:modular-training-free · spatial coherence: hand-crafted affinity / GrabCut → DINOv2 self-similarity · driver: [[oquab2023_dinov2]].
+- 2024 · op:modular-training-free · aggregation: per-paper bespoke fusion → Trident three-stage pipeline · driver: [[shi2024_open-vocab-segmentation]].
+- 2025 · op:modular-training-free · spatial coherence: DINOv2 → DINOv3 · driver: [[simeoni2025_dinov3]].
+- 2025 · op:distilled-single-pass · new OP: three-ViT inference → single distilled backbone · driver: [[heinrich2025_radiov25]].
+- 2026 · op:unified-promptable · new OP: CLIP + SAM separate → SAM 3 single model · driver: [[carion2026_sam-3]].
+- 2026 · op:modular-training-free · zero-label RoI selection: external proposer → MLLM self-distilled attention · driver: [[shi2026_self-distilled-roi]] (adjacent pattern; not yet in the main pipelines).
 
 ## Candidate components / not yet integrated
 
@@ -47,10 +58,59 @@ Three *parallel* pipelines are viable — the thread hasn't collapsed to one:
 
 ## Open questions & synthesis bets
 
-- Does the composition pattern survive as each component improves independently? Trident survived CLIP→SigLIP and DINOv2→DINOv3. **Open**: does it survive CLIP+SAM→SAM 3? If SAM 3 fully subsumes two of three legs, Pipeline A is structurally dominated.
-- **Synthesis bet 1**: *Pipeline A with SigLIP-swapped semantic stage + DINOv3 spatial stage + SAM 3 mask stage.* Mixes [[carion2026_sam-3]] (mask) with [[simeoni2025_dinov3]] (spatial) and SigLIP (semantic). No paper does this. Expected gain: Trident's modularity + SAM 3's instance tracking, at the cost of three-backbone inference; usable for video datasets where SAM 3's video support is the primary draw but DINOv3's spatial precision still matters at per-frame scale.
-- **Synthesis bet 2**: *Distill SAM 3 + DINOv3 into a RADIO-style agglomerative student* to get Pipeline B's capabilities at Pipeline C's inference cost. Mixes [[heinrich2025_radiov25]] + [[carion2026_sam-3]] + [[simeoni2025_dinov3]]. Not proposed by any paper.
-- **Synthesis bet 3**: *SD-RPN attention-denoising applied to the DINO stage* — take DINOv3's attention, remove sink tokens per the SD-RPN recipe, use as the spatial-coherence signal. Mixes [[shi2026_self-distilled-roi]] + [[simeoni2025_dinov3]]. Not tried.
+### Bet #017 — Trident with SigLIP + DINOv3 + SAM 3
+status: proposed
+combines: [[carion2026_sam-3]], [[simeoni2025_dinov3]], [[shi2024_open-vocab-segmentation]]
+stage_target: open-vocab-2d.composition
+op_target: op:modular-training-free
+confidence: high
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: Keep Trident's three-stage structure but upgrade each leg to the 2026 state: SigLIP (semantic) + DINOv3 (spatial) + SAM 3 (mask + instance). Trident's modularity + SAM 3's instance tracking, at the cost of three-backbone inference.
+expected_gain: 2–4% open-vocab mIoU over Trident-original + video / instance tracking for free.
+risk: SAM 3 already does text prompts; using Trident's aggregation on top may be redundant. Three-backbone inference cost may push users to Pipeline C.
+validating_experiment: Ablate {original Trident, +SigLIP, +DINOv3, +SAM3, full upgrade} on ADE20K open-vocab + video-object-segmentation benchmarks. Needs SigLIP stub page first.
+triggers: [ingest-of-idea:siglip-wiki-page, benchmark:video-trident]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #018 — Distill SAM 3 + DINOv3 into a RADIO-style student
+status: proposed
+combines: [[heinrich2025_radiov25]], [[carion2026_sam-3]], [[simeoni2025_dinov3]]
+stage_target: open-vocab-2d.unified-backbone
+op_target: op:distilled-single-pass
+confidence: med
+magnitude: substantial
+cost: months
+breakage_risk: med
+hypothesis: RADIO distillation recipe applied to SAM 3 + DINOv3 (instead of RADIOv2.5's original teacher set) gives Pipeline B's promptable-concept capabilities at Pipeline C's single-pass inference cost.
+expected_gain: Pipeline B capabilities (video, instance IDs, text prompts) in a single ViT forward pass; ~3× inference speedup over running SAM 3 + DINOv3 separately.
+risk: SAM 3's prompt-conditioning head doesn't distill into a classifier-free student trivially. RADIO recipe may not generalize to prompt-based teachers.
+validating_experiment: Train RADIO-style agglomerative student on SAM 3 + DINOv3; compare vs. Pipeline B (SAM 3 alone) on segmentation + vs. Pipeline C (RADIOv2.5) on spatial benchmarks.
+triggers: [ingest-of-idea:prompt-conditional-distillation]
+created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #019 — SD-RPN attention-denoising on DINOv3 as spatial stage
+status: proposed
+combines: [[shi2026_self-distilled-roi]], [[simeoni2025_dinov3]]
+stage_target: open-vocab-2d.spatial-coherence
+op_target: op:modular-training-free
+confidence: med
+magnitude: incremental
+cost: weeks
+breakage_risk: low
+hypothesis: SD-RPN's attention-denoising (remove sink tokens, threshold into foreground/background) was developed for MLLM cross-attention but the recipe is general. Applying it to DINOv3 self-attention may produce cleaner spatial-coherence signals for Trident.
+expected_gain: 1–3% mIoU improvement on fine-structure queries; cleaner object boundaries in Trident output.
+risk: Sink-token-removal thresholds are per-backbone; DINOv3 may need different parameters than MLLM attention. Marginal gain over existing DINO self-similarity.
+validating_experiment: Replace DINOv3 self-similarity with SD-RPN-denoised attention in Trident; ablate threshold choices on ADE20K open-vocab.
+triggers: [ingest-of-idea:cross-backbone-attention-denoising]
+created: 2026-04-15 · updated: 2026-04-18
+
+## Capability gaps
+
+- **Compositional-prompt reasoning** ("red chair *without* armrests") — CLIP is weak; SAM 3 exemplars partly help but don't generalize. Would unlock: compositional-query benchmarks. Search target: VLM + SAM 3 hybrids with explicit logical reasoning.
+- **Fine-structure segmentation at sub-patch scale** — all three backbones operate at 14–16 px patches. Would unlock: thin-object benchmarks. Search target: dual-resolution or cascaded-ViT approaches.
+- **Harmonized open-vocab benchmark** — cross-paper numbers are apples-to-oranges. Not a paper-search target; a meta-benchmark gap the thread must track.
 
 ## Contradictions & tensions
 

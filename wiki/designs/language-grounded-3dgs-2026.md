@@ -3,7 +3,7 @@ title: "Language-Grounded 3DGS — Research-Synthesis Design (2026)"
 type: design
 tags: [3dgs, language-grounded, instance-segmentation, open-vocabulary, feature-distillation, sam3, radio, dinov3, interaction-layer, densify-prune-invariant]
 created: 2026-04-15
-updated: 2026-04-15
+updated: 2026-04-18
 sources:
   - papers/qin2024_langsplat.md
   - papers/ye2024_gaussian-grouping.md
@@ -20,6 +20,10 @@ sources:
   - papers/mao2025_spatiallm.md
   - papers/radford2021_clip.md
   - papers/kirillov2023_sam.md
+realizes_bet: Bet #020
+realizes_ideas: [[sam3-native-video-ids_carion2026]], [[radiov25-agglomerative-distillation_heinrich2025]], [[dinov3-gram-anchoring_simeoni2025]], [[langsplat-per-scene-autoencoder_qin2024]], [[gaussian-grouping-identity-encoding_ye2024]]
+outcome: pending
+outcome_date: null
 status: draft
 ---
 
