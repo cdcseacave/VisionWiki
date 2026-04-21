@@ -4,7 +4,7 @@ type: thread
 tags: [pose-estimation, relative-pose, two-view, minimal-solver, ransac, msac, mono-depth, epipolar]
 created: 2026-04-21
 updated: 2026-04-21
-sources: [papers/yu2025_madpose.md, papers/pataki2025_mp-sfm.md]
+sources: [papers/yu2025_madpose.md, papers/pataki2025_mp-sfm.md, papers/leroy2024_mast3r.md]
 operating_points: [op:default]
 status: stable
 ---
@@ -31,7 +31,7 @@ required_capabilities: [minimal-solver, robust-scoring, local-optimization]
 
 The SOTA pipeline for depth-aware two-view pose, using MADPose as the instantiation:
 
-- **n1** · stage: [[feature-matching.task-head]] · filler: _matcher-of-choice_ (SP+LG, RoMa v2 on DINOv3 from [[edstedt2025_roma-v2]], or MASt3R) · source: various · gain over prior: dense / semi-dense matchers provide 10× more correspondences than SIFT+NN · upstream: [raw-image-pair] · downstream: [n3] · edge types: `in: image-pair; out: pixel-correspondences`.
+- **n1** · stage: [[feature-matching.task-head]] · filler: _matcher-of-choice_ (SP+LG, RoMa v2 on DINOv3 from [[roma-v2-dinov3-dense-matcher_edstedt2025]], or MASt3R via [[dust3r-matching-head_leroy2024]] — 3D-grounded dual-head matching) · source: various; MASt3R = [Leroy et al. 2024](../papers/leroy2024_mast3r.md) · gain over prior: dense / semi-dense matchers provide 10× more correspondences than SIFT+NN; 3D-grounded MASt3R adds extreme-viewpoint robustness · upstream: [raw-image-pair] · downstream: [n3] · edge types: `in: image-pair; out: pixel-correspondences`.
 - **n2** · stage: [[mono-depth-estimation]] (implicit stage; see [[mono-depth-estimation]] thread) · filler: off-the-shelf MDE (MoGe best calibrated, DA-met best shared-focal/two-focal per [[yu2025_madpose]]) · source: [[wang2025_moge]] / Depth-Anything v2 · gain: affine-invariant or metric depth per view at 3–160 ms / image · upstream: [raw-image-pair] · downstream: [n3] · edge types: `in: image; out: per-view-depth-map`.
 - **n3** · stage: [[pose-estimation.hybrid-robust-estimator]] · filler: [[hybrid-lo-msac-dual-modality-estimator_yu2025]] · source: [Yu et al. 2025](../papers/yu2025_madpose.md) · gain over prior: ScanNet-1500 shared-focal + MASt3R + DA-met **56.99 AUC@10° vs 30.27 PoseLib-6pt baseline (+27)**; MegaDepth-1500 two-focal +16 AUC@10° · upstream: [n1, n2] · downstream: [n4] · edge types: `in: correspondences, depth; out: R, t, α, β_1, β_2, [f_1, f_2], inliers`. **Bundle node**: filler has `co_requires: [affine-corrected-minimal-relative-pose-solvers_yu2025, depth-induced-reprojection-scoring_yu2025]` — those two ideas must also appear as fillers below (bundle travels together per §6.14).
 - **n4** · stage: [[pose-estimation.relative-pose-solver]] · filler: [[affine-corrected-minimal-relative-pose-solvers_yu2025]] (bundled with n3) · source: [Yu et al. 2025](../papers/yu2025_madpose.md) · gain: +15 AUC@20° from shift modeling vs scale-only (Table 6) · upstream: [n1, n2] · downstream: [n3] · edge types: `in: minimal-sample; out: pose-hypotheses-with-affine-corrections`.
@@ -55,6 +55,8 @@ Prior to MADPose, the community SOTA was **PoseLib-5pt/6pt/7pt + Sampson MSAC** 
 
 ## Candidate components / not yet integrated
 
+- **MASt3R direct-regression pose** (via [[metric-scale-pointmap-loss_leroy2024]]): not on the same benchmark as MADPose's Table 5 — the MASt3R Map-free result (94.1 VCRE AUC, 0.42m median translation from direct PnP on the predicted metric pointmap, no matching, no RANSAC) and the MegaDepth two-focal result (36.80 AUC@10° in Table 5 of [[yu2025_madpose]], used as a _matcher_ into MADPose) are measuring different things. The right reading: **MASt3R's metric pointmap wins on calibrated / known-viewpoint-class benchmarks (Map-free) where direct regression from ẑ is well-defined, but loses on uncalibrated / general two-view benchmarks where intrinsics alignment breaks the metric assumption** — MADPose's robust estimator dominates there. Candidate integration: use MASt3R direct-regression when the task has known-scale priors (indoor AR, map-free re-localization), swap to MADPose otherwise. Runtime argument (single forward pass vs RANSAC) is secondary.
+- **Fast reciprocal-NN matcher** ([[fast-reciprocal-nn-matching_leroy2024]]): drop-in speedup for n1 regardless of matcher choice. 64× CPU speedup with AUC improvement on the Map-free benchmark; matcher-agnostic. Should be part of every n1 configuration.
 - **Feed-forward pointmap pose** (DUSt3R / MASt3R two-view output used directly): Table 5 of [[yu2025_madpose]] shows MASt3R alone gets 36.80 AUC@10° on MegaDepth-1500 two-focal, beaten by MADPose (+16) using the same MASt3R matches and DA-met depth — meaning the MASt3R predicted pose is weaker than MADPose's classical solver with MASt3R's matches + DA-met's depth. This is a candidate because it might still win on *runtime* (single forward pass, no RANSAC).
 - **Barath 2022 2pt+D, Ding 2024 3p3d/4p4d** (scale-only predecessors): parked in lineage — superseded on accuracy, retained as historical points.
 - **PoseLib-5pt/6pt/7pt as lone fillers**: lineage entries; the point-based solver still lives inside the hybrid estimator as the fallback modality.

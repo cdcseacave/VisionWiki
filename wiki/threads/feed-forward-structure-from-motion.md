@@ -4,7 +4,7 @@ type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
 updated: 2026-04-21
-sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md]
+sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md, papers/leroy2024_mast3r.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -24,7 +24,7 @@ required_capabilities: [pose-regression, pointmap-prediction, long-context-scali
 
 ## Capability gaps
 
-- **Calibration-grade outdoor accuracy from fully feed-forward methods** — no Tier-3 paper matches COLMAP on outdoor benchmarks without a BA tail. Search target: 2026 scale-up of DUSt3R/VGGT-family on outdoor training data.
+- **Calibration-grade outdoor accuracy from fully feed-forward methods** — no Tier-3 paper matches COLMAP on outdoor benchmarks without a BA tail. **Partially closed at the pair-pose level by [[leroy2024_mast3r|MASt3R]]** (ingested 2026-04-21): [[metric-scale-pointmap-loss_leroy2024]] gives 94.1 VCRE AUC / 0.42m median translation on Map-free test from a single forward pass (direct regression on the pointmap, no matching, no RANSAC). The remaining gap is **sequence-level**: MASt3R predicts per-pair metric pointmaps that are internally consistent but don't automatically compose into a globally-consistent multi-view reconstruction (scale mismatch across pairs, Sim(3) alignment still required). Search target: Tier-3 papers that propagate MASt3R-style metric output across long sequences without BA.
 - **Dynamic-scene handling without heuristic motion masks** — MegaSaM is the best attempt but still relies on learned segmentation. Search target: end-to-end dynamic SfM where motion is inferred implicitly.
 - **Principled fusion of ≥3 learned priors** (depth + normal + correspondence + flow) into classical BA — MP-SfM uses depth+normal; InstantSfM uses depth; no paper fuses all three. All three atomic priors are now in the wiki as `drop-in` / `stage-swap` ideas: [[depth-proportional-uncertainty-fusion_pataki2025]] + [[bilateral-normal-integration-with-uncertainty_pataki2025]] + [[roma-v2-predictive-covariance_edstedt2025]]. The gap is no longer acquiring the priors — it is the combinatorial ablation. [[gpu-native-sfm]] Bet #010 is the scheduled experiment; flow remains an unaddressed fourth modality. Search target: ablation-heavy multi-prior-fusion papers that include optical flow alongside depth/normal/match-confidence.
 - **Texture-poor + low-overlap joint handling** — [[he2023_detector-free-sfm|DetectorFreeSfM]] closes texture-poor; [[pataki2025_mp-sfm|MP-SfM]] closes low-overlap. Each paper tests only its own failure mode; neither tests the intersection. Search target: future benchmark that combines both regimes (e.g., Texture-Poor SfM dataset + MP-SfM's 0%-overlap ETH3D split). Resolved by: Bet #019 below.
@@ -99,6 +99,23 @@ quadratic attention costs.
   and [[depth-induced-reprojection-scoring_yu2025]].
 
 ### Tier 3: Fully feed-forward
+- [MASt3R (Leroy 2024)](../papers/leroy2024_mast3r.md): the foundational
+  Tier-3 matching-aware paper. Augments [[dust3r|DUSt3R]] with a dense
+  local-descriptor head ([[dust3r-matching-head_leroy2024]]) trained
+  jointly via InfoNCE, and adds a metric-scale loss variant
+  ([[metric-scale-pointmap-loss_leroy2024]]) on the 10 metric datasets
+  in its 14-dataset training mix. Introduces two mechanism-independent
+  utilities: [[fast-reciprocal-nn-matching_leroy2024]] (O(kWH) vs
+  O(W²H²), 64× CPU speedup *with* AUC improvement, new stage
+  [[feature-matching.reciprocal-matching]]) and
+  [[coarse-to-fine-window-covering-matching_leroy2024]] (greedy
+  full-res window set-cover; 4.6× Chamfer reduction on DTU zero-shot
+  vs DUSt3R). Headline: **30 absolute AUC points over LoFTR+KBR on
+  Map-free**; direct regression (no matching) achieves **94.1 VCRE
+  AUC** — the strongest evidence that single-forward-pass Tier-3
+  localization is competitive with matching-based pipelines when the
+  pointmap is metric-scale. Gravitational centre for everything
+  below.
 - [MASt3R-SLAM (Murai 2025)](../papers/murai2025_mast3r-slam.md): first
   real-time dense SLAM on [[mast3r|MASt3R]] priors. 15 FPS, no calibration needed.
   Proves the DUSt3R family can serve as a live SLAM backend.
@@ -178,6 +195,54 @@ expected_gain: first end-to-end SfM that handles both regimes simultaneously; ne
 risk: MP-SfM's mono-depth lifting assumes the bootstrap pair has enough textureless matches to fit the depth scale — texture-poor might starve the matching even after quantization merging. Mitigation: fall back to MP-SfM's PnP-from-depth bootstrap when quantized-match count is below threshold.
 validating_experiment: build a combined benchmark (Texture-Poor SfM + 0%-overlap ETH3D + drone low-texture captures); run {COLMAP, DetectorFreeSfM, MP-SfM, combo} on all; compare AUC and completeness.
 triggers: [ingest-of-idea:coarse-to-fine-detector-free-sfm-bridge_he2023, ingest-of-idea:mono-depth-normal-constrained-incremental-sfm_pataki2025]
+created: 2026-04-21 · updated: 2026-04-21
+
+### Bet #026 — MASt3R metric pointmap as sequence-level conditioning for TTT3R / CUT3R state
+status: proposed
+combines: [[metric-scale-pointmap-loss_leroy2024]], [[ttt3r-closed-form-confidence-lr_chen2026]]
+stage_target: feed-forward-sfm.recurrent-state-update
+op_target: op:default (Tier 3)
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: TTT3R's closed-form confidence-guided learning rate drives a CUT3R-style recurrent pointmap state. The state is *up-to-scale* because CUT3R descends from DUSt3R. Injecting [[mast3r|MASt3R]]'s metric-scale pointmap output ([[metric-scale-pointmap-loss_leroy2024]]) as a per-step absolute-scale anchor gives the recurrent state a global reference frame without BA — closing the remaining sequence-level portion of the "calibration-grade outdoor" capability gap that Idea B only closes at the pair level. Anchoring per-step costs nothing inference-wise (MASt3R runs anyway) and zero retraining if applied as a Sim(3) alignment of the recurrent state each step.
+expected_gain: calibration-grade multi-view ATE on outdoor ETH3D / ScanNet without BA tail; specifically, close the 2× ATE gap between MASt3R-SLAM (calibration-free) and DROID-SLAM (calibrated) observed in [[murai2025_mast3r-slam]]'s ETH3D-SLAM numbers.
+risk: per-step Sim(3) alignment introduces scale-jitter if MASt3R's pair-wise metric predictions disagree on adjacent keyframes — known MASt3R failure mode (limitations ii in [[leroy2024_mast3r]]). Mitigation: low-pass-filter the scale estimate over the recurrent state's own confidence.
+validating_experiment: modify [[chen2026_ttt3r|TTT3R]]'s closed-form LR to include a MASt3R-metric Sim(3) anchor per keyframe; rerun ETH3D-SLAM ATE/AUC vs the training-free baseline.
+triggers: [ingest-of-idea:metric-scale-pointmap-loss_leroy2024]
+created: 2026-04-21 · updated: 2026-04-21
+
+### Bet #027 — Fast reciprocal-NN ([[fast-reciprocal-nn-matching_leroy2024]]) on RoMa v2 dense features
+status: proposed
+combines: [[fast-reciprocal-nn-matching_leroy2024]], [[roma-v2-dinov3-dense-matcher_edstedt2025]]
+stage_target: feature-matching.reciprocal-matching
+op_target: op:default (Tier 2 matcher frontend)
+confidence: high
+magnitude: incremental
+cost: days
+breakage_risk: low
+hypothesis: [[fast-reciprocal-nn-matching_leroy2024]] is matcher-agnostic — it operates on any pair of dense unit-norm descriptor maps. [[edstedt2025_roma-v2|RoMa v2]] currently uses its own custom CUDA refinement step, which is fast but not an explicit reciprocal filter. Replacing the CUDA refinement with MASt3R's `O(kWH)` cycle-finder at `k ≈ 3000` should (a) be GPU-friendly once ported from CPU FAISS, (b) retain RoMa's recall, and (c) apply the implicit outlier-filter cycle-consistency that RoMa v2 currently doesn't have. The paper showed the optimum at `k ≈ 3000` is robust enough to expect similar behavior on RoMa's descriptor space.
+expected_gain: small AUC gain (+0.5–1 on MegaDepth / IMC) from cycle-consistency filtering, or failing that, a faster inference path for RoMa v2 at equal accuracy.
+risk: RoMa v2's descriptors are higher-dim (>24) and trained with different supervision; the "fewer matches, higher AUC" monotonicity may not hold on that descriptor space.
+validating_experiment: implement `k`-parameterized reciprocal matching on RoMa v2 dense output; sweep `k ∈ {768, 3000, 12000, 49000, all}` on MegaDepth / IMC / Map-free; compare against RoMa v2's native CUDA refinement.
+triggers: [ingest-of-idea:fast-reciprocal-nn-matching_leroy2024]
+created: 2026-04-21 · updated: 2026-04-21
+
+### Bet #028 — MASt3R direct-regression pose as two-view bootstrap for MP-SfM
+status: proposed
+combines: [[metric-scale-pointmap-loss_leroy2024]], [[mono-depth-normal-constrained-incremental-sfm_pataki2025]]
+stage_target: sfm.next-view-registration
+op_target: [[pataki2025_mp-sfm|MP-SfM]] adopting thread's op:default (Tier 2)
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: MP-SfM's two-view bootstrap rescales mono-depth by the median ratio to already-triangulated points — scale-only alignment that breaks at 0%-overlap pairs ([[pataki2025_mp-sfm]] Eq. 1). Replacing the mono-depth + scale-fit with MASt3R's metric pointmap from Idea B gives bootstrap an *absolute-scale* pair of pointmaps that don't require alignment to a triangulated subgraph at all. Unlike Bet #014 (which uses MADPose's 3pt solver on unstructured mono-depth), this bet uses MASt3R's pointmap directly as the geometry seed. On ETH3D 0%-overlap (where mono-depth alone gives 34.9 AUC and MADPose adds +10), MASt3R direct regression should add more — its 94.1 AUC on Map-free under similar extreme-viewpoint conditions is the supporting data point.
+expected_gain: +5–15 AUC@1° on ETH3D 0%-overlap over MP-SfM baseline; qualitatively: bootstrap that works even when zero keypoints match between pair members.
+risk: MP-SfM's subsequent BA depends on consistent mono-depth across the full sequence — a MASt3R-only bootstrap followed by MP-SfM's mono-depth BA creates a modality mismatch. Mitigation: use MASt3R to seed scale, then switch to mono-depth for BA.
+validating_experiment: rerun MP-SfM's ETH3D 0%-overlap benchmark with MASt3R direct-regression as the two-view bootstrap; compare AUC@1/5/10° and bootstrap success rate.
+triggers: [ingest-of-idea:metric-scale-pointmap-loss_leroy2024]
 created: 2026-04-21 · updated: 2026-04-21
 
 ### Bet #020 — DINOv3-backboned detector-free matching (LoFTR → RoMa v2) into DetectorFreeSfM

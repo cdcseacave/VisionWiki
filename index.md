@@ -66,6 +66,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [MADPose (Yu 2025)](wiki/papers/yu2025_madpose.md) — affine-corrected depth-aware relative-pose solvers + hybrid LO-MSAC, CVPR 2025 Highlight · _2026-04-21_
 
 ### Feature Matching
+- [MASt3R (Leroy 2024)](wiki/papers/leroy2024_mast3r.md) — 3D-grounded dense matching via dual-head DUSt3R + metric-scale pointmap loss + fast reciprocal-NN; +30 VCRE AUC over LoFTR+KBR on Map-free · _2026-04-21_
 - [RoMa v2](wiki/papers/edstedt2025_roma-v2.md) — dense matcher with DINOv3 backbone, SOTA correspondence · _2026-04-12_
 - [LoFTR (Sun 2021)](wiki/papers/sun2021_loftr.md) — detector-free semi-dense transformer matcher _(stub)_ · _2026-04-21_
 
@@ -160,15 +161,15 @@ _(empty)_
 
 ## Ideas
 
-83 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#020: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, DetectorFreeSfM bridge + transformer refinement + track-topology adjustment, MADPose affine-corrected solvers + depth-induced scoring + hybrid LO-MSAC, plus 68 more.
+87 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#028: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, DetectorFreeSfM bridge + transformer refinement + track-topology adjustment, MADPose affine-corrected solvers + depth-induced scoring + hybrid LO-MSAC, MASt3R dual-head matching + metric-scale pointmap loss + fast reciprocal-NN + coarse-to-fine window covering, plus 72 more.
 
 ## Stages
 
-92 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (17), `feed-forward-sfm.*` (15), `pose-estimation.*` (3), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (2), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. New 2026-04-21: `sfm.feature-track-refinement`, `sfm.track-topology-adjustment`, `pose-estimation.relative-pose-solver`, `pose-estimation.robust-estimator-scoring`, `pose-estimation.hybrid-robust-estimator`. Browse the directory or query via `lint stage-coverage`.
+93 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (17), `feed-forward-sfm.*` (15), `pose-estimation.*` (3), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (3), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. New 2026-04-21: `sfm.feature-track-refinement`, `sfm.track-topology-adjustment`, `pose-estimation.relative-pose-solver`, `pose-estimation.robust-estimator-scoring`, `pose-estimation.hybrid-robust-estimator`, `feature-matching.reciprocal-matching`. Browse the directory or query via `lint stage-coverage`.
 
 ## Meta
 - [License Audit](wiki/meta/license-audit.md) — commercial-use readiness of all 55 wiki papers; bet-level commercial-readiness table; remediation checklist · _2026-04-18_
 
 ---
 
-_Last rebuilt: 2026-04-21 · 60 papers, 14 methods, 15 concepts, 13 threads, 4 designs, 83 ideas, 92 stages, 1 meta_
+_Last rebuilt: 2026-04-21 · 61 papers, 14 methods, 15 concepts, 13 threads, 4 designs, 87 ideas, 93 stages, 1 meta_

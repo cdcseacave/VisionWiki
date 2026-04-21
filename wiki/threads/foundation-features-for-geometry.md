@@ -3,8 +3,8 @@ title: Foundation Features for Geometry
 type: thread
 tags: [foundation-model, dinov2, dinov3, feature-matching, sfm, frozen-backbone]
 created: 2026-04-15
-updated: 2026-04-18
-sources: [wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/edstedt2025_roma-v2.md, wiki/papers/jang2025_pow3r.md, wiki/papers/zhang2025_feed-forward-3d-survey.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/radford2021_clip.md, wiki/papers/kirillov2023_sam.md]
+updated: 2026-04-21
+sources: [wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/edstedt2025_roma-v2.md, wiki/papers/jang2025_pow3r.md, wiki/papers/zhang2025_feed-forward-3d-survey.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/radford2021_clip.md, wiki/papers/kirillov2023_sam.md, wiki/papers/leroy2024_mast3r.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -86,7 +86,7 @@ created: 2026-04-15 · updated: 2026-04-18
 
 - **Silent-failure rejection signal** — DINO geometry fails plausibly-wrong where SIFT failed loudly. Would unlock: joint DINO+classical-consistency residual bets. Search target: papers that fuse foundation features with geometric-cycle-consistency rejection.
 - **3D-native self-supervised backbone** (video-aware / 4D DINO) — would unlock the next generation of geometry heads. Search target: 2026 SSL papers training on multi-view / video data natively.
-- **Calibration-grade feed-forward poses without classical BA** — would obsolete the hybrid tier. Search target: larger-backbone feed-forward methods with metric-pose claims on outdoor benchmarks.
+- **Calibration-grade feed-forward poses without classical BA** — would obsolete the hybrid tier. **Partially closed at the pair-pose level** by [[leroy2024_mast3r|MASt3R]] (ingested 2026-04-21): [[metric-scale-pointmap-loss_leroy2024]] gives 94.1 VCRE AUC / 0.42m median translation on Map-free from a single forward pass. But MASt3R's backbone is DUSt3R/CroCo-pretrained, *not* DINOv3 — so the win is evidence that **3D-grounded pretraining can substitute for a stronger 2D frozen backbone** for this thread's goal. Open question: could a DINOv3-backboned equivalent of Idea B close the same gap? Captured downstream in Bet #028 synthesis direction from [[feed-forward-structure-from-motion]]. Search target: 2026 papers attaching a MASt3R-style metric pointmap head to a DINOv3 (rather than CroCo) frozen backbone.
 
 ## Contradictions & tensions
 
@@ -104,6 +104,8 @@ Between ~2023 and 2026, **frozen self-supervised ViT features** ([[dinov2|DINOv2
 
 ### Dense matching
 - [[edstedt2025_roma-v2|RoMa v2]] — frozen DINOv3 features drive dense correspondence. Beats hand-crafted SIFT, learned SuperGlue/LoFTR on a wide benchmark sweep. The paper explicitly argues DINOv3 features make specialized matching losses largely unnecessary.
+- [[leroy2024_mast3r|MASt3R]] (contrast) — rather than freezing a large 2D backbone and training a matching head on top, MASt3R *jointly trains* a dense-descriptor head alongside a 3D pointmap head on a fine-tuned DUSt3R/CroCo ViT ([[dust3r-matching-head_leroy2024]]). The 3D supervision substitutes for DINOv3's self-supervised visual prior: matching accuracy (30 absolute AUC points over LoFTR+KBR on Map-free) comes from 3D grounding, not frozen-backbone quality. This is evidence that "foundation features" need not mean "frozen DINOv3" for geometry — a 3D-task-pretrained encoder is a parallel design point worth tracking.
+- **Cross-cutting**: [[fast-reciprocal-nn-matching_leroy2024]] is a matcher-agnostic dense-reciprocal algorithm (new stage [[feature-matching.reciprocal-matching]]). It applies to RoMa v2 output just as well as MASt3R output — a drop-in efficiency atom for anything in this thread's task-head section. Captured as Bet #027 of [[feed-forward-structure-from-motion]].
 
 ### Monocular depth & geometric priors
 - Depth Anything / DINOv2-based depth heads follow the same pattern: freeze the backbone, train a depth decoder on mixed-domain data.
