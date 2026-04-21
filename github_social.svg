@@ -1,0 +1,280 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <!-- ============================================================
+       VisionWiki - GitHub Social Preview (1280x640)
+       Concept: Lightbulb of ideas = colorful knowledge graph,
+       surrounded by subtle photogrammetry cues (camera frustums,
+       point cloud, 3D cube) and the project name + tagline.
+       ============================================================ -->
+
+  <defs>
+    <!-- Background: deep navy vignette -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="75%">
+      <stop offset="0%"  stop-color="#1a2238"/>
+      <stop offset="55%" stop-color="#0d1324"/>
+      <stop offset="100%" stop-color="#05070f"/>
+    </radialGradient>
+
+    <!-- Subtle center glow behind the bulb -->
+    <radialGradient id="bulbGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#ffe39a" stop-opacity="0.35"/>
+      <stop offset="40%" stop-color="#ff9cd8" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Bulb outline gradient -->
+    <linearGradient id="bulbOutline" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"  stop-color="#ffd36b"/>
+      <stop offset="100%" stop-color="#f07c1c"/>
+    </linearGradient>
+
+    <!-- Title gradient (vibrant, matches graph edges) -->
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#8ce8ff"/>
+      <stop offset="50%"  stop-color="#c56bff"/>
+      <stop offset="100%" stop-color="#ff8a3d"/>
+    </linearGradient>
+
+    <!-- Base / screw gradients -->
+    <linearGradient id="baseA" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#36c6ff"/>
+      <stop offset="100%" stop-color="#1e7bd1"/>
+    </linearGradient>
+    <linearGradient id="baseB" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d76cff"/>
+      <stop offset="100%" stop-color="#8637c9"/>
+    </linearGradient>
+    <linearGradient id="baseC" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffb04a"/>
+      <stop offset="100%" stop-color="#e07312"/>
+    </linearGradient>
+
+    <!-- Soft glow filter for nodes -->
+    <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Stronger outer glow for the bulb body -->
+    <filter id="bulbOuterGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bgGrad)"/>
+
+  <!-- Faint grid (reticle / calibration vibe) -->
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <path d="M0 80 H1280 M0 160 H1280 M0 240 H1280 M0 320 H1280 M0 400 H1280 M0 480 H1280 M0 560 H1280"/>
+    <path d="M80 0 V640 M160 0 V640 M240 0 V640 M320 0 V640 M400 0 V640 M480 0 V640 M560 0 V640 M640 0 V640 M720 0 V640 M800 0 V640 M880 0 V640 M960 0 V640 M1040 0 V640 M1120 0 V640 M1200 0 V640"/>
+  </g>
+
+  <!-- Decorative scattered point cloud (photogrammetry cue) -->
+  <g fill="#ffffff">
+    <circle cx="70"   cy="120" r="1.3" opacity="0.55"/>
+    <circle cx="110"  cy="200" r="1.0" opacity="0.35"/>
+    <circle cx="180"  cy="520" r="1.2" opacity="0.5"/>
+    <circle cx="230"  cy="560" r="0.9" opacity="0.35"/>
+    <circle cx="90"   cy="440" r="1.1" opacity="0.45"/>
+    <circle cx="1210" cy="110" r="1.3" opacity="0.55"/>
+    <circle cx="1160" cy="80"  r="0.9" opacity="0.35"/>
+    <circle cx="1090" cy="520" r="1.2" opacity="0.5"/>
+    <circle cx="1190" cy="540" r="0.9" opacity="0.4"/>
+    <circle cx="1230" cy="430" r="1.0" opacity="0.45"/>
+    <circle cx="40"   cy="300" r="0.8" opacity="0.3"/>
+    <circle cx="1250" cy="260" r="0.8" opacity="0.3"/>
+  </g>
+
+  <!-- =========================================================
+       LEFT: LIGHTBULB WITH KNOWLEDGE GRAPH
+       Centered near x=360, y=300. Canvas: 1280x640
+       ========================================================= -->
+  <g transform="translate(360 320)">
+    <!-- Back glow -->
+    <ellipse cx="0" cy="-10" rx="250" ry="250" fill="url(#bulbGlow)"/>
+
+    <!-- Radiating rays (clock-like) -->
+    <g stroke="#ffd57a" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round">
+      <line x1="0"    y1="-275" x2="0"    y2="-255"/>
+      <line x1="0"    y1="255"  x2="0"    y2="275"/>
+      <line x1="-275" y1="0"    x2="-255" y2="0"/>
+      <line x1="255"  y1="0"    x2="275"  y2="0"/>
+      <line x1="-194" y1="-194" x2="-180" y2="-180"/>
+      <line x1="194"  y1="-194" x2="180"  y2="-180"/>
+      <line x1="-194" y1="194"  x2="-180" y2="180"/>
+      <line x1="194"  y1="194"  x2="180"  y2="180"/>
+      <line x1="-250" y1="-100" x2="-232" y2="-93"/>
+      <line x1="250"  y1="-100" x2="232"  y2="-93"/>
+      <line x1="-250" y1="100"  x2="-232" y2="93"/>
+      <line x1="250"  y1="100"  x2="232"  y2="93"/>
+      <line x1="-100" y1="-250" x2="-93"  y2="-232"/>
+      <line x1="100"  y1="-250" x2="93"   y2="-232"/>
+      <line x1="-100" y1="250"  x2="-93"  y2="232"/>
+      <line x1="100"  y1="250"  x2="93"   y2="232"/>
+    </g>
+
+    <!-- Bulb body (rounded top + tapered neck) -->
+    <g filter="url(#bulbOuterGlow)">
+      <path d="M -150 -50
+               C -150 -170, -80 -220, 0 -220
+               C 80 -220, 150 -170, 150 -50
+               C 150 10, 120 55, 95 90
+               L 95 140
+               C 95 150, 87 158, 77 158
+               L -77 158
+               C -87 158, -95 150, -95 140
+               L -95 90
+               C -120 55, -150 10, -150 -50 Z"
+            fill="none" stroke="url(#bulbOutline)" stroke-width="5" stroke-linejoin="round"/>
+    </g>
+
+    <!-- =====================================================
+         KNOWLEDGE GRAPH INSIDE THE BULB
+         Nodes = topics (papers, methods). Edges = cross-links.
+         ===================================================== -->
+
+    <!-- Edges -->
+    <g stroke-width="2.5" stroke-linecap="round" fill="none">
+      <!-- from top node -->
+      <line x1="0"   y1="-190" x2="-78" y2="-105" stroke="#36c6ff"/>
+      <line x1="0"   y1="-190" x2="78"  y2="-105" stroke="#d76cff"/>
+      <line x1="0"   y1="-190" x2="0"   y2="-10"  stroke="#ffb04a" opacity="0.85"/>
+
+      <!-- mid triangle -->
+      <line x1="-78" y1="-105" x2="78"  y2="-105" stroke="#2dd4bf" opacity="0.85"/>
+      <line x1="-78" y1="-105" x2="0"   y2="-10"  stroke="#d76cff"/>
+      <line x1="78"  y1="-105" x2="0"   y2="-10"  stroke="#36c6ff"/>
+
+      <!-- center to lower ring -->
+      <line x1="0"   y1="-10"  x2="-110" y2="40"  stroke="#ffb04a"/>
+      <line x1="0"   y1="-10"  x2="110"  y2="40"  stroke="#36c6ff"/>
+      <line x1="0"   y1="-10"  x2="-40"  y2="115" stroke="#2dd4bf"/>
+      <line x1="0"   y1="-10"  x2="40"   y2="115" stroke="#d76cff"/>
+
+      <!-- lower triangles -->
+      <line x1="-110" y1="40"  x2="-40"  y2="115" stroke="#2dd4bf"/>
+      <line x1="110"  y1="40"  x2="40"   y2="115" stroke="#36c6ff"/>
+      <line x1="-110" y1="40"  x2="110"  y2="40"  stroke="#d76cff" opacity="0.75"/>
+      <line x1="-40"  y1="115" x2="40"   y2="115" stroke="#ffb04a" opacity="0.85"/>
+
+      <!-- base row -->
+      <line x1="-40"  y1="115" x2="-75"  y2="155" stroke="#2dd4bf"/>
+      <line x1="40"   y1="115" x2="75"   y2="155" stroke="#36c6ff"/>
+      <line x1="-40"  y1="115" x2="75"   y2="155" stroke="#d76cff" opacity="0.75"/>
+      <line x1="40"   y1="115" x2="-75"  y2="155" stroke="#ffb04a" opacity="0.75"/>
+    </g>
+
+    <!-- Nodes -->
+    <g filter="url(#nodeGlow)">
+      <!-- top root (white = "synthesis" node) -->
+      <circle cx="0"   cy="-190" r="6.5" fill="#ffffff"/>
+      <!-- upper pair -->
+      <circle cx="-78" cy="-105" r="5.5" fill="#36c6ff"/>
+      <circle cx="78"  cy="-105" r="5.5" fill="#ff4fb0"/>
+      <!-- center hub -->
+      <circle cx="0"   cy="-10"  r="6.5" fill="#2dd4bf"/>
+      <!-- lower ring -->
+      <circle cx="-110" cy="40" r="5.5" fill="#c56bff"/>
+      <circle cx="110"  cy="40" r="5.5" fill="#ff8a3d"/>
+      <circle cx="-40"  cy="115" r="5" fill="#36c6ff"/>
+      <circle cx="40"   cy="115" r="5" fill="#ff8a3d"/>
+      <!-- base pair -->
+      <circle cx="-75"  cy="155" r="4.5" fill="#2dd4bf"/>
+      <circle cx="75"   cy="155" r="4.5" fill="#ff4fb0"/>
+    </g>
+
+    <!-- Bulb base stripes (screw) -->
+    <g stroke-linecap="round">
+      <rect x="-60" y="170" width="120" height="22" rx="9" fill="url(#baseA)"/>
+      <rect x="-50" y="200" width="100" height="22" rx="9" fill="url(#baseB)"/>
+      <rect x="-35" y="230" width="70"  height="20" rx="9" fill="url(#baseC)"/>
+    </g>
+  </g>
+
+  <!-- =========================================================
+       RIGHT: TITLE + TAGLINE + META
+       ========================================================= -->
+  <g transform="translate(680 0)" font-family="DejaVu Sans, Helvetica, Arial, sans-serif">
+
+    <!-- Small pre-title eyebrow -->
+    <g transform="translate(0 180)">
+      <rect x="0" y="0" width="10" height="10" rx="2" fill="#2dd4bf"/>
+      <text x="22" y="10" font-size="16" font-weight="600" fill="#8ce8ff" letter-spacing="3">
+        RESEARCH · SYNTHESIS · ENGINE
+      </text>
+    </g>
+
+    <!-- Title -->
+    <text x="0" y="265" font-size="96" font-weight="800" fill="url(#titleGrad)" letter-spacing="-2">
+      VisionWiki
+    </text>
+
+    <!-- Underline accent -->
+    <rect x="0" y="285" width="120" height="5" rx="2.5" fill="#ff8a3d"/>
+
+    <!-- Tagline -->
+    <text x="0" y="345" font-size="26" font-weight="500" fill="#e8ecf4">
+      A personal second brain for
+    </text>
+    <text x="0" y="380" font-size="26" font-weight="500" fill="#e8ecf4">
+      photogrammetry &amp; ML research.
+    </text>
+
+    <!-- Keyword chips -->
+    <g font-size="14" font-weight="600" fill="#cfd5e2" transform="translate(0 430)">
+      <!-- chip 1 -->
+      <g>
+        <rect x="0" y="0" width="128" height="30" rx="15" fill="#ffffff" fill-opacity="0.06" stroke="#36c6ff" stroke-opacity="0.55"/>
+        <text x="64" y="20" text-anchor="middle" fill="#8ce8ff">Photogrammetry</text>
+      </g>
+      <!-- chip 2 -->
+      <g transform="translate(140 0)">
+        <rect x="0" y="0" width="108" height="30" rx="15" fill="#ffffff" fill-opacity="0.06" stroke="#c56bff" stroke-opacity="0.55"/>
+        <text x="54" y="20" text-anchor="middle" fill="#e6c8ff">3D · NeRF · GS</text>
+      </g>
+      <!-- chip 3 -->
+      <g transform="translate(260 0)">
+        <rect x="0" y="0" width="92" height="30" rx="15" fill="#ffffff" fill-opacity="0.06" stroke="#2dd4bf" stroke-opacity="0.55"/>
+        <text x="46" y="20" text-anchor="middle" fill="#9ef0dc">SfM / MVS</text>
+      </g>
+      <!-- chip 4 -->
+      <g transform="translate(364 0)">
+        <rect x="0" y="0" width="118" height="30" rx="15" fill="#ffffff" fill-opacity="0.06" stroke="#ff8a3d" stroke-opacity="0.55"/>
+        <text x="59" y="20" text-anchor="middle" fill="#ffd1a6">Living SOTA wiki</text>
+      </g>
+    </g>
+
+    <!-- Footer: repo handle -->
+    <g transform="translate(0 500)" font-size="16" fill="#8b93a7" font-weight="500">
+      <!-- github mark -->
+      <g transform="translate(0 -12) scale(0.9)" fill="#8b93a7">
+        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.37-3.88-1.37-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18.92-.26 1.91-.38 2.9-.39.98.01 1.97.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.44-2.7 5.41-5.27 5.69.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
+      </g>
+      <text x="30" y="0">github.com/cdcseacave/VisionWiki</text>
+    </g>
+  </g>
+
+  <!-- Top-right: tiny 3D cube + camera frustum (subtle photogrammetry motif) -->
+  <g transform="translate(1120 90)" stroke="#ffffff" stroke-opacity="0.55" fill="none" stroke-width="1.6" stroke-linejoin="round">
+    <!-- camera frustum wireframe -->
+    <path d="M 0 0 L 60 -14 L 60 14 L 0 0 Z"/>
+    <circle cx="-6" cy="0" r="4" stroke-opacity="0.7"/>
+    <path d="M 60 -14 L 68 -14 L 68 14 L 60 14" stroke-opacity="0.4"/>
+  </g>
+
+  <!-- Bottom-left: small wireframe cube -->
+  <g transform="translate(90 540)" stroke="#ffffff" stroke-opacity="0.45" fill="none" stroke-width="1.4" stroke-linejoin="round">
+    <path d="M 0 20 L 0 60 L 40 80 L 40 40 Z"/>
+    <path d="M 40 40 L 60 30 L 60 70 L 40 80"/>
+    <path d="M 0 20 L 20 10 L 60 30"/>
+    <path d="M 20 10 L 20 50 L 0 60" stroke-opacity="0.25"/>
+    <path d="M 20 50 L 40 40" stroke-opacity="0.25"/>
+  </g>
+</svg>

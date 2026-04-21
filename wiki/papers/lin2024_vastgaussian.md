@@ -3,7 +3,7 @@ title: "VastGaussian: Vast 3D Gaussians for Large Scene Reconstruction"
 type: paper
 tags: [radiance-fields, 3dgs, large-scale, scene-partitioning, appearance-modeling, aerial]
 created: 2026-04-14
-updated: 2026-04-15
+updated: 2026-04-16
 sources:
   - papers/lin2024_vastgaussian.md
 local_paper: papers/radiance-fields/lin_2024_vastgaussian.pdf
@@ -59,8 +59,12 @@ Rather than baking per-image appearance into the radiance model (NeRF-W, Ha-NeRF
 The flow (Fig. 4):
 
 1. Rendered image $\mathcal{I}_i^r$ is downsampled 32× and concatenated with a per-image **appearance embedding** $\ell_i$ (length 64), producing a feature map $\mathcal{D}_i$ of shape $\tfrac{H}{32} \times \tfrac{W}{32} \times 67$.
-2. A small CNN (4 upsampling blocks with pixel-shuffle + 3×3 conv, then bilinear upsample to $H \times W \times 3$) produces a **transformation map** $\mathcal{M}_i$.
-3. The adjusted image $\mathcal{I}_i^a = T(\mathcal{I}_i^r; \mathcal{M}_i)$ — a pixel-wise multiplication suffices in practice — is matched to the GT:
+2. A small CNN (supplementary §7.1, Fig. 9) produces a **transformation map** $\mathcal{M}_i$ of shape $H \times W \times 3$. The stack is:
+   1. **Stem conv** — a $3\times3$ conv lifts the 67-channel input to **256 channels** at $\tfrac{H}{32} \times \tfrac{W}{32}$.
+   2. **4 upsampling blocks**, each structured as `pixel-shuffle → 3×3 conv → ReLU`. Every block **doubles spatial resolution and halves channel depth** (256 → 128 → 64 → 32 → 16), so after the 4th block the feature map is $\tfrac{H}{2} \times \tfrac{W}{2} \times 16$.
+   3. **Bilinear interpolation** to full resolution $H \times W \times 16$.
+   4. **Head** — a $3\times3$ conv, ReLU, then a final $3\times3$ conv that projects to $H \times W \times 3$.
+3. The adjusted image $\mathcal{I}_i^a = T(\mathcal{I}_i^r; \mathcal{M}_i)$ — a pixel-wise multiplication suffices in practice (affine and γ-correction variants give marginal gains; supplementary Tab. 6) — is matched to the GT:
 
 $$
 \mathcal{L} = (1-\lambda)\mathcal{L}_1(\mathcal{I}_i^a, \mathcal{I}_i) + \lambda\, \mathcal{L}_{\text{D-SSIM}}(\mathcal{I}_i^r, \mathcal{I}_i)

@@ -605,7 +605,12 @@ Two references compose here. They must be read together — neither alone specif
 - Build a **transformation map** $\mathcal{M}_i \in \mathbb{R}^{H \times W \times 3}$ from the downsampled rendered image plus $\ell_i$:
   1. Downsample $\mathcal{I}_i^r$ by 32× (bilinear) → $\tfrac{H}{32} \times \tfrac{W}{32} \times 3$.
   2. Broadcast $\ell_i$ across spatial dimensions and concatenate → $\tfrac{H}{32} \times \tfrac{W}{32} \times 67$.
-  3. Feed to the CNN architecture in Fig. 9 of the supplement (see §7.3 below).
+  3. Feed to the CNN architecture specified in supplement §7.1 / Fig. 9. The exact stack — read off the figure, not paraphrased — is:
+     1. **Stem**: a $3\times3$ conv lifts the 67-channel input to **256 channels** at $\tfrac{H}{32} \times \tfrac{W}{32}$.
+     2. **4 upsampling blocks**, each structured as `pixel-shuffle(2) → 3×3 conv → ReLU`. The supplement states each block *"doubles the feature map resolution and halves its channel depth"*, giving the trajectory **256 → 128 → 64 → 32 → 16** channels at **H/32 → H/16 → H/8 → H/4 → H/2** resolution.
+     3. **Bilinear interpolation** up to full resolution $H \times W \times 16$. This is the *only* resolution step after the four shuffle blocks — do not confuse it with the channel-reduction head that follows.
+     4. **Head**: a $3\times3$ conv, ReLU, then a final $3\times3$ conv that projects to $H \times W \times 3$. The final conv is the one CoMe §A.1 zero-initializes to get `M = 0 ⇒ identity transform` at t=0 (see §7.4 for the implementation).
+  Supplement Tab. 6 confirms the pixel-wise multiplication form matches multiplication+addition and multiplication+γ-correction on VastGaussian's datasets — so the added complexity of those variants is not worth carrying; CoMe's `exp(M)` swap (§7.1 below, point 1) is the only activation change adopted here.
 - **Adjusted image** — VastGaussian's original form is a bare elementwise multiply $\mathcal{I}_i^a = \mathcal{I}_i^r \odot \mathcal{M}_i$. Paper's Tab. 6 shows pixel-wise multiplication matches multiplication+addition and multiplication+γ-correction on their datasets. CoMe reimplements this (source was never released) and lands on a different activation — see §7.1.3.
 - **Training loss** (VastGaussian's Eq. 3):
 
