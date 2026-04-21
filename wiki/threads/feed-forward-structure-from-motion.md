@@ -3,7 +3,7 @@ title: Feed-Forward Structure from Motion
 type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
-updated: 2026-04-18
+updated: 2026-04-21
 sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md]
 operating_points: [op:default]
 status: draft
@@ -26,7 +26,7 @@ required_capabilities: [pose-regression, pointmap-prediction, long-context-scali
 
 - **Calibration-grade outdoor accuracy from fully feed-forward methods** — no Tier-3 paper matches COLMAP on outdoor benchmarks without a BA tail. Search target: 2026 scale-up of DUSt3R/VGGT-family on outdoor training data.
 - **Dynamic-scene handling without heuristic motion masks** — MegaSaM is the best attempt but still relies on learned segmentation. Search target: end-to-end dynamic SfM where motion is inferred implicitly.
-- **Principled fusion of ≥3 learned priors** (depth + normal + correspondence + flow) into classical BA — MP-SfM uses 2; InstantSfM uses 1; no consensus. Search target: ablation-heavy multi-prior-fusion papers.
+- **Principled fusion of ≥3 learned priors** (depth + normal + correspondence + flow) into classical BA — MP-SfM uses depth+normal; InstantSfM uses depth; no paper fuses all three. All three atomic priors are now in the wiki as `drop-in` / `stage-swap` ideas: [[depth-proportional-uncertainty-fusion_pataki2025]] + [[bilateral-normal-integration-with-uncertainty_pataki2025]] + [[roma-v2-predictive-covariance_edstedt2025]]. The gap is no longer acquiring the priors — it is the combinatorial ablation. [[gpu-native-sfm]] Bet #010 is the scheduled experiment; flow remains an unaddressed fourth modality. Search target: ablation-heavy multi-prior-fusion papers that include optical flow alongside depth/normal/match-confidence.
 
 ## Working hypothesis
 
@@ -60,7 +60,17 @@ quadratic attention costs.
 - [MP-SfM (Pataki 2025)](../papers/pataki2025_mp-sfm.md): mono depth + normal
   priors from [[Metric3Dv2]] eliminate the three-view overlap requirement in
   incremental SfM. Key result: SfM works on sparse drone/indoor imagery where
-  COLMAP fails.
+  COLMAP fails. The full-system idea
+  ([[mono-depth-normal-constrained-incremental-sfm_pataki2025]]) is a pipeline
+  DAG change (new init/registration/filter nodes replacing classical ones),
+  not a single-stage swap — adopters take the DAG change and three
+  independently-reusable atoms together:
+  next-view selection by summed matcher score
+  ([[matcher-score-next-view-selection_pataki2025]]),
+  mono-prior uncertainty calibration
+  ([[depth-proportional-uncertainty-fusion_pataki2025]]), and BA with
+  bilateral normal integration under propagated covariance
+  ([[bilateral-normal-integration-with-uncertainty_pataki2025]]).
 - [MegaSaM (Li 2025)](../papers/li2025_megasam.md): learned motion segmentation
   + uncertainty-aware BA enables SfM from casual dynamic videos (people walking,
   cars moving). Bridges the "static scene assumption" gap.

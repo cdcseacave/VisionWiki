@@ -3,7 +3,7 @@ title: GPU-Native SfM (Tier 1 — Accelerated Classical)
 type: thread
 tags: [sfm, gpu-acceleration, bundle-adjustment, colmap, glomap, cuda, pytorch]
 created: 2026-04-12
-updated: 2026-04-18
+updated: 2026-04-21
 sources: [papers/zhong2026_instantsfm.md, papers/yu2025_cusfm.md]
 operating_points: [op:general-purpose, op:sequential-slam-prior]
 status: draft
@@ -219,25 +219,41 @@ created: 2026-04-15 · updated: 2026-04-18
 
 ### Bet #010 — Multi-prior Jacobian fusion (depth + normal + DINOv3 match confidence)
 status: proposed
-combines: [[zhong2026_instantsfm]], [[pataki2025_mp-sfm]], [[edstedt2025_roma-v2]]
-stage_target: sfm.pose
+combines: [[depth-constrained-jacobian_zhong2026]], [[bilateral-normal-integration-with-uncertainty_pataki2025]], [[depth-proportional-uncertainty-fusion_pataki2025]], [[roma-v2-predictive-covariance_edstedt2025]]
+stage_target: sfm.depth-constrained-ba
 op_target: op:general-purpose
 confidence: med
 magnitude: substantial
 cost: weeks
 breakage_risk: med
-hypothesis: MP-SfM uses depth+normal; InstantSfM uses depth; CuSfM uses SLAM+features. No paper fuses all three modality families. Each prior informs a different residual axis — depth constrains global position, normal constrains local tangent, DINOv3 match confidence downweights bad correspondences.
-expected_gain: Improved pose accuracy on sparse-view / textureless benchmarks where any single prior is weak; ~20–40% error reduction on MP-SfM's sparse-view benchmarks.
-risk: Three-prior weight tuning is empirical; over-regularization can degrade accuracy on dense captures. Prior conflicts must be handled (e.g. depth contradicting normal).
-validating_experiment: Implement three Jacobian augmentations as separate residual blocks in InstantSfM; ablate on sparse-view drone + dense office captures.
+hypothesis: InstantSfM's depth-constrained Jacobians use Metric3Dv2 but skip MP-SfM's two complementary recipes — (i) depth-proportional + model uncertainty fusion that makes the prior actually calibrated, and (ii) bilateral normal integration that adds a tangent-plane residual. Adding these plus RoMa v2's predictive match covariance into InstantSfM's GPU BA gives a principled 3-prior fusion inside a single solver — no paper today combines all three families on one Hessian.
+expected_gain: Improved pose accuracy on sparse-view / textureless benchmarks where any single prior is weak; ~20–40% error reduction on MP-SfM's sparse-view benchmarks *at InstantSfM's throughput*.
+risk: Three-prior weight tuning is empirical; over-regularization can degrade accuracy on dense captures. Prior conflicts must be handled (e.g. depth contradicting normal). The Schur-complement-breaking coupling from the normal residual (see [[sfm.depth-constrained-ba]]) may force a GPU-native alternating solver rather than a one-shot Newton step.
+validating_experiment: Implement three Jacobian augmentations as separate residual blocks in InstantSfM; ablate on sparse-view drone + dense office captures. Use the MP-SfM calibration recipe on Metric3Dv2 uncertainties before feeding into the depth residual.
 triggers: [ingest-of-idea:principled-prior-weighting-ba]
-created: 2026-04-15 · updated: 2026-04-18
+created: 2026-04-15 · updated: 2026-04-21
+
+### Bet #013 — Port matcher-score next-view selection into Tier-1 GPU SfM
+status: proposed
+combines: [[matcher-score-next-view-selection_pataki2025]], [[depth-constrained-jacobian_zhong2026]]
+stage_target: sfm.next-view-registration
+op_target: op:general-purpose
+confidence: high
+magnitude: incremental
+cost: hours
+breakage_risk: low
+hypothesis: MP-SfM's Table 8 shows matcher-score-summed selection beats inlier-count selection whenever the matcher is a deep learned one (MASt3R, RoMa). InstantSfM currently inherits COLMAP's inlier-count heuristic. Plugging the scored-view scheduler in should be a clean win on any InstantSfM pipeline that swaps SIFT for LightGlue / RoMa, at near-zero cost.
+expected_gain: Avoids catastrophic next-view failures on symmetric / textureless scenes; small (~1–3%) AUC improvement on general benchmarks, larger on SMERF-style scenes.
+risk: Requires the matcher to expose per-match scores; COLMAP's SIFT+ratio-test doesn't. Candidate a no-op for classical-matcher baselines.
+validating_experiment: Swap InstantSfM's next-view scorer for summed matcher scores; re-run ETH3D + SMERF minimal-overlap with MASt3R correspondences; report AUC delta.
+triggers: [ingest-of-idea:matcher-score-next-view-selection_pataki2025]
+created: 2026-04-21 · updated: 2026-04-21
 
 ## Capability gaps
 
 - **Learned feature frontend with proven speed parity** (RoMa v2 on DINOv3, LoFTR) — would unlock backbone-level accuracy gains without giving up speed. Search target: matcher papers with RootSIFT-quality metric-pose results at equal throughput.
 - **End-to-end differentiable SfM through PyTorch** — InstantSfM enables the graph but no paper backprops a downstream render loss through it yet. Search target: papers training 3DGS/NeRF jointly with pose refinement.
-- **Multi-prior Jacobian fusion scheme** (depth + normal + DINOv3 confidence + SLAM-poses) — no consensus. Search target: ablation papers that vary the prior mix on one benchmark.
+- **Multi-prior Jacobian fusion scheme** (depth + normal + DINOv3 confidence + SLAM-poses) — no consensus. With MP-SfM's atomic recipes now separable ([[depth-proportional-uncertainty-fusion_pataki2025]] for per-prior calibration; [[bilateral-normal-integration-with-uncertainty_pataki2025]] for the normal residual), Bet #010 is more concretely actionable. Remaining search target: ablation papers that vary the prior mix on one benchmark.
 
 ## Contradictions & tensions
 

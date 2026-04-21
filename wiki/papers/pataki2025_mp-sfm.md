@@ -3,7 +3,7 @@ title: "MP-SfM: Monocular Surface Priors for Robust Structure-from-Motion"
 type: paper
 tags: [sfm, monocular-depth, surface-normals, incremental-sfm, low-overlap, robustness]
 created: 2026-04-12
-updated: 2026-04-15
+updated: 2026-04-21
 sources: []
 local_paper: papers/sfm-slam/pataki_2025_mp-sfm.pdf
 url: https://arxiv.org/abs/2504.20040
@@ -27,15 +27,19 @@ State-of-the-art SfM systems fundamentally require three-view overlap with suffi
 
 ## Method
 
-MP-SfM integrates monocular depth and normal priors into incremental SfM through several key mechanisms:
+MP-SfM integrates monocular depth and normal priors into incremental SfM through five coupled mechanisms:
 
-1. **Single-view 3D point lifting**: Feature points are lifted to 3D using monocular depth, enabling next-view registration from only two-view correspondences (no three-view tracks required). This allows leveraging dense pairwise matchers directly.
+1. **Two-view initialization with mono-depth fallback** (§3.1): When the top-ranked image pair lacks the inliers/parallax for essential-matrix init, lift points from image $a$ via $D_a$ and $K_a$ to form 2D-3D matches with image $b$; estimate pose $T_{ba}$ via PnP. Enables bootstrapping on low-parallax captures.
 
-2. **Depth-constrained bundle adjustment**: The optimization alternates between (a) depth refinement via normal integration with uncertainty weighting, and (b) joint BA over poses, 3D points, and refined depth maps. Principled uncertainty propagation from monocular priors ensures robustness to prediction errors.
+2. **Per-view depth rescaling** (Eq. 1): Rescale each mono-depth by the median ratio to already-triangulated 3D points, $D^*_i = D_i \cdot \text{median}_{j,k}(\hat{D}_i(X_k)/D_i(x_j))$, before lifting — absorbs the up-to-scale ambiguity of mono-priors.
 
-3. **Dense depth consistency check**: Reprojected depth maps across views are compared to identify incorrect registrations (e.g., from symmetries), using a forward-backward consistency metric with occlusion handling.
+3. **Single-view 3D point lifting for next-view registration**: Lifted features are used as 2D-3D correspondences for PnP, enabling registration from only two-view tracks. Next-view candidates are ranked by summed matcher score, not inlier count.
 
-The objective decomposes into three terms: standard reprojection ($C_{BA}$), depth regularization ($C_{reg}$), and depth integration with normal constraints ($C_{int}$), solved via alternating block coordinate descent.
+4. **Depth-constrained BA with normal integration**: Joint $C_{BA} + C_{reg} + C_{int}$ objective — reprojection, 3D-point-to-refined-depth tie, and depth-prior + bilateral-normal-integration with propagated covariance. Hessian is not Schur-amenable, so alternate block coordinate descent: $C_{reg} + C_{int}$ per image on GPU, $C_{BA} + C_{reg}$ across views on CPU (Ceres).
+
+5. **Forward-backward depth consistency check**: Reprojected refined depths across views identify incorrect registrations (symmetry ghosts), using a propagated-uncertainty confidence band and occlusion-ratio threshold.
+
+The system also **calibrates monocular-prior uncertainties**: take the pixel-wise max of model-predicted uncertainty and a depth-proportional uncertainty, clipped at 2 cm. Calibration scale tuned once on ETH3D training split.
 
 ## Results
 
@@ -51,10 +55,11 @@ MP-SfM demonstrates that integrating monocular priors into classical incremental
 
 ## Pipeline contribution
 
-- **Single-view 3D point lifting via mono depth (N1)** — lifts features with depth, enables next-view registration from only two-view tracks. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *next-view registration (incremental)* · replaces/augments: *3-view overlap requirement in classical incremental SfM* · expected gain: works on low-overlap / low-parallax captures where COLMAP fails (AUC@1 34.9 vs GLOMAP 8.4 on ETH3D 0% overlap).
-- **Depth-constrained BA with normal integration (N2)** — alternating depth refinement (normal integration with uncertainty weighting) + joint BA over poses, points, refined depths. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *BA* · replaces/augments: *reprojection-only BA* · expected gain: principled uncertainty propagation from mono priors; robust to prediction errors.
-- **Forward-backward depth consistency check (N3)** — identifies symmetry/duplicate-registration failures via reprojected-depth agreement. candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · stage: *registration validation* · replaces/augments: *track-count heuristics* · expected gain: resolves the symmetry-induced ghost camera problem that COLMAP is famously fragile to.
-- **Synthesis-bet candidate**: MP-SfM uses Metric3Dv2 depth+normals; the forthcoming thread bet is *combine MP-SfM's depth-constrained BA with InstantSfM's PyTorch-native GPU BA* to get depth+normal+depth-constrained SfM that runs on GPU — neither paper does this, mechanisms are compatible.
+- [[mono-depth-normal-constrained-incremental-sfm_pataki2025]] — system-level `topology-rewrite`. Candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · replaces: [[sfm.next-view-registration]] + [[sfm.bundle-adjustment]] · introduces: [[sfm.mono-depth-lifted-registration]], [[sfm.depth-constrained-ba]], [[sfm.forward-backward-depth-consistency]] · expected gain: AUC@1° 34.9 vs GLOMAP 8.4 on ETH3D 0%-overlap.
+- [[matcher-score-next-view-selection_pataki2025]] — `stage-swap` on [[sfm.next-view-registration]] / [[sfm.next-view-scheduling]]. Candidate thread: [[feed-forward-structure-from-motion]] Tier 2 · reusable independently for any incremental SfM consuming a deep matcher (MASt3R / RoMa / LightGlue) · expected gain: avoids catastrophic failure on symmetric scenes with MASt3R-class matchers (Table 8).
+- [[depth-proportional-uncertainty-fusion_pataki2025]] — `drop-in` recipe for calibrating off-the-shelf mono-depth uncertainties. Candidate thread: [[mono-depth-estimation]] · reusable across classical SfM, 3DGS depth supervision, MVS · expected gain: recovers calibrated uncertainty for consumers that inverse-variance-weight depth priors.
+- [[bilateral-normal-integration-with-uncertainty_pataki2025]] — `stage-swap` sub-mechanism inside [[sfm.depth-constrained-ba]]. Propagates normal uncertainty through the integration residual. Reusable for any joint-depth-pose refinement with normal priors.
+- **Synthesis-bet candidate** (extends existing Bet #010 in [[gpu-native-sfm]]): Port [[depth-proportional-uncertainty-fusion_pataki2025]] and [[bilateral-normal-integration-with-uncertainty_pataki2025]] into [[depth-constrained-jacobian_zhong2026]]'s GPU-native BA — InstantSfM uses Metric3Dv2 depth but skips both the uncertainty calibration and the normal-integration term, leaving accuracy on the table.
 
 ## Relation to prior work
 

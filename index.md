@@ -10,7 +10,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [COLMAP SfM (Schönberger 2016)](wiki/papers/schonberger2016_colmap-sfm.md) — canonical incremental SfM, CVPR 2016 · _2026-04-14_
 - [GLOMAP](wiki/papers/pan2024_glomap.md) — global SfM matching COLMAP accuracy, orders of magnitude faster · _2026-04-14_
 - [InstantSfM](wiki/papers/zhong2026_instantsfm.md) — GPU-native global SfM, 40x faster than COLMAP · _2026-04-12_
-- [MP-SfM](wiki/papers/pataki2025_mp-sfm.md) — monocular depth/normal priors for robust incremental SfM · _2026-04-12_
+- [MP-SfM](wiki/papers/pataki2025_mp-sfm.md) — monocular depth/normal priors for robust incremental SfM · _2026-04-21_
 - [VPGS-SLAM](wiki/papers/deng2026_vpgs-slam.md) — voxel-based progressive 3DGS SLAM for large scenes · _2026-04-12_
 - [CuSfM](wiki/papers/yu2025_cusfm.md) — CUDA-accelerated SfM for autonomous driving · _2026-04-12_
 - [MASt3R-SLAM](wiki/papers/murai2025_mast3r-slam.md) — real-time dense SLAM on MASt3R priors, 15 FPS · _2026-04-12_
@@ -154,15 +154,15 @@ _(empty)_
 
 ## Ideas
 
-74 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#025: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, plus 64 more.
+77 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#025: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, plus 64 more.
 
 ## Stages
 
-84 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (12), `feed-forward-sfm.*` (15), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (2), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. Browse the directory or query via `lint stage-coverage`.
+87 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (15), `feed-forward-sfm.*` (15), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (2), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. Browse the directory or query via `lint stage-coverage`.
 
 ## Meta
 - [License Audit](wiki/meta/license-audit.md) — commercial-use readiness of all 55 wiki papers; bet-level commercial-readiness table; remediation checklist · _2026-04-18_
 
 ---
 
-_Last rebuilt: 2026-04-18 · 55 papers, 14 methods, 15 concepts, 12 threads, 4 designs, 74 ideas, 84 stages, 1 meta_
+_Last rebuilt: 2026-04-21 · 55 papers, 14 methods, 15 concepts, 12 threads, 4 designs, 77 ideas, 87 stages, 1 meta_

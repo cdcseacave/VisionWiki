@@ -3,7 +3,7 @@ title: Monocular Depth Estimation
 type: thread
 tags: [depth-estimation, monocular, metric-depth, relative-depth, foundation-model]
 created: 2026-04-12
-updated: 2026-04-18
+updated: 2026-04-21
 sources: [papers/pataki2025_mp-sfm.md, papers/zhong2026_instantsfm.md, papers/li2025_megasam.md, papers/tang2025_dronesplat.md, papers/kim2025_multiview-geometric-gs.md, papers/chebbi2025_multiview-dense-matching.md]
 operating_points: [op:default]
 status: draft
@@ -25,7 +25,7 @@ required_capabilities: [metric-depth, scale-consistency-across-frames, uncertain
 
 ## Capability gaps
 
-- **Calibrated per-pixel uncertainty** from mono depth — would let classical BA downweight uncertain regions automatically. Search target: diffusion-depth papers that expose variance; discriminative heads with explicit epistemic outputs.
+- **Calibrated per-pixel uncertainty** from mono depth — would let classical BA downweight uncertain regions automatically. Partial answer now available: [[depth-proportional-uncertainty-fusion_pataki2025]] provides a `drop-in` recipe (pixel-wise max of depth-proportional and model-predicted uncertainty, scaled by a single calibration constant) that works across Metric3Dv2, DepthPro, DepthAnything-v2. Remaining gap: diffusion-depth variance outputs (MariGold-family) — is their epistemic uncertainty better calibrated or still needs the same fusion?
 - **Principled fusion of mono depth + mono normal + sparse-point priors** into one residual — no consensus. Search target: papers that ablate prior-combination strategies on the same benchmark.
 - **Mono depth that composes with DUSt3R-style feed-forward depth** without redundancy. Search target: papers comparing mono-depth-as-init vs. DUSt3R-depth-as-init in downstream 3DGS.
 
@@ -41,7 +41,10 @@ integrating mono depth without over-constraining the geometry.
 ### As SfM prior
 - [MP-SfM (Pataki 2025)](../papers/pataki2025_mp-sfm.md): uses [[Metric3Dv2]]
   depth + normals to eliminate the three-view overlap requirement. Mono depth
-  makes SfM work on sparse imagery where COLMAP fails.
+  makes SfM work on sparse imagery where COLMAP fails. Also contributes a
+  **reusable uncertainty-calibration recipe**:
+  [[depth-proportional-uncertainty-fusion_pataki2025]] — applicable to any
+  downstream consumer of off-the-shelf mono-depth uncertainty.
 - [InstantSfM (Zhong 2026)](../papers/zhong2026_instantsfm.md): depth-constrained
   Jacobians from mono depth estimates stabilize GPU-native bundle adjustment.
 
@@ -72,7 +75,9 @@ integrating mono depth without over-constraining the geometry.
   No paper in this batch directly compares them in a reconstruction pipeline.
 - What's the right way to fuse mono depth priors into multi-view optimization
   without over-constraining the geometry? InstantSfM uses depth-constrained
-  Jacobians; MP-SfM uses depth/normal as additional residuals. No consensus.
+  Jacobians; MP-SfM uses depth/normal as additional residuals with propagated
+  covariance ([[bilateral-normal-integration-with-uncertainty_pataki2025]]).
+  No consensus; Bet #010 in [[gpu-native-sfm]] proposes to combine them.
 - How does mono depth interact with feed-forward methods (DUSt3R predicts its
   own depth — does adding mono depth priors help or conflict)?
 

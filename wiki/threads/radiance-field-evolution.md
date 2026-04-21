@@ -3,7 +3,7 @@ title: Radiance Field Evolution
 type: thread
 tags: [nerf, 3dgs, differentiable-rendering, novel-view-synthesis, sparse-voxels]
 created: 2026-04-11
-updated: 2026-04-18
+updated: 2026-04-21
 sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md]
 operating_points: [op:quality-per-scene, op:city-scale, op:neural-free]
 status: draft
@@ -205,6 +205,22 @@ risk: Codebook quantization interacts badly with submap merging boundaries; may 
 validating_experiment: Sequential capture on UrbanScene3D (aerial); compare {Vast-only, Vast+EA, Vast+VPGS, Vast+EA+VPGS} on SSIM + memory + training time.
 triggers: [ingest-of-idea:submap-boundary-codebook-alignment]
 created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #004 — Calibrated mono-depth uncertainty as per-pixel weight for 3DGS depth supervision
+status: proposed
+combines: [[depth-proportional-uncertainty-fusion_pataki2025]], [[median-depth-relative-loss_kim2025]], [[va-gs-four-loss-stack_li2025]]
+stage_target: radiance-fields.depth-supervision
+op_target: op:quality-per-scene
+confidence: med
+magnitude: incremental
+cost: days
+breakage_risk: low
+hypothesis: 3DGS pipelines that supervise rendered depth against mono-depth priors (Kim 2025, VA-GS) currently treat the prior as a scalar loss term with per-image or median scaling. MP-SfM shows that off-the-shelf mono-depth uncertainties are badly calibrated and that a depth-proportional + model-uncertainty max recovers calibration. Plugging that recipe in as a per-pixel inverse-variance weight on the depth-supervision loss should reduce the loss's dominance in high-variance regions (distant objects, vegetation) where the mono prior is wrong anyway.
+expected_gain: Less over-regularization on outdoor / vegetation scenes; +0.2–0.5 PSNR or improved geometry F-score on scenes where current median-relative loss visibly degrades the radiance field. Smaller gain expected on indoor scenes where mono-depth is already reliable.
+risk: The calibration recipe was tuned for metric-depth SfM residuals, not photometric depth supervision. The optimal weight schedule may differ; uncertainty-aware loss can also vanish over training and stop contributing. Needs a modest calibration split; absent that, the depth-proportional term alone still helps.
+validating_experiment: Replace fixed depth-supervision weight in Kim 2025 or VA-GS with per-pixel inverse variance from the MP-SfM recipe; re-run on Mip-NeRF 360 outdoor + ScanNet++ indoor; report PSNR, LPIPS, geometry F-score vs. baseline weighting.
+triggers: [ingest-of-idea:depth-proportional-uncertainty-fusion_pataki2025]
+created: 2026-04-21 · updated: 2026-04-21
 
 ### Bet #003 — CamP-style Jacobian preconditioner on 3DGS joint pose-refinement
 status: proposed
