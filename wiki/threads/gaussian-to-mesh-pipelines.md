@@ -1,10 +1,10 @@
 ---
 title: Gaussian-to-Mesh Pipelines
 type: thread
-tags: [3dgs, mesh-reconstruction, surface-extraction, marching-cubes, sdf, tsdf]
+tags: [3dgs, mesh-reconstruction, surface-extraction, marching-cubes, sdf, tsdf, hierarchical-sparse-grid]
 created: 2026-04-12
-updated: 2026-04-18
-sources: [papers/li2025_geosvr.md, papers/li2025_va-gs.md, papers/gao2025_anisdf.md, papers/radl2025_sof.md, papers/guedon2025_milo.md, papers/radl2026_confidence-mesh-3dgs.md, papers/elflein2026_vgg-t3.md, papers/kim2025_multiview-geometric-gs.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/chen2024_pgsr.md]
+updated: 2026-04-21
+sources: [papers/li2025_geosvr.md, papers/li2025_va-gs.md, papers/gao2025_anisdf.md, papers/radl2025_sof.md, papers/guedon2025_milo.md, papers/radl2026_confidence-mesh-3dgs.md, papers/elflein2026_vgg-t3.md, papers/kim2025_multiview-geometric-gs.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/chen2024_pgsr.md, papers/shen2026_lyra2.md]
 operating_points: [op:regularized-3dgs, op:mesh-in-loop, op:natively-extractable]
 status: draft
 ---
@@ -150,6 +150,11 @@ Regularized 3DGS → TSDF/MC:
 - **TSDF fusion with per-Gaussian CoMe confidence as the weight** — the TSDF weighting slot exists since 1996; CoMe confidence exists since 2026; no paper combines them. Blocked on: implementation, not novelty.
 - **MVSNet-family learned MVS as the depth source** for Pipeline A — every current Pipeline A paper uses classical COLMAP MVS or self-supervised depth. Blocked on: speed/quality comparison.
 - **SAM 3 masks as geometry constraints** — on-surface vs. off-surface Gaussian supervision from segmentation. Blocked on: no paper.
+- **[[hierarchical-sparse-grid-mesh-extraction_shen2026]]** (Lyra 2.0) — adaptive-level OpenVDB grid + per-level marching cubes + transition merging. OP considered: any — primarily relevant for *large scenes* (multi-room explorable walkthroughs, city-scale). **Did not displace any existing OP filler** because:
+  - No isolated ablation in [[shen2026_lyra2|Lyra 2.0]] §4.4 — mesh extraction is described as implementation detail supporting Fig. 7's Isaac Sim demo, not benchmarked vs MILo/CoMe/TSDF baselines.
+  - None of the thread's current benchmarks (DTU, T&T) target the scale where hierarchical allocation is load-bearing. Existing extraction fillers (TSDF, MILo-Delaunay, GeoSVR direct-MC) are evaluated at object / room scale where a single-level grid suffices.
+  - Would win by default if the thread added a `op:large-scale` OP, since no current filler has demonstrated at multi-room / city-scene extent. See Capability gaps.
+  - Revivable condition: a head-to-head benchmark vs MILo / CoMe at scene scale on a common ground-truth-mesh dataset.
 
 ## Open questions & synthesis bets
 
@@ -223,6 +228,7 @@ created: 2026-04-15 · updated: 2026-04-18
 - **Principled switch between external-MVS-depth and self-supervised-3DGS-depth** — external wins on controlled capture, self-supervised wins on sparse/textureless. No paper has a confidence-based switch. Search target: depth-reliability estimators that compose with both sources.
 - **Texturing pipeline from splat/voxel to game-engine mesh** — every paper stops at geometry. Would unlock: deployment-ready pipelines. Search target: render-then-unwrap with foundation-feature seam-minimization.
 - **Sparse-view benchmarks** (3–10 views) — most current benchmarks are dense-capture (DTU 49 views). Would unlock: real-world phone-scan regimes. Search target: sparse-view mesh benchmarks (ScanNet++, DL3DV subsets).
+- **Large-scale scene extraction benchmark** — no in-wiki filler has been quantitatively demonstrated at scene scale (multi-room, multi-building). [[shen2026_lyra2|Lyra 2.0]]'s [[hierarchical-sparse-grid-mesh-extraction_shen2026]] is the first in-wiki filler targeting this regime but has no isolated ablation vs alternatives. Would unlock: a fourth OP (`op:large-scale-scene`) where hierarchical allocation is load-bearing. Search target: (a) a paper that explicitly benchmarks mesh-extraction methods at scene scale against a ground-truth mesh (Matterport3D-GT, Replica-GT, or a synthetic scene benchmark), or (b) a MILo / CoMe variant that scales to scene-level capture without memory blowup.
 
 ## Contradictions & tensions
 

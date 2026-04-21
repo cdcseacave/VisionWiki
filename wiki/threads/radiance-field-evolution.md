@@ -4,7 +4,7 @@ type: thread
 tags: [nerf, 3dgs, differentiable-rendering, novel-view-synthesis, sparse-voxels]
 created: 2026-04-11
 updated: 2026-04-21
-sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md, papers/wang2026_feed-forward-3d-scene-modeling.md]
+sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md, papers/wang2026_feed-forward-3d-scene-modeling.md, papers/shen2026_lyra2.md]
 operating_points: [op:quality-per-scene, op:city-scale, op:neural-free]
 status: draft
 ---
@@ -137,7 +137,26 @@ stacked.
   §7.4): is the long-term role of radiance fields to serve as the persistent
   3D-world representation behind agents, or will video diffusion ("video as
   world simulator") absorb the function? This is a cross-thread framing
-  shared with [[generative-3d-from-2d-priors]].
+  shared with [[generative-3d-from-2d-priors]]. **Partial answer landed 2026-04-21**:
+  [[shen2026_lyra2|Lyra 2.0]] demonstrates a production-grade video-world
+  pipeline whose *output* is a radiance field (3DGS + mesh). So the paradigms
+  are not zero-sum — the radiance field can sit *downstream* of a video-world
+  generator as its persistent 3D state. Relevant to this thread at the
+  `generative-reconstruction 3DGS output` boundary: [[downsampled-gaussian-dpt-head_shen2026]]
+  is a candidate streaming-compatible primitive representation (see
+  Candidate components) that is orthogonal to the thread's per-scene
+  optimization OPs.
+- **Feed-forward generative-reconstruction 3DGS as an alternative to per-scene
+  optimization?** [[shen2026_lyra2|Lyra 2.0]] produces scene-scale 3DGS via
+  a feed-forward lift on generated video rather than per-scene photometric
+  optimization. None of the thread's current OPs (`op:quality-per-scene`,
+  `op:city-scale`, `op:neural-free`) are feed-forward; all assume posed
+  real images as input. Whether a future `op:generative-feed-forward` OP is
+  warranted depends on additional video-world papers landing with directly
+  comparable quality numbers — Lyra 2.0 alone is insufficient evidence for
+  an OP split, and its input regime (single-image-driven generation) is
+  sufficiently different from the current three OPs (posed-image
+  reconstruction) that cross-OP benchmarking is hard.
 
 ## Related threads
 - [[gaussian-to-mesh-pipelines]] — the downstream question of what to do with Gaussians
@@ -192,6 +211,7 @@ stacked.
 - **Pow3R-style prior injection** (intrinsics / poses / sparse depth) into a 3DGS training frontend. No paper does this yet; 3DGS is still COLMAP-posed. Target OP: all.
 - **Feed-forward 3DGS initialization** (PixelSplat, MVSplat, NoPoSplat) replacing COLMAP-SfM in the per-scene pipeline. Target OP: `op:quality-per-scene`.
 - **Foundation-feature distillation into per-Gaussian features** — tracked under [[lifting-foundation-models-to-3d]] but not yet in any Current-SOTA radiance pipeline.
+- **[[downsampled-gaussian-dpt-head_shen2026]]** (Lyra 2.0) — `k × k` strided per-pixel Gaussian DPT head for 4× Gaussian reduction at prediction time. Target OP: `op:city-scale` (streaming-compatible Gaussian count is a live concern there) and `op:quality-per-scene` (real-time rendering at high resolution). **Did not displace any current filler** because (a) the current pipelines rely on per-scene optimization rather than a feed-forward Gaussian predictor, so the head-downsampling trick has no directly-comparable existing target; (b) no isolated ablation in the source paper isolates the head-modification gain from the surrounding fine-tune + video-model improvements. Revivable condition: a paper that drops the strided head into a pure feed-forward 3DGS baseline (MVSplat, pixelSplat) and reports per-pixel vs strided quality. This is orthogonal to EA-3DGS codebook VQ and to the Gaussian-side compaction family ([[wang2026_feed-forward-3d-scene-modeling]] §4.3.2) — prediction-time reduction + post-hoc compaction is a plausible stack.
 
 ## Open questions & synthesis bets
 
