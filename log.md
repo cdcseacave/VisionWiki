@@ -539,3 +539,46 @@ Second feed-forward-3D survey (66 pp., arXiv 2604.14025, CC-BY-NC-SA-4.0) ingest
 - **Not created (deferred per §6.5 "name-drop is not a page"):** 30+ methods cited once in Wang 2026 (iLRM, Long-LRM, ZPressor, TinySplat, NoPoSplat, Splatt3R, PF3plat, FreeSplatter, FLARE, RegGS, GGN, PixelGaussian, FreeSplat++, LongSplat, Puzzles, Aug3D, Easi3R, 4D-LRM, L4GM, 4DGT, StreamSplat, DGS-LRM, Stream3R, LongStream, MonST3R, PIXIE, PhysGM, ARTDECO, EC3R-SLAM, MASt3R-Fusion, ViSTA-SLAM, SLAM3R, VGGT-SLAM, VGGSfM, Light3R-SfM). None are referenced ≥2 times across the wiki or materially advance any current thread beyond being listed.
 
 - `raw/` now empty.
+
+## [2026-04-21] ingest | VGGT-efficiency cluster (Shen 2025 FastVGGT + Wang 2025 Faster-VGGT block-sparse + Feng 2025 QuantVGGT)
+
+Three-paper batch closing the "VGGT-efficiency sub-family" capability gap that the Wang 2026 survey ingest had flagged as a Search target earlier today. All three papers target the same bottleneck — quadratic global-attention cost in VGGT/π³ — from three genuinely orthogonal resource axes: **token count** (FastVGGT), **attention sparsity** (Faster-VGGT block-sparse, which Wang 2026 informally named "SparseVGGT"), and **numerical precision** (QuantVGGT W4A4 PTQ). None of the three papers tests composition with the others; that untested composition is the natural cross-paper synthesis (Bet #029) and the wiki's reason for existing.
+
+- **Created:**
+  - [wiki/papers/shen2025_fastvggt.md](wiki/papers/shen2025_fastvggt.md) · arXiv 2509.02560 · ICLR 2026 · Meta VGGT License (research-only, non-commercial).
+  - [wiki/papers/wang2025_faster-vggt-block-sparse.md](wiki/papers/wang2025_faster-vggt-block-sparse.md) · arXiv 2509.07120 · no code license declared.
+  - [wiki/papers/feng2025_quantvggt.md](wiki/papers/feng2025_quantvggt.md) · arXiv 2509.21302 · ICLR 2026 · CC-BY-4.0 paper + Apache-2.0 code — the **only commercial-clean** paper of the three.
+  - [wiki/ideas/vggt-token-merge-3-part-partition_shen2025.md](wiki/ideas/vggt-token-merge-3-part-partition_shen2025.md) · scope `stage-split` (introduces new pre-attention stage).
+  - [wiki/ideas/pooled-qk-block-sparse-global-attention_wang2025.md](wiki/ideas/pooled-qk-block-sparse-global-attention_wang2025.md) · scope `stage-swap` on existing `feed-forward-sfm.global-attention`.
+  - [wiki/ideas/vggt-dual-smoothed-quantization_feng2025.md](wiki/ideas/vggt-dual-smoothed-quantization_feng2025.md) · scope `stage-swap` on new `feed-forward-sfm.numerical-precision`.
+  - [wiki/ideas/frame-aware-ptq-calibration-sampling_feng2025.md](wiki/ideas/frame-aware-ptq-calibration-sampling_feng2025.md) · scope `drop-in` on new `feed-forward-sfm.ptq-calibration-sampling`, **`co_requires: vggt-dual-smoothed-quantization_feng2025`** (bundle).
+  - [wiki/stages/feed-forward-sfm.token-compaction.md](wiki/stages/feed-forward-sfm.token-compaction.md) — new pre-attention stage for token-count reduction in VGGT-family pipelines.
+  - [wiki/stages/feed-forward-sfm.numerical-precision.md](wiki/stages/feed-forward-sfm.numerical-precision.md) — new post-training-transform stage for PTQ/quantization.
+  - [wiki/stages/feed-forward-sfm.ptq-calibration-sampling.md](wiki/stages/feed-forward-sfm.ptq-calibration-sampling.md) — new calibration-sample-selection stage (companion to numerical-precision).
+
+- **Updated:**
+  - [wiki/threads/feed-forward-structure-from-motion.md](wiki/threads/feed-forward-structure-from-motion.md) · op:default (Tier 3):
+    - Added three papers to `sources:`.
+    - Added three Tier-3 evidence entries.
+    - **Closed the "VGGT-efficiency sub-family" capability gap** (partially): the *existence* gap is now closed (four ideas land in the wiki); the *comparison* gap vs the TTT-scaling family remains open as Bet #030's motivation.
+    - Added pattern observation to "Emerging patterns": VGGT-compression family as parallel scaling trick alongside TTT-scaling family, with the key mechanistic distinction — compression preserves the attention function class, TTT replaces it.
+    - **Filed two new Pass B synthesis bets**:
+      - **Bet #029 — Triple-orthogonal VGGT compression stack** (token-merge × block-sparse × W4A4): composition of all three VGGT-compression ideas plus QuantVGGT's bundle. Expected ~40× end-to-end speedup, ~14× memory reduction at ≤2% accuracy loss. None of the 3 papers tested composition — this is a genuine cross-paper novel combination.
+      - **Bet #030 — VGGT-compression vs TTT-scaling family head-to-head**: direct Pareto comparison on a common long-sequence benchmark, addressing the comparison gap. First publication-quality comparison of the two Tier-3 scaling branches.
+  - [index.md](index.md) — 3 new paper entries under SfM / SLAM; stage count bumped from 93 → 96 with new stages enumerated; idea count bumped 87 → 91; footer rebuilt.
+
+- **Pipeline impact:**
+  - No SOTA-pipeline node *changes* on any op (these are efficiency transforms, not accuracy-improving SOTA swaps). Instead, they populate a parallel branch of candidate fillers at the long-context-attention stage, orthogonal to the TTT-family fillers currently there.
+  - Pass B completed with **two concrete bets** — closing the loop on the Wang 2026 ingest's capability-gap-refresh in a single day. This is the end-to-end synthesis cycle the wiki is designed to produce: survey flags a gap → search targets identified → papers ingested → bets filed proposing novel compositions.
+
+- **Notable / non-obvious:**
+  - **Orthogonality as a synthesis lever.** The three papers are the clearest case in the wiki so far of mechanisms attacking *genuinely independent resource axes* on a shared bottleneck. Each paper only ablates its own axis. The triple-composition Bet #029 is therefore a pure "cross-paper bet" — no single paper's authors could have conceived it; it only becomes visible once all three are in the same wiki.
+  - **License diversity within a family.** FastVGGT inherits Meta's VGGT License (non-commercial research-only, via its LICENSE.txt). Faster-VGGT has *no* code license declared (all-rights-reserved by default on GitHub). QuantVGGT is CC-BY-4.0 paper + Apache-2.0 code — commercial-clean. The License Audit meta page should be updated to reflect this spread; for Bet-level planning, only QuantVGGT's axis is commercial-adoptable without legal review. Per CLAUDE.md §6.15, bet composition decisions are unaffected — but downstream implementation readiness is materially different across the three.
+  - **FastVGGT's drift-mitigation finding.** Long-sequence pose *improves* (not just matches) under 90% token merging. The paper frames it as a cumulative-drift mitigation but does not isolate the mechanism experimentally — intriguing open question for future interpretability work on VGGT's aggregator behavior.
+  - **NFDS as a transferable contribution.** QuantVGGT's frame-aware calibration sampling is the contribution most likely to transfer beyond VGGT — deep-layer noise filtering is architecture-agnostic and the frame-distribution-clustering premise extends to any multi-view-structured input. Potential cross-thread transfer target for future PTQ work on dense matchers / monocular depth foundation models.
+  - **Stage design choices.** Chose three new stages over collapsing into one `feed-forward-sfm.backbone-efficiency` composite, because FastVGGT's token compaction is compositional with *any* downstream attention-mechanism filler (not just its own), SparseVGGT replaces the attention itself (same stage), and QuantVGGT operates at a deployment-time transform layer orthogonal to attention. Three stages, three distinct composition semantics. Matches CLAUDE.md §1.7's discipline: "Stage IDs are dotted: `<domain>.<slot>`."
+  - **Scope classification was the judgment call.** FastVGGT initially presented as `stage-swap` in the Step 2 plan but revised to `stage-split` on write — it genuinely introduces a new pre-attention stage, not just a different filler for an existing one. Classifying as stage-swap would have flattened the fact that the token-compaction node is independent of the attention-mechanism node and can receive *any* downstream filler.
+
+- **Not created (deferred):** π³ (Wang 2025c, permutation-invariant VGGT variant) is referenced by all three papers but no wiki page yet — would be a reasonable near-term stub if ingest load grows. SpargeAttention (LLM-world sparse attention precedent cited by Faster-VGGT) is outside the wiki's photogrammetry/ML scope. QuaRot, SpinQuant, SmoothQuant (PTQ baselines) — rotation-based PTQ lineage; not load-bearing for wiki threads.
+
+- `raw/` now empty.

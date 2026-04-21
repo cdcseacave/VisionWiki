@@ -4,7 +4,7 @@ type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
 updated: 2026-04-21
-sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/wang2026_feed-forward-3d-scene-modeling.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md, papers/leroy2024_mast3r.md]
+sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/wang2026_feed-forward-3d-scene-modeling.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md, papers/leroy2024_mast3r.md, papers/shen2025_fastvggt.md, papers/wang2025_faster-vggt-block-sparse.md, papers/feng2025_quantvggt.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -30,7 +30,7 @@ required_capabilities: [pose-regression, pointmap-prediction, long-context-scali
 - **Texture-poor + low-overlap joint handling** — [[he2023_detector-free-sfm|DetectorFreeSfM]] closes texture-poor; [[pataki2025_mp-sfm|MP-SfM]] closes low-overlap. Each paper tests only its own failure mode; neither tests the intersection. Search target: future benchmark that combines both regimes (e.g., Texture-Poor SfM dataset + MP-SfM's 0%-overlap ETH3D split). Resolved by: Bet #019 below.
 - **Pair-pose quality as SfM frontend** — MADPose shows +15–27 AUC@10° pair-pose gains but no paper has integrated it into multi-view SfM init. The cross-pair shift-consistency problem is the integration blocker. Search target: papers solving global mono-depth-affine consistency across image sequences. Cross-referenced from [[relative-pose-estimation]] Bet #016.
 - **View-selection-bias in standard benchmarks** — [[wang2026_feed-forward-3d-scene-modeling]] §7.1 observes that RealEstate10K / ACID / most Tier-3 training benchmarks use fixed view splits that let models game specific viewpoint patterns, and few provide 3D ground truth. The thread's "outdoor generalization under-tested" concern (see Open questions) was implicitly about domain shift; Wang 2026 reframes it as a protocol-design problem — the benchmarks don't stratify by viewpoint-gap difficulty. Search target: benchmark papers that explicitly vary baseline / overlap / contextual-gap as a difficulty axis and report 3D-ground-truth-backed accuracy.
-- **VGGT-efficiency sub-family for long-context feed-forward pointmap prediction** — [[wang2026_feed-forward-3d-scene-modeling]] §4.3 flags a parallel efficiency direction to the TTT story: token merging (FastVGGT), post-training quantization (QuantVGGT), and block-sparse attention (SparseVGGT) all target [[vggt|VGGT]]-class models with full attention, orthogonal to the RNN-state compaction in [[ttt3r-closed-form-confidence-lr_chen2026]]. None are in the wiki. Gap: no head-to-head comparison exists between the TTT-scaling family (LoGeR / ZipMap / TTT3R) and the VGGT-compression family (FastVGGT / QuantVGGT / SparseVGGT) on a common long-sequence benchmark. Search target: one of the VGGT-compression papers, ideally with Tier-3 ATE/AUC numbers comparable to TTT3R's.
+- **VGGT-efficiency sub-family for long-context feed-forward pointmap prediction** — ~~[[wang2026_feed-forward-3d-scene-modeling]] §4.3 flags a parallel efficiency direction to the TTT story... None are in the wiki.~~ **Partially closed 2026-04-21 by ingesting all three papers.** The family now lives in the wiki as four ideas across three orthogonal resource axes: [[vggt-token-merge-3-part-partition_shen2025]] (token count), [[pooled-qk-block-sparse-global-attention_wang2025]] (attention sparsity), [[vggt-dual-smoothed-quantization_feng2025]] + [[frame-aware-ptq-calibration-sampling_feng2025]] (numerical precision, bundled). The **open portion of the gap** is the head-to-head benchmark vs. the TTT-scaling family ([[loger-hybrid-ttt-plus-swa_zhang2025]], [[large-chunk-ttt-fast-weights_jin2026]], [[ttt3r-closed-form-confidence-lr_chen2026]], [[ttt-mlp-kv-compression_elflein2026]]): none of the six papers compare to the other branch on a common long-sequence benchmark. Bet #030 is the natural experiment. Additional search target: a VGGT-compression paper that includes 500+ frame pose ATE numbers directly comparable to TTT3R's — currently inferred indirectly through VGGT-as-baseline comparisons.
 
 ## Working hypothesis
 
@@ -143,6 +143,33 @@ quadratic attention costs.
 - [Cameras as Rays (Zhang 2024)](../papers/zhang2024_cameras-as-rays.md):
   Plucker ray-bundle camera representation + diffusion for sparse-view pose.
   Earlier work that planted the "cameras are just rays" idea.
+- [FastVGGT (Shen 2025)](../papers/shen2025_fastvggt.md): training-free 4× speedup
+  of VGGT via token merging with a VGGT-aware three-part partitioning (reference
+  + salient + region-random). Headline: at 500+ frames FastVGGT actually
+  *improves* pose accuracy over full-token VGGT — the cumulative-drift regime
+  rewards aggressive 90% merging. Introduces stage
+  [[feed-forward-sfm.token-compaction]]; idea
+  [[vggt-token-merge-3-part-partition_shen2025]]. VGGT-compression family,
+  token-count axis. Research-only license (inherits Meta VGGT license).
+- [Faster VGGT with Block-Sparse Global Attention (Wang 2025)](../papers/wang2025_faster-vggt-block-sparse.md):
+  training-free 4× speedup of VGGT's and π³'s global-attention layer via a
+  kernel-agnostic binary block mask derived from pooled-Q̄K̄ᵀ similarity. Works on
+  any block-sparse GPU kernel. Idea
+  [[pooled-qk-block-sparse-global-attention_wang2025]] fills existing stage
+  [[feed-forward-sfm.global-attention]] as a stage-swap alternative to the
+  TTT-family fillers (LoGeR/ZipMap/TTT3R). VGGT-compression family, attention-
+  sparsity axis. No code license — commercial-adoption-restricted.
+- [QuantVGGT (Feng 2025)](../papers/feng2025_quantvggt.md): first PTQ for VGGT
+  delivering W4A4 with ≥98% FP16 accuracy retention, 3.7× memory, 2.5× real-
+  hardware speedup. Two co-required ideas:
+  [[vggt-dual-smoothed-quantization_feng2025]] (Hadamard rotation + post-local
+  channel smoothing to handle VGGT's data-independent special-token heavy tails)
+  and [[frame-aware-ptq-calibration-sampling_feng2025]] (deep-layer noise
+  filtering + frame-aware clustering for calibration stability). Introduces
+  stages [[feed-forward-sfm.numerical-precision]] and
+  [[feed-forward-sfm.ptq-calibration-sampling]]. VGGT-compression family,
+  numerical-precision axis. **Commercial-license clean** (CC-BY-4.0 paper,
+  Apache-2.0 code) — the only one of the three compression papers that is.
 
 ### Cross-cutting: matching and features
 - [RoMa v2 (Edstedt 2025)](../papers/edstedt2025_roma-v2.md): dense matcher
@@ -170,6 +197,15 @@ quadratic attention costs.
   Frontier question: does TTT need retraining (LoGeR, ZipMap) or can it be
   derived from the frozen model's own attention (TTT3R)? TTT3R's training-free
   closed-form learning rate is the cheapest answer yet.
+- **VGGT-compression family as the parallel scaling trick.** Three orthogonal
+  efficiency mechanisms populated 2026-04-21: token merging (FastVGGT, 4× at 1000
+  frames, *improves* long-sequence pose via drift mitigation), block-sparse
+  attention (Faster-VGGT, 4× on global attention, kernel-agnostic binary mask),
+  W4A4 quantization (QuantVGGT, 3.7× memory × 2.5× speed, 98% accuracy retention).
+  All three attack VGGT-class full-attention bottleneck from *different* resource
+  axes — unlike TTT fillers which replace the attention function class, these
+  preserve it and compute less. Theoretically stackable (Bet #029); head-to-head
+  vs TTT-family untested (Bet #030).
 - **DUSt3R/MASt3R** is the gravitational center — Pow3R extends it, MASt3R-SLAM
   runs it in real-time, DiffusionSfM rethinks it.
 - **Monocular depth priors** are the bridge between classical and learned: MP-SfM
@@ -288,5 +324,37 @@ expected_gain: +2–5 AUC@10° on ETH3D and IMC; larger gains expected on textur
 risk: RoMa v2's coarse stride differs from LoFTR's — may require re-tuning `r` in the bridge.
 validating_experiment: replace LoFTR with RoMa v2 in the DetectorFreeSfM public code; re-run ETH3D/IMC/Texture-Poor.
 triggers: [ingest-of-idea:coarse-to-fine-detector-free-sfm-bridge_he2023, ingest-of-idea:roma-v2-dinov3-dense-matcher_edstedt2025]
+created: 2026-04-21 · updated: 2026-04-21
+
+### Bet #029 — Triple-orthogonal VGGT compression stack (token-merge × block-sparse × W4A4)
+status: proposed
+combines: [[vggt-token-merge-3-part-partition_shen2025]], [[pooled-qk-block-sparse-global-attention_wang2025]], [[vggt-dual-smoothed-quantization_feng2025]], [[frame-aware-ptq-calibration-sampling_feng2025]]
+stage_target: feed-forward-sfm.token-compaction + feed-forward-sfm.global-attention + feed-forward-sfm.numerical-precision
+op_target: op:default (Tier 3)
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: The three VGGT-compression papers each ablate only their own resource axis: FastVGGT reduces *token count* (4× at 1000 frames, training-free merge), Faster-VGGT reduces *attention density* (4× on global attention via binary block mask), QuantVGGT reduces *numerical precision* (3.7× memory × 2.5× speed at W4A4). None tests composition with the others. Because the three resource axes are genuinely independent, the gains should compose multiplicatively: ~16× global-attention speedup (token count × sparsity) × 2.5× numerical-precision speed × 3.7× memory reduction. On paper: ~40× end-to-end speedup, ~14× memory reduction vs FP16 dense VGGT at ≤2% accuracy loss.
+expected_gain: on ScanNet-50 at 500-1000 frames, the triple stack matches FP16 VGGT's pose ATE within 10% at ~40× wall-clock speedup; establishes the VGGT-compression family's Pareto frontier vs TTT-family alternatives.
+risk: (a) token merging changes activation distributions → QuantVGGT's calibration (trained on unmerged inputs) mis-quantizes the merged regime; (b) block-sparse mask quality degrades on compacted token streams because the pooled-similarity signal operates on fewer tokens; (c) compounded quantization + sparsification + merging may cross a nonlinear-regime threshold where accuracy collapses non-monotonically. Mitigation: (a) recalibrate QuantVGGT on merged-token streams (NFDS supports this — calibration pool just needs to include the merged regime); (b) recompute the sparsity-ratio `x` per token-count regime; (c) ablate staged adoption: merge-only → merge+sparse → merge+sparse+quant.
+validating_experiment: sequential ablation on ScanNet-50 / 7-Scenes / NRGBD at 500/1000/2000 frames measuring {ATE, AUC@5, wall-clock, peak-VRAM, accuracy-retention-%} for {VGGT dense FP16, +merge, +merge+sparse, +merge+sparse+W8A8, +merge+sparse+W4A4}. Report the efficient frontier (Pareto curve of speed × accuracy).
+triggers: [ingest-of-idea:vggt-token-merge-3-part-partition_shen2025, ingest-of-idea:pooled-qk-block-sparse-global-attention_wang2025, ingest-of-idea:vggt-dual-smoothed-quantization_feng2025]
+created: 2026-04-21 · updated: 2026-04-21
+
+### Bet #030 — VGGT-compression family vs TTT-scaling family on a common long-sequence benchmark
+status: proposed
+combines: [[vggt-token-merge-3-part-partition_shen2025]], [[pooled-qk-block-sparse-global-attention_wang2025]], [[vggt-dual-smoothed-quantization_feng2025]], [[ttt3r-closed-form-confidence-lr_chen2026]], [[large-chunk-ttt-fast-weights_jin2026]], [[ttt-mlp-kv-compression_elflein2026]], [[loger-hybrid-ttt-plus-swa_zhang2025]]
+stage_target: feed-forward-sfm.global-attention (the shared bottleneck)
+op_target: op:default (Tier 3)
+confidence: high
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: The TTT-scaling family replaces VGGT's attention with a recurrent fast-weight state (linear time); the VGGT-compression family preserves the attention function class but computes less of it. Both target the same bottleneck. No paper compares branches directly. A head-to-head should reveal: (a) TTT's linear time wins at very long sequences (>2000 frames) where quadratic-but-compressed attention still loses; (b) VGGT-compression wins when the input distribution matches training (pure compression preserves function class), TTT wins under distribution shift (fast-weights adapt at inference); (c) combining them (W4A4 + TTT) may be unexpectedly synergistic — QuantVGGT's DSFQ is agnostic to attention mechanism.
+expected_gain: first direct Pareto comparison across the two Tier-3 scaling branches; publication-quality insight regardless of which family wins; enables principled op selection (short-sequence / moderate-sequence / long-sequence) per capability-gap entry.
+risk: benchmarks don't isolate *scaling behavior* well — most Tier-3 pose benchmarks saturate at <500 frames. The experiment may need a new long-sequence pose benchmark (gluing ScanNet-50 sequences, extending DTU MVS). This is partly already flagged in the view-selection-bias capability gap from [[wang2026_feed-forward-3d-scene-modeling]] §7.1.
+validating_experiment: run {dense VGGT, TTT3R, ZipMap, VGG-T3, LoGeR, FastVGGT, Faster-VGGT, QuantVGGT, triple stack from Bet #029} on ScanNet-50 / ScanNet-gluing-to-2000-frames / ETH3D-gluing / 7-Scenes at 500 / 1000 / 2000 frames. Report ATE, AUC@5, wall-clock, peak-VRAM. Produce the efficient frontier per sequence length.
+triggers: [ingest-of-idea:vggt-token-merge-3-part-partition_shen2025, ingest-of-idea:pooled-qk-block-sparse-global-attention_wang2025, ingest-of-idea:vggt-dual-smoothed-quantization_feng2025]
 created: 2026-04-21 · updated: 2026-04-21
 

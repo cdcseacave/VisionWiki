@@ -21,6 +21,9 @@ see [CLAUDE.md](CLAUDE.md).
 - [TTT3R](wiki/papers/chen2026_ttt3r.md) — training-free TTT patch to CUT3R, 2× pose improvement on long sequences · _2026-04-15_
 - [DetectorFreeSfM (He 2023)](wiki/papers/he2023_detector-free-sfm.md) — coarse-to-fine detector-free SfM; quantized-match bridge + multi-view transformer refinement + track-topology adjustment; 340× less BA memory than PixSfM · _2026-04-21_
 - [PixSfM (Lindenberger 2021)](wiki/papers/lindenberger2021_pixsfm.md) — feature-metric track refinement + BA; DetectorFreeSfM's direct baseline _(stub)_ · _2026-04-21_
+- [FastVGGT (Shen 2025)](wiki/papers/shen2025_fastvggt.md) — training-free 4× VGGT speedup via three-part token merging; improves long-sequence pose via drift mitigation · _2026-04-21_
+- [Faster-VGGT block-sparse (Wang 2025)](wiki/papers/wang2025_faster-vggt-block-sparse.md) — training-free 4× VGGT global-attention speedup via pooled-Q̄K̄ binary block mask; kernel-agnostic · _2026-04-21_
+- [QuantVGGT (Feng 2025)](wiki/papers/feng2025_quantvggt.md) — first PTQ for VGGT, W4A4 at 98% accuracy retention; DSFQ + frame-aware calibration; CC-BY / Apache-2.0 · _2026-04-21_
 
 ### Mesh Reconstruction
 - [PGSR](wiki/papers/chen2024_pgsr.md) — planar-constrained 3DGS with unbiased depth for high-fidelity meshes · _2026-04-15_
@@ -163,15 +166,15 @@ _(empty)_
 
 ## Ideas
 
-87 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#028: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, DetectorFreeSfM bridge + transformer refinement + track-topology adjustment, MADPose affine-corrected solvers + depth-induced scoring + hybrid LO-MSAC, MASt3R dual-head matching + metric-scale pointmap loss + fast reciprocal-NN + coarse-to-fine window covering, plus 72 more.
+91 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#030: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, DetectorFreeSfM bridge + transformer refinement + track-topology adjustment, MADPose affine-corrected solvers + depth-induced scoring + hybrid LO-MSAC, MASt3R dual-head matching + metric-scale pointmap loss + fast reciprocal-NN + coarse-to-fine window covering, **VGGT-compression family** (FastVGGT three-part token merge + block-sparse pooled-Q̄K̄ attention + QuantVGGT DSFQ/NFDS), plus 76 more.
 
 ## Stages
 
-93 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (17), `feed-forward-sfm.*` (15), `pose-estimation.*` (3), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (3), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. New 2026-04-21: `sfm.feature-track-refinement`, `sfm.track-topology-adjustment`, `pose-estimation.relative-pose-solver`, `pose-estimation.robust-estimator-scoring`, `pose-estimation.hybrid-robust-estimator`, `feature-matching.reciprocal-matching`. Browse the directory or query via `lint stage-coverage`.
+96 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (17), `feed-forward-sfm.*` (18), `pose-estimation.*` (3), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (3), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. New 2026-04-21: `sfm.feature-track-refinement`, `sfm.track-topology-adjustment`, `pose-estimation.relative-pose-solver`, `pose-estimation.robust-estimator-scoring`, `pose-estimation.hybrid-robust-estimator`, `feature-matching.reciprocal-matching`, `feed-forward-sfm.token-compaction`, `feed-forward-sfm.numerical-precision`, `feed-forward-sfm.ptq-calibration-sampling`. Browse the directory or query via `lint stage-coverage`.
 
 ## Meta
 - [License Audit](wiki/meta/license-audit.md) — commercial-use readiness of all 55 wiki papers; bet-level commercial-readiness table; remediation checklist · _2026-04-18_
 
 ---
 
-_Last rebuilt: 2026-04-21 · 62 papers, 14 methods, 16 concepts, 13 threads, 4 designs, 87 ideas, 93 stages, 1 meta_
+_Last rebuilt: 2026-04-21 · 65 papers, 14 methods, 16 concepts, 13 threads, 4 designs, 91 ideas, 96 stages, 1 meta_
