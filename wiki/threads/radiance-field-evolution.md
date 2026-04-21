@@ -4,7 +4,7 @@ type: thread
 tags: [nerf, 3dgs, differentiable-rendering, novel-view-synthesis, sparse-voxels]
 created: 2026-04-11
 updated: 2026-04-21
-sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md]
+sources: [papers/park2023_camp.md, papers/xie2025_gauss-mi.md, papers/tang2025_dronesplat.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/kim2025_multiview-geometric-gs.md, papers/guo2025_ea-3dgs.md, papers/deng2026_vpgs-slam.md, papers/lin2024_vastgaussian.md, papers/barron2022_mip-nerf-360.md, papers/barron2023_zip-nerf.md, papers/wang2026_feed-forward-3d-scene-modeling.md]
 operating_points: [op:quality-per-scene, op:city-scale, op:neural-free]
 status: draft
 ---
@@ -117,6 +117,27 @@ stacked.
 - Can the decoupled appearance-modeling trick (train-time 2D transform,
   discarded at inference) be ported to *other* rasterization-based renderers
   (SVRaster, neural primitives) as a general recipe against photometric drift?
+- **4D Gaussian frontier.** [[wang2026_feed-forward-3d-scene-modeling]] §4.5
+  surveys a cluster of feed-forward 4D / temporal-Gaussian methods that the
+  thread's current op set doesn't address: 4DGT, L4GM, 4D-LRM (offline
+  feed-forward 4D) and StreamSplat / DGS-LRM (online streaming Gaussian
+  motion). Question for the thread: does this warrant a new `op:dynamic-4d`
+  operating point (subject to the ≤3 OPs cap — would likely displace
+  `op:neural-free`, which is thinly supported)? Or is 4D feed-forward its
+  own thread once enough mechanism-level papers land? Cross-reference with
+  [[feed-forward-structure-from-motion]]'s temporal section.
+- **Feed-forward Gaussian compaction as a candidate efficiency pathway.**
+  [[wang2026_feed-forward-3d-scene-modeling]] §4.3.2 describes GGN,
+  PixelGaussian, FreeSplat++, LongSplat as Gaussian-side compaction
+  mechanisms (graph pooling, cascade pruning, triplet fusion, identity-aware
+  redundancy compression) — complementary to the thread's current
+  compression story (EA-3DGS codebook VQ). None yet in the wiki. Search
+  target: the top 1–2 that report concrete city-scale / long-capture numbers.
+- **Video-world vs 3D-world model paradigm** ([[wang2026_feed-forward-3d-scene-modeling]]
+  §7.4): is the long-term role of radiance fields to serve as the persistent
+  3D-world representation behind agents, or will video diffusion ("video as
+  world simulator") absorb the function? This is a cross-thread framing
+  shared with [[generative-3d-from-2d-priors]].
 
 ## Related threads
 - [[gaussian-to-mesh-pipelines]] — the downstream question of what to do with Gaussians

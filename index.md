@@ -79,7 +79,8 @@ see [CLAUDE.md](CLAUDE.md).
 - [SD-RPN](wiki/papers/shi2026_self-distilled-roi.md) — self-distilled RoI predictors for fine-grained MLLM perception · _2026-04-12_
 - [RADIOv2.5](wiki/papers/heinrich2025_radiov25.md) — agglomerative vision foundation model distilling CLIP+DINOv2+SAM · _2026-04-12_
 - [Trident](wiki/papers/shi2024_open-vocab-segmentation.md) — training-free open vocabulary segmentation via CLIP+DINO+SAM · _2026-04-12_
-- [Feed-Forward 3D Survey](wiki/papers/zhang2025_feed-forward-3d-survey.md) — comprehensive taxonomy of feed-forward 3D methods · _2026-04-12_
+- [Feed-Forward 3D Survey (Zhang 2025)](wiki/papers/zhang2025_feed-forward-3d-survey.md) — comprehensive taxonomy of feed-forward 3D methods, organized by output representation · _2026-04-12_
+- [Feed-Forward 3D Survey (Wang 2026)](wiki/papers/wang2026_feed-forward-3d-scene-modeling.md) — second survey; problem-driven 5-axis taxonomy orthogonal to Zhang 2025's representation axis · _2026-04-21_
 
 ## Methods
 - [3D Gaussian Splatting](wiki/methods/3d-gaussian-splatting.md) — explicit radiance field via anisotropic Gaussians · _updated 2026-04-14_
@@ -128,6 +129,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [Feature Matching](wiki/concepts/feature-matching.md) — correspondence finding between images · _stub_
 - [Spherical Harmonics](wiki/concepts/spherical-harmonics.md) — basis functions for view-dependent color · _stub_
 - [Vision Transformer](wiki/concepts/vision-transformer.md) — transformer architecture for visual tasks · _stub_
+- [Feed-Forward 3D Problem Axes](wiki/concepts/feed-forward-problem-axes.md) — 5-axis problem-driven taxonomy for feed-forward 3D methods (Wang 2026) · _2026-04-21_
 
 ## Datasets
 - [Tanks and Temples](wiki/datasets/tanks-and-temples.md) — laser-scanned large-scene reconstruction benchmark with F-score metric · _2026-04-15_
@@ -142,14 +144,14 @@ _(empty)_
 - [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS/voxel primitives, 3 OPs · _updated 2026-04-18_
 - [Foundation Features for Geometry](wiki/threads/foundation-features-for-geometry.md) — frozen DINO backbones replacing SIFT across SfM / matching / depth · _updated 2026-04-18_
 - [Open-Vocab 2D Composition](wiki/threads/open-vocab-2d-composition.md) — CLIP + DINO + SAM as complementary backbones (Trident, SAM 3, RADIO), 3 OPs · _updated 2026-04-18_
-- [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, 3 OPs (quality-per-scene / city-scale / neural-free) · _updated 2026-04-18_
+- [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, 3 OPs (quality-per-scene / city-scale / neural-free) · _updated 2026-04-21_
 - [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting meshes from Gaussian splats, 3 OPs (regularized-3dgs / mesh-in-loop / natively-extractable) · _updated 2026-04-18_
-- [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — three-tier SfM taxonomy: classical → hybrid → fully feed-forward · _updated 2026-04-18_
+- [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — three-tier SfM taxonomy: classical → hybrid → fully feed-forward · _updated 2026-04-21_
 - [GPU-Native SfM (Tier 1)](wiki/threads/gpu-native-sfm.md) — 2 OPs (general-purpose InstantSfM / sequential-slam-prior CuSfM) · _updated 2026-04-18_
 - [Monocular Depth Estimation](wiki/threads/mono-depth-estimation.md) — mono depth as load-bearing prior for SfM/3DGS/MVS · _updated 2026-04-18_
 - [Nerfstudio + gsplat Codebase](wiki/threads/nerfstudio.md) — local visiofacto fork architecture reference · _updated 2026-04-18_
 - [VLM Reasoning over 3D Scenes](wiki/threads/vlm-reasoning-over-3d-scenes.md) — inference-time VLM reasoning on reconstructed 3DGS scenes (GaussExplorer) · _2026-04-18_
-- [Generative 3D from 2D Priors](wiki/threads/generative-3d-from-2d-priors.md) — single-image generative 3D (SAM 3D, latent flow-matching) · _2026-04-18_
+- [Generative 3D from 2D Priors](wiki/threads/generative-3d-from-2d-priors.md) — single-image generative 3D (SAM 3D, latent flow-matching) · _2026-04-21_
 - [LLM-Native Structured Scenes](wiki/threads/llm-native-structured-scenes.md) — point-cloud → LLM-emitted structured scene scripts (SpatialLM) · _2026-04-18_
 - [Relative Pose Estimation](wiki/threads/relative-pose-estimation.md) — depth-aware two-view pose (MADPose); calibrated / shared-focal / uncalibrated · _updated 2026-04-21_
 
@@ -172,4 +174,4 @@ _(empty)_
 
 ---
 
-_Last rebuilt: 2026-04-21 · 61 papers, 14 methods, 15 concepts, 13 threads, 4 designs, 87 ideas, 93 stages, 1 meta_
+_Last rebuilt: 2026-04-21 · 62 papers, 14 methods, 16 concepts, 13 threads, 4 designs, 87 ideas, 93 stages, 1 meta_

@@ -3,8 +3,8 @@ title: Generative 3D from 2D Priors
 type: thread
 tags: [generative-3d, single-image, flow-matching, sam-3d, latent-diffusion]
 created: 2026-04-18
-updated: 2026-04-18
-sources: [wiki/papers/chen2025_sam-3d.md]
+updated: 2026-04-21
+sources: [wiki/papers/chen2025_sam-3d.md, wiki/papers/wang2026_feed-forward-3d-scene-modeling.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -78,13 +78,14 @@ created: 2026-04-18 · updated: 2026-04-18
 
 ## Capability gaps
 
-- **Reconstruction-vs-generation disentanglement** — no principled way to know when the output is reconstructed from the input image vs. hallucinated. Would unlock: credibility for downstream asset creation. Search target: uncertainty estimation in flow-matching / diffusion 3D generators.
+- **Reconstruction-vs-generation disentanglement** — no principled way to know when the output is reconstructed from the input image vs. hallucinated. Would unlock: credibility for downstream asset creation. Search target: uncertainty estimation in flow-matching / diffusion 3D generators. **Reinforced by [[wang2026_feed-forward-3d-scene-modeling]] §7.6**: the second feed-forward-3D survey names this explicitly as the "reconstruction-vs-generation spectrum" — a continuum, not a dichotomy, with the design question being *where* on the spectrum a method should sit for a given deployment. Confirms this gap is real and cross-thread.
 - **Compositing with existing scene** — generated objects need lighting + shadow consistency with their host scene. Would unlock: scene editing pipelines. Search target: relighting-aware 3D generation.
-- **Bridge to multi-view reconstruction** — when 2+ views are available, the generative prior should yield gracefully to photometric fitting. Would unlock: unified generative-reconstructive pipeline. Search target: Bet #023's hypothesis becoming a paper.
+- **Bridge to multi-view reconstruction** — when 2+ views are available, the generative prior should yield gracefully to photometric fitting. Would unlock: unified generative-reconstructive pipeline. Search target: Bet #023's hypothesis becoming a paper. [[wang2026_feed-forward-3d-scene-modeling]] §4.4.2 (Visual Augmentation) documents an adjacent pattern — *post-hoc* generative polish applied after feed-forward reconstruction to fix artifacts / hallucinate occluded regions — which is the mirror-image architecture of Bet #023 (generation-first, reconstruction-second vs. reconstruction-first, generation-second).
+- **Video-world vs 3D-world paradigm choice** — [[wang2026_feed-forward-3d-scene-modeling]] §7.4 names two emerging world-model paradigms: *video world models* (video generation with geometric conditioning as implicit world simulator) vs. *3D world models* (explicit persistent 3D state, feed-forward 3D as backbone). This thread sits squarely in the 3D-world paradigm; the video-world paradigm is a parallel approach the wiki doesn't yet cover. Search target: a video-world-model paper (Sora-class with explicit 3D conditioning, or a geometry-grounded video-diffusion paper) to articulate the trade-off.
 
 ## Contradictions & tensions
 
-- **Reconstruction vs. generation paradigm**: this thread's generative approach is orthogonal to every paper in [[radiance-field-evolution]] and [[feed-forward-structure-from-motion]], which rely on multi-view photometric consistency. No paper explicitly contrasts the two regimes on the same benchmark.
+- **Reconstruction vs. generation paradigm**: this thread's generative approach is orthogonal to every paper in [[radiance-field-evolution]] and [[feed-forward-structure-from-motion]], which rely on multi-view photometric consistency. No paper explicitly contrasts the two regimes on the same benchmark. [[wang2026_feed-forward-3d-scene-modeling]] reinforces rather than resolves this — its §7.6 frames the choice as a continuum to be navigated per deployment, not an either/or. The cross-thread reconstruction-vs-generation question is now an open question on [[feed-forward-structure-from-motion]] as well.
 
 ## Shelved bets / known non-compositions
 
@@ -93,3 +94,4 @@ created: 2026-04-18 · updated: 2026-04-18
 ## Sources
 
 - [chen2025_sam-3d.md](../papers/chen2025_sam-3d.md)
+- [wang2026_feed-forward-3d-scene-modeling.md](../papers/wang2026_feed-forward-3d-scene-modeling.md) — second feed-forward-3D survey; §4.4.2 Visual Augmentation and §7.4 World Models + §7.6 reconstruction-vs-generation spectrum land on this thread.

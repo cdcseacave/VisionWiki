@@ -4,7 +4,7 @@ type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
 updated: 2026-04-21
-sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md, papers/leroy2024_mast3r.md]
+sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/wang2026_feed-forward-3d-scene-modeling.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md, papers/leroy2024_mast3r.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -29,6 +29,8 @@ required_capabilities: [pose-regression, pointmap-prediction, long-context-scali
 - **Principled fusion of ≥3 learned priors** (depth + normal + correspondence + flow) into classical BA — MP-SfM uses depth+normal; InstantSfM uses depth; no paper fuses all three. All three atomic priors are now in the wiki as `drop-in` / `stage-swap` ideas: [[depth-proportional-uncertainty-fusion_pataki2025]] + [[bilateral-normal-integration-with-uncertainty_pataki2025]] + [[roma-v2-predictive-covariance_edstedt2025]]. The gap is no longer acquiring the priors — it is the combinatorial ablation. [[gpu-native-sfm]] Bet #010 is the scheduled experiment; flow remains an unaddressed fourth modality. Search target: ablation-heavy multi-prior-fusion papers that include optical flow alongside depth/normal/match-confidence.
 - **Texture-poor + low-overlap joint handling** — [[he2023_detector-free-sfm|DetectorFreeSfM]] closes texture-poor; [[pataki2025_mp-sfm|MP-SfM]] closes low-overlap. Each paper tests only its own failure mode; neither tests the intersection. Search target: future benchmark that combines both regimes (e.g., Texture-Poor SfM dataset + MP-SfM's 0%-overlap ETH3D split). Resolved by: Bet #019 below.
 - **Pair-pose quality as SfM frontend** — MADPose shows +15–27 AUC@10° pair-pose gains but no paper has integrated it into multi-view SfM init. The cross-pair shift-consistency problem is the integration blocker. Search target: papers solving global mono-depth-affine consistency across image sequences. Cross-referenced from [[relative-pose-estimation]] Bet #016.
+- **View-selection-bias in standard benchmarks** — [[wang2026_feed-forward-3d-scene-modeling]] §7.1 observes that RealEstate10K / ACID / most Tier-3 training benchmarks use fixed view splits that let models game specific viewpoint patterns, and few provide 3D ground truth. The thread's "outdoor generalization under-tested" concern (see Open questions) was implicitly about domain shift; Wang 2026 reframes it as a protocol-design problem — the benchmarks don't stratify by viewpoint-gap difficulty. Search target: benchmark papers that explicitly vary baseline / overlap / contextual-gap as a difficulty axis and report 3D-ground-truth-backed accuracy.
+- **VGGT-efficiency sub-family for long-context feed-forward pointmap prediction** — [[wang2026_feed-forward-3d-scene-modeling]] §4.3 flags a parallel efficiency direction to the TTT story: token merging (FastVGGT), post-training quantization (QuantVGGT), and block-sparse attention (SparseVGGT) all target [[vggt|VGGT]]-class models with full attention, orthogonal to the RNN-state compaction in [[ttt3r-closed-form-confidence-lr_chen2026]]. None are in the wiki. Gap: no head-to-head comparison exists between the TTT-scaling family (LoGeR / ZipMap / TTT3R) and the VGGT-compression family (FastVGGT / QuantVGGT / SparseVGGT) on a common long-sequence benchmark. Search target: one of the VGGT-compression papers, ideally with Tier-3 ATE/AUC numbers comparable to TTT3R's.
 
 ## Working hypothesis
 
@@ -149,6 +151,17 @@ quadratic attention costs.
 - [Survey (Zhang 2025)](../papers/zhang2025_feed-forward-3d-survey.md):
   comprehensive taxonomy confirming the three-tier split above. Identifies
   pointmap prediction (DUSt3R-style) as the dominant feed-forward paradigm.
+- [Survey (Wang 2026)](../papers/wang2026_feed-forward-3d-scene-modeling.md):
+  second survey on the same field, orthogonal axis — organizes by
+  **engineering problem** (feature enhancement / geometry awareness / model
+  efficiency / augmentation / temporal-awareness) rather than by output
+  representation. The new [[feed-forward-problem-axes]] concept page captures
+  this as cross-cutting vocabulary. For this thread, the most concrete
+  additions are the VGGT-efficiency-family search target (see Capability
+  gaps), the §7.1 view-selection-bias critique, and the §6.4 observation
+  that feed-forward SfM and feed-forward SLAM are converging into a single
+  pipeline family (VGGSfM, Light3R-SfM, MASt3R-SLAM, SLAM3R, VGGT-SLAM,
+  ARTDECO, MASt3R-Fusion, ViSTA-SLAM) — confirming Tier 3's direction.
 
 ## Emerging patterns
 
@@ -171,7 +184,23 @@ quadratic attention costs.
   end-to-end training.
 - How sensitive are feed-forward methods to domain shift? Most train on
   ScanNet/CO3D — outdoor generalization is under-tested.
-- Will test-time-training replace attention for long-context 3D?
+- Will test-time-training replace attention for long-context 3D? Or will
+  the VGGT-compression family (FastVGGT / QuantVGGT / SparseVGGT — flagged by
+  [[wang2026_feed-forward-3d-scene-modeling]] §4.3 as the orthogonal
+  efficiency branch) close the same deployment gap via full-attention
+  compression?
+- **Reconstruction-vs-generation spectrum** ([[wang2026_feed-forward-3d-scene-modeling]]
+  §7.6): when should a feed-forward SfM output observed geometry only, and
+  when should it hallucinate plausible structure for occluded / unseen
+  regions? The current thread hypothesizes a strict reconstruction regime
+  (match COLMAP accuracy) but a generation-augmented variant could materially
+  help sparse-view + texture-poor cases — at the cost of metric fidelity.
+  This question also lives in [[generative-3d-from-2d-priors]] and is the
+  seam between the two threads.
+- **Gauge-decoupled streaming** ([[wang2026_feed-forward-3d-scene-modeling]]
+  §4.5.1: LongStream): keyframe-relative poses + cache-consistent training
+  as a stability mechanism for very-long-sequence metric reconstruction — a
+  concrete mechanism we haven't ingested; search target for the next round.
 
 ## Related threads
 - [[radiance-field-evolution]]
