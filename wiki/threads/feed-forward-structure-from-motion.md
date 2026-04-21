@@ -4,7 +4,7 @@ type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
 updated: 2026-04-21
-sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md]
+sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -27,6 +27,8 @@ required_capabilities: [pose-regression, pointmap-prediction, long-context-scali
 - **Calibration-grade outdoor accuracy from fully feed-forward methods** — no Tier-3 paper matches COLMAP on outdoor benchmarks without a BA tail. Search target: 2026 scale-up of DUSt3R/VGGT-family on outdoor training data.
 - **Dynamic-scene handling without heuristic motion masks** — MegaSaM is the best attempt but still relies on learned segmentation. Search target: end-to-end dynamic SfM where motion is inferred implicitly.
 - **Principled fusion of ≥3 learned priors** (depth + normal + correspondence + flow) into classical BA — MP-SfM uses depth+normal; InstantSfM uses depth; no paper fuses all three. All three atomic priors are now in the wiki as `drop-in` / `stage-swap` ideas: [[depth-proportional-uncertainty-fusion_pataki2025]] + [[bilateral-normal-integration-with-uncertainty_pataki2025]] + [[roma-v2-predictive-covariance_edstedt2025]]. The gap is no longer acquiring the priors — it is the combinatorial ablation. [[gpu-native-sfm]] Bet #010 is the scheduled experiment; flow remains an unaddressed fourth modality. Search target: ablation-heavy multi-prior-fusion papers that include optical flow alongside depth/normal/match-confidence.
+- **Texture-poor + low-overlap joint handling** — [[he2023_detector-free-sfm|DetectorFreeSfM]] closes texture-poor; [[pataki2025_mp-sfm|MP-SfM]] closes low-overlap. Each paper tests only its own failure mode; neither tests the intersection. Search target: future benchmark that combines both regimes (e.g., Texture-Poor SfM dataset + MP-SfM's 0%-overlap ETH3D split). Resolved by: Bet #019 below.
+- **Pair-pose quality as SfM frontend** — MADPose shows +15–27 AUC@10° pair-pose gains but no paper has integrated it into multi-view SfM init. The cross-pair shift-consistency problem is the integration blocker. Search target: papers solving global mono-depth-affine consistency across image sequences. Cross-referenced from [[relative-pose-estimation]] Bet #016.
 
 ## Working hypothesis
 
@@ -77,6 +79,24 @@ quadratic attention costs.
 - [Pow3R (Jang 2025)](../papers/jang2025_pow3r.md): lightweight conditioning
   injects optional camera intrinsics/poses/sparse depth into [[dust3r|DUSt3R]]. Shows
   that the DUSt3R architecture can absorb classical priors when available.
+- [DetectorFreeSfM (He 2023)](../papers/he2023_detector-free-sfm.md):
+  detector-free semi-dense matcher (LoFTR) drives classical COLMAP mapping
+  via a match-quantization bridge + multi-view transformer track refinement
+  + iterative BA / track-topology adjustment. **Closes the texture-poor
+  failure mode** of classical SfM with geometric-BA memory 340× smaller
+  than PixSfM. Three co-required ideas travel together:
+  [[coarse-to-fine-detector-free-sfm-bridge_he2023]],
+  [[multi-view-transformer-track-refinement_he2023]],
+  [[iterative-ba-plus-track-topology-adjustment_he2023]]. Orthogonal failure
+  mode to MP-SfM's low-overlap — the two compose (proposed in Bet #017 of
+  [[gpu-native-sfm]], combo also flagged below).
+- [MADPose (Yu 2025)](../papers/yu2025_madpose.md): depth-aware two-view
+  pose estimator (affine-corrected 3pt/4pt solvers + hybrid LO-MSAC).
+  Pair-pose only — the full thread-level coverage lives in
+  [[relative-pose-estimation]]. Relevant to Tier 2 as a better
+  view-graph-construction frontend; [[hybrid-lo-msac-dual-modality-estimator_yu2025]]
+  bundle-linked with [[affine-corrected-minimal-relative-pose-solvers_yu2025]]
+  and [[depth-induced-reprojection-scoring_yu2025]].
 
 ### Tier 3: Fully feed-forward
 - [MASt3R-SLAM (Murai 2025)](../papers/murai2025_mast3r-slam.md): first
@@ -139,5 +159,40 @@ quadratic attention costs.
 ## Related threads
 - [[radiance-field-evolution]]
 - [[mono-depth-estimation]]
+- [[relative-pose-estimation]] — depth-aware two-view pose as a standalone problem (thread split off 2026-04-21 when ingesting [[yu2025_madpose|MADPose]])
 - [[gaussian-to-mesh-pipelines]] — VGG-T3 bridges feed-forward to mesh output
+
+## Pass B synthesis bets (cross-paper)
+
+### Bet #019 — DetectorFreeSfM × MP-SfM compose (texture-poor AND low-overlap simultaneously)
+status: proposed
+combines: [[coarse-to-fine-detector-free-sfm-bridge_he2023]], [[multi-view-transformer-track-refinement_he2023]], [[iterative-ba-plus-track-topology-adjustment_he2023]], [[mono-depth-normal-constrained-incremental-sfm_pataki2025]]
+stage_target: full SfM pipeline (feature-matching + bootstrap + registration + BA)
+op_target: [[feed-forward-structure-from-motion]] Tier 2
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: DetectorFreeSfM replaces the matching frontend with a detector-free matcher + quantization bridge (solving texture-poor). MP-SfM replaces the bootstrap/registration/BA with mono-depth-driven variants (solving low-overlap). The two failure modes are orthogonal and their solutions operate at disjoint stages — compose them: LoFTR-based quantized matches feed MP-SfM's incremental pipeline (which now lifts points via mono-depth for bootstrap, does depth-constrained BA, and forward-backward-depth-consistency filters). Target: scenes that are **both** texture-poor **and** low-overlap (drone captures of low-textured surfaces, underwater at wide baselines).
+expected_gain: first end-to-end SfM that handles both regimes simultaneously; new benchmark numbers on a dataset combining texture-poor + low-overlap. No existing benchmark targets this; dataset creation is part of the bet.
+risk: MP-SfM's mono-depth lifting assumes the bootstrap pair has enough textureless matches to fit the depth scale — texture-poor might starve the matching even after quantization merging. Mitigation: fall back to MP-SfM's PnP-from-depth bootstrap when quantized-match count is below threshold.
+validating_experiment: build a combined benchmark (Texture-Poor SfM + 0%-overlap ETH3D + drone low-texture captures); run {COLMAP, DetectorFreeSfM, MP-SfM, combo} on all; compare AUC and completeness.
+triggers: [ingest-of-idea:coarse-to-fine-detector-free-sfm-bridge_he2023, ingest-of-idea:mono-depth-normal-constrained-incremental-sfm_pataki2025]
+created: 2026-04-21 · updated: 2026-04-21
+
+### Bet #020 — DINOv3-backboned detector-free matching (LoFTR → RoMa v2) into DetectorFreeSfM
+status: proposed
+combines: [[coarse-to-fine-detector-free-sfm-bridge_he2023]], [[roma-v2-dinov3-dense-matcher_edstedt2025]]
+stage_target: feature-matching.task-head
+op_target: [[feed-forward-structure-from-motion]] Tier 2
+confidence: high
+magnitude: incremental
+cost: days
+breakage_risk: low
+hypothesis: DetectorFreeSfM's quantization bridge is matcher-agnostic; the paper tests LoFTR, AspanFormer, MatchFormer — all 2021–2022 models. RoMa v2 on DINOv3 is the current dense-matching SOTA ([[foundation-features-for-geometry]]) and produces substantially more accurate coarse-stride matches. Swapping LoFTR → RoMa v2 inside the bridge should improve every downstream number without changing the pipeline.
+expected_gain: +2–5 AUC@10° on ETH3D and IMC; larger gains expected on texture-poor where DINOv3 features help more than LoFTR's CNN features.
+risk: RoMa v2's coarse stride differs from LoFTR's — may require re-tuning `r` in the bridge.
+validating_experiment: replace LoFTR with RoMa v2 in the DetectorFreeSfM public code; re-run ETH3D/IMC/Texture-Poor.
+triggers: [ingest-of-idea:coarse-to-fine-detector-free-sfm-bridge_he2023, ingest-of-idea:roma-v2-dinov3-dense-matcher_edstedt2025]
+created: 2026-04-21 · updated: 2026-04-21
 

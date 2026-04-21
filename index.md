@@ -19,6 +19,8 @@ see [CLAUDE.md](CLAUDE.md).
 - [LoGeR](wiki/papers/zhang2025_loger.md) — long-context (19K frames) feedforward reconstruction via TTT · _2026-04-12_
 - [ZipMap](wiki/papers/jin2026_zipmap.md) — linear-time bidirectional reconstruction, 20x faster than VGGT · _2026-04-12_
 - [TTT3R](wiki/papers/chen2026_ttt3r.md) — training-free TTT patch to CUT3R, 2× pose improvement on long sequences · _2026-04-15_
+- [DetectorFreeSfM (He 2023)](wiki/papers/he2023_detector-free-sfm.md) — coarse-to-fine detector-free SfM; quantized-match bridge + multi-view transformer refinement + track-topology adjustment; 340× less BA memory than PixSfM · _2026-04-21_
+- [PixSfM (Lindenberger 2021)](wiki/papers/lindenberger2021_pixsfm.md) — feature-metric track refinement + BA; DetectorFreeSfM's direct baseline _(stub)_ · _2026-04-21_
 
 ### Mesh Reconstruction
 - [PGSR](wiki/papers/chen2024_pgsr.md) — planar-constrained 3DGS with unbiased depth for high-fidelity meshes · _2026-04-15_
@@ -57,12 +59,15 @@ see [CLAUDE.md](CLAUDE.md).
 - [MVSNet](wiki/papers/yao2018_mvsnet.md) — first end-to-end deep MVS via plane-sweep cost volume · _2026-04-14_
 - [Multi-view Dense Matching](wiki/papers/chebbi2025_multiview-dense-matching.md) — similarity learning extended to multi-view without retraining · _2026-04-12_
 - [Pow3R](wiki/papers/jang2025_pow3r.md) — conditioning DUSt3R with camera priors for native-resolution 3D · _2026-04-12_
+- [MoGe (Wang 2025)](wiki/papers/wang2025_moge.md) — affine-invariant monocular geometry foundation model, CVPR 2025 _(stub)_ · _2026-04-21_
 
 ### Pose Estimation
 - [Cameras as Rays](wiki/papers/zhang2024_cameras-as-rays.md) — Plucker ray-bundle pose estimation via diffusion · _2026-04-12_
+- [MADPose (Yu 2025)](wiki/papers/yu2025_madpose.md) — affine-corrected depth-aware relative-pose solvers + hybrid LO-MSAC, CVPR 2025 Highlight · _2026-04-21_
 
 ### Feature Matching
 - [RoMa v2](wiki/papers/edstedt2025_roma-v2.md) — dense matcher with DINOv3 backbone, SOTA correspondence · _2026-04-12_
+- [LoFTR (Sun 2021)](wiki/papers/sun2021_loftr.md) — detector-free semi-dense transformer matcher _(stub)_ · _2026-04-21_
 
 ### Fundamentals
 - [CLIP](wiki/papers/radford2021_clip.md) — contrastive vision-language pretraining, zero-shot classification · _2026-04-14_
@@ -145,6 +150,7 @@ _(empty)_
 - [VLM Reasoning over 3D Scenes](wiki/threads/vlm-reasoning-over-3d-scenes.md) — inference-time VLM reasoning on reconstructed 3DGS scenes (GaussExplorer) · _2026-04-18_
 - [Generative 3D from 2D Priors](wiki/threads/generative-3d-from-2d-priors.md) — single-image generative 3D (SAM 3D, latent flow-matching) · _2026-04-18_
 - [LLM-Native Structured Scenes](wiki/threads/llm-native-structured-scenes.md) — point-cloud → LLM-emitted structured scene scripts (SpatialLM) · _2026-04-18_
+- [Relative Pose Estimation](wiki/threads/relative-pose-estimation.md) — depth-aware two-view pose (MADPose); calibrated / shared-focal / uncalibrated · _updated 2026-04-21_
 
 ## Designs
 - [Language-Grounded 3DGS 2026 — Research-Synthesis Design](wiki/designs/language-grounded-3dgs-2026.md) — realizes Bet #020; composes SAM 3 + RADIOv2.5 + DINOv3 + LangSplat-style autoencoder on a 3DGS substrate · _updated 2026-04-18_
@@ -154,15 +160,15 @@ _(empty)_
 
 ## Ideas
 
-77 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#025: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, plus 64 more.
+83 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#020: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, DetectorFreeSfM bridge + transformer refinement + track-topology adjustment, MADPose affine-corrected solvers + depth-induced scoring + hybrid LO-MSAC, plus 68 more.
 
 ## Stages
 
-87 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (15), `feed-forward-sfm.*` (15), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (2), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. Browse the directory or query via `lint stage-coverage`.
+92 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (17), `feed-forward-sfm.*` (15), `pose-estimation.*` (3), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (2), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), plus `relighting.*`, `active-reconstruction.*`. New 2026-04-21: `sfm.feature-track-refinement`, `sfm.track-topology-adjustment`, `pose-estimation.relative-pose-solver`, `pose-estimation.robust-estimator-scoring`, `pose-estimation.hybrid-robust-estimator`. Browse the directory or query via `lint stage-coverage`.
 
 ## Meta
 - [License Audit](wiki/meta/license-audit.md) — commercial-use readiness of all 55 wiki papers; bet-level commercial-readiness table; remediation checklist · _2026-04-18_
 
 ---
 
-_Last rebuilt: 2026-04-21 · 55 papers, 14 methods, 15 concepts, 12 threads, 4 designs, 77 ideas, 87 stages, 1 meta_
+_Last rebuilt: 2026-04-21 · 60 papers, 14 methods, 15 concepts, 13 threads, 4 designs, 83 ideas, 92 stages, 1 meta_

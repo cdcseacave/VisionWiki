@@ -4,7 +4,7 @@ type: thread
 tags: [sfm, gpu-acceleration, bundle-adjustment, colmap, glomap, cuda, pytorch]
 created: 2026-04-12
 updated: 2026-04-21
-sources: [papers/zhong2026_instantsfm.md, papers/yu2025_cusfm.md]
+sources: [papers/zhong2026_instantsfm.md, papers/yu2025_cusfm.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md]
 operating_points: [op:general-purpose, op:sequential-slam-prior]
 status: draft
 ---
@@ -146,6 +146,9 @@ grabs the attention, Tier 1 is where production SfM is heading because:
   are covered there.
 - [[mono-depth-estimation]] — mono depth is the dominant learned prior for
   Tier 1 (InstantSfM, MP-SfM, MegaSaM).
+- [[relative-pose-estimation]] — [[yu2025_madpose|MADPose]] feeds depth-aware
+  pair-pose estimates (+ per-pair affine corrections) into view-graph
+  construction; cross-thread Bets #015, #016 live there.
 - [[radiance-field-evolution]] — InstantSfM specifically targets 3DGS/NeRF
   pipelines as its downstream consumer.
 
@@ -180,7 +183,10 @@ Stage-by-stage when a coarse SLAM trajectory is already available:
 
 ## Candidate components / not yet integrated
 
-- **Learned feature frontend** (RoMa v2 on DINOv3, LoFTR) in place of RootSIFT — appears in research matchers but not yet inside a GPU-native classical SfM. Blocked on: speed parity; no clean benchmark.
+- **Learned feature frontend** (RoMa v2 on DINOv3, LoFTR) in place of RootSIFT — ~~appears in research matchers but not yet inside a GPU-native classical SfM. Blocked on: speed parity; no clean benchmark.~~ **Updated 2026-04-21** (ingest of [[he2023_detector-free-sfm]]): DetectorFreeSfM is the clean benchmark. Detector-free matching via LoFTR + [[coarse-to-fine-detector-free-sfm-bridge_he2023]] drives COLMAP mapping; ETH3D AUC@10° 79.53 vs 72.86 best detector-based (Tables 1–2 of [[he2023_detector-free-sfm]]); geometric BA 3 orders of magnitude less memory than PixSfM (Table 4). Porting this front-end into InstantSfM is now a concrete, low-risk bet — see Bet #017.
+- **Detector-free track refinement + track-topology adjustment** — [[multi-view-transformer-track-refinement_he2023]] + [[iterative-ba-plus-track-topology-adjustment_he2023]] are orthogonal to InstantSfM's current BA. Candidate add-ons at op:general-purpose. Note: the three DetectorFreeSfM ideas are bundle-linked (`co_requires:`); adopting one means adopting all three, per §6.14.
+- **Depth-aware pair-pose frontend** ([[hybrid-lo-msac-dual-modality-estimator_yu2025]]) — currently in [[relative-pose-estimation]] thread as its SOTA filler. Feeds better pair-pose estimates + per-pair affine corrections into InstantSfM's view-graph → global-positioning path. See Bet #016 (cross-referenced from [[relative-pose-estimation]]).
+- **Depth-induced reprojection as third model in multi-model geometric verification** ([[depth-induced-reprojection-scoring_yu2025]]) — see Bet #015 (cross-referenced from [[relative-pose-estimation]]).
 - **Pow3R conditioning** as an auxiliary prior into BA — [[jang2025_pow3r]] injects partial priors into DUSt3R; adapting to classical BA is untried.
 
 ## Open questions & synthesis bets
@@ -233,6 +239,22 @@ validating_experiment: Implement three Jacobian augmentations as separate residu
 triggers: [ingest-of-idea:principled-prior-weighting-ba]
 created: 2026-04-15 · updated: 2026-04-21
 
+### Bet #017 — DetectorFreeSfM frontend into InstantSfM backend (texture-poor GPU-native SfM)
+status: proposed
+combines: [[coarse-to-fine-detector-free-sfm-bridge_he2023]], [[multi-view-transformer-track-refinement_he2023]], [[iterative-ba-plus-track-topology-adjustment_he2023]], [[depth-constrained-jacobian_zhong2026]]
+stage_target: feature-matching.task-head + sfm.view-graph-construction + sfm.feature-track-refinement + sfm.iterative-triangulation-ba
+op_target: op:general-purpose
+confidence: high
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: DetectorFreeSfM proved detector-free matching (LoFTR + quantized-match bridge) can feed a classical COLMAP-style mapper with texture-poor robustness *and* 340× less BA memory than PixSfM. InstantSfM is a GPU-native COLMAP — it has the BA machinery but inherits RootSIFT's texture-poor failures. Port the bundle (bridge + transformer refinement + BA/TA loop) onto InstantSfM's BA and you get texture-poor GPU-native SfM with the best of both: DetectorFreeSfM's front-end accuracy + InstantSfM's throughput + InstantSfM's depth-constrained Jacobians (which DetectorFreeSfM doesn't use).
+expected_gain: Match DetectorFreeSfM's 45.43 AUC@10° on Texture-Poor SfM (vs 24.55 best detector-based) at InstantSfM-grade throughput (1.5×–40× speedup over CPU classical); unlock the currently-empty intersection of texture-poor and large-scale (Aachen-scale).
+risk: DetectorFreeSfM's multi-view transformer refinement runs on 4× V100 — porting to InstantSfM's PyTorch BA requires unified GPU allocation. The BA/TA loop's track topology edits (adding observations post-hoc) must compose with InstantSfM's dynamic parameter extraction; unclear whether they conflict.
+validating_experiment: Run InstantSfM with LoFTR+quantized matches (via [[coarse-to-fine-detector-free-sfm-bridge_he2023]]) on ETH3D + Texture-Poor SfM + Aachen v1.1; benchmark pose AUC, memory, throughput vs (a) DetectorFreeSfM alone, (b) InstantSfM alone.
+triggers: [ingest-of-idea:coarse-to-fine-detector-free-sfm-bridge_he2023]
+created: 2026-04-21 · updated: 2026-04-21
+
 ### Bet #013 — Port matcher-score next-view selection into Tier-1 GPU SfM
 status: proposed
 combines: [[matcher-score-next-view-selection_pataki2025]], [[depth-constrained-jacobian_zhong2026]]
@@ -251,7 +273,10 @@ created: 2026-04-21 · updated: 2026-04-21
 
 ## Capability gaps
 
-- **Learned feature frontend with proven speed parity** (RoMa v2 on DINOv3, LoFTR) — would unlock backbone-level accuracy gains without giving up speed. Search target: matcher papers with RootSIFT-quality metric-pose results at equal throughput.
+- ~~**Learned feature frontend with proven speed parity** (RoMa v2 on DINOv3, LoFTR) — would unlock backbone-level accuracy gains without giving up speed.~~ **Resolved 2026-04-21** (DetectorFreeSfM Apache-2.0; 340× less BA memory than PixSfM). Scheduled experiment: Bet #017.
+- **Track-topology editing after BA** — [[iterative-ba-plus-track-topology-adjustment_he2023]] edits the track graph post-BA (append observations that pass a looser threshold after pose refinement). InstantSfM's outlier filter is a weaker subset. Would unlock: the 4.6% accuracy gain DetectorFreeSfM reports on strict thresholds. Search target: global track-graph optimization papers (beyond local reprojection gating).
+- **Depth-aware pair-pose as SfM frontend** — [[hybrid-lo-msac-dual-modality-estimator_yu2025]] improves pair-pose by +15–27 AUC@10° on standard benchmarks but no paper has used it as the view-graph-construction frontend for a large-scale global SfM. Would unlock: Bet #016. Search target: 2026 papers plugging depth-aware pair-pose into incremental / global SfM.
+- **Cross-pair shift consistency** — MADPose's per-pair `β_1, β_2` do not propagate across pairs sharing a view. Solving this is what makes depth-aware pair-pose usable as a global SfM frontend.
 - **End-to-end differentiable SfM through PyTorch** — InstantSfM enables the graph but no paper backprops a downstream render loss through it yet. Search target: papers training 3DGS/NeRF jointly with pose refinement.
 - **Multi-prior Jacobian fusion scheme** (depth + normal + DINOv3 confidence + SLAM-poses) — no consensus. With MP-SfM's atomic recipes now separable ([[depth-proportional-uncertainty-fusion_pataki2025]] for per-prior calibration; [[bilateral-normal-integration-with-uncertainty_pataki2025]] for the normal residual), Bet #010 is more concretely actionable. Remaining search target: ablation papers that vary the prior mix on one benchmark.
 
