@@ -83,6 +83,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [SAM 3](wiki/papers/carion2026_sam-3.md) — Promptable Concept Segmentation (text + exemplars), 2× prior SOTA · _2026-04-14_
 - [SD-RPN](wiki/papers/shi2026_self-distilled-roi.md) — self-distilled RoI predictors for fine-grained MLLM perception · _2026-04-12_
 - [RADIOv2.5](wiki/papers/heinrich2025_radiov25.md) — agglomerative vision foundation model distilling CLIP+DINOv2+SAM · _2026-04-12_
+- [C-RADIOv4 (Tech Report)](wiki/papers/ranzinger2026_c-radiov4.md) — refined agglomerative VFM: SigLIP2+DINOv3+SAM3, shift-equivariant loss, stochastic resolutions, ViTDet mode, commercial license · _2026-04-22_
 - [Trident](wiki/papers/shi2024_open-vocab-segmentation.md) — training-free open vocabulary segmentation via CLIP+DINO+SAM · _2026-04-12_
 - [Feed-Forward 3D Survey (Zhang 2025)](wiki/papers/zhang2025_feed-forward-3d-survey.md) — comprehensive taxonomy of feed-forward 3D methods, organized by output representation · _2026-04-12_
 - [Feed-Forward 3D Survey (Wang 2026)](wiki/papers/wang2026_feed-forward-3d-scene-modeling.md) — second survey; problem-driven 5-axis taxonomy orthogonal to Zhang 2025's representation axis · _2026-04-21_
@@ -116,6 +117,9 @@ see [CLAUDE.md](CLAUDE.md).
 - [VGGSfM](wiki/methods/vggsfm.md) — end-to-end differentiable SfM · _stub_
 - [Depth Anything](wiki/methods/depthanything.md) — monocular depth foundation model · _stub_
 - [Depth Anything v3](wiki/methods/depthanythingv3.md) — feed-forward 3D foundation model (mono-depth + per-pixel 3DGS head) · _stub (2026-04-21)_
+- [SigLIP 2](wiki/methods/siglip2.md) — sigmoid-loss text-image encoder; teacher in C-RADIOv4 · _stub (2026-04-22)_
+- [PHI-S](wiki/methods/phi-s.md) — distribution-balancing normalization for multi-teacher distillation · _stub (2026-04-22)_
+- [FeatSharp](wiki/methods/featsharp.md) — feature-upsampling for fixed-resolution ViT teachers · _stub (2026-04-22)_
 
 ## Concepts
 - [Neural Implicit Surfaces](wiki/concepts/neural-implicit-surfaces.md) — SDF-based continuous surfaces; NeuS→Neuralangelo lineage · _stub_
@@ -137,6 +141,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [Vision Transformer](wiki/concepts/vision-transformer.md) — transformer architecture for visual tasks · _stub_
 - [Feed-Forward 3D Problem Axes](wiki/concepts/feed-forward-problem-axes.md) — 5-axis problem-driven taxonomy for feed-forward 3D methods (Wang 2026) · _2026-04-21_
 - [Information Routing vs 3D-Rendering Memory](wiki/concepts/information-routing-vs-3d-rendering-memory.md) — design-principle axis within the video-world paradigm for long-horizon scene generation (Lyra 2.0) · _2026-04-21_
+- [RADIO / C-RADIO Dense-Prediction Heads](wiki/concepts/radio-dense-prediction.md) — task-by-task recipes for segmentation (instance / semantic / open-vocab) and depth on RADIOv2.5 + C-RADIOv4; distinguishes shipped from must-train · _2026-04-22_
 
 ## Datasets
 - [Tanks and Temples](wiki/datasets/tanks-and-temples.md) — laser-scanned large-scene reconstruction benchmark with F-score metric · _2026-04-15_
@@ -148,9 +153,9 @@ see [CLAUDE.md](CLAUDE.md).
 _(empty)_
 
 ## Threads
-- [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS/voxel primitives, 3 OPs · _updated 2026-04-18_
-- [Foundation Features for Geometry](wiki/threads/foundation-features-for-geometry.md) — frozen DINO backbones replacing SIFT across SfM / matching / depth · _updated 2026-04-18_
-- [Open-Vocab 2D Composition](wiki/threads/open-vocab-2d-composition.md) — CLIP + DINO + SAM as complementary backbones (Trident, SAM 3, RADIO), 3 OPs · _updated 2026-04-18_
+- [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS/voxel primitives, 3 OPs · _updated 2026-04-22_
+- [Foundation Features for Geometry](wiki/threads/foundation-features-for-geometry.md) — frozen DINO backbones replacing SIFT across SfM / matching / depth · _updated 2026-04-22_
+- [Open-Vocab 2D Composition](wiki/threads/open-vocab-2d-composition.md) — CLIP + DINO + SAM as complementary backbones (Trident, SAM 3, RADIO), 3 OPs · _updated 2026-04-22_
 - [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, 3 OPs (quality-per-scene / city-scale / neural-free) · _updated 2026-04-21_
 - [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting meshes from Gaussian splats, 3 OPs (regularized-3dgs / mesh-in-loop / natively-extractable) · _updated 2026-04-21_
 - [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — three-tier SfM taxonomy: classical → hybrid → fully feed-forward · _updated 2026-04-21_
@@ -181,4 +186,4 @@ _(empty)_
 
 ---
 
-_Last rebuilt: 2026-04-21 · 67 papers, 15 methods, 17 concepts, 13 threads, 4 designs, 97 ideas, 100 stages, 1 meta_
+_Last rebuilt: 2026-04-22 · 68 papers, 18 methods, 18 concepts, 13 threads, 4 designs, 99 ideas, 100 stages, 1 meta_

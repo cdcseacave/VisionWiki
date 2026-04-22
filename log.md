@@ -643,3 +643,49 @@ Single-paper ingest from `raw/2604.13036v1.pdf` (13 MB arxiv-named PDF). Lyra 2.
   - **Lyra 1** (Bahmani 2025 [2], arXiv 2509.19296) — direct precedent; [[bahmani2025_lyra]] stub is in wiki.
 
 - `raw/` now empty.
+
+## [2026-04-22] ingest | C-RADIOv4 (Tech Report) — Ranzinger 2026
+- Created:
+  - `wiki/papers/ranzinger2026_c-radiov4.md` (paper page)
+  - `wiki/ideas/cradiov4-agglomerative-distillation_ranzinger2026.md` (wrapper idea; `refines:` [[radiov25-agglomerative-distillation_heinrich2025]]; `co_requires:` shift-equivariant loss)
+  - `wiki/ideas/shift-equivariant-distillation-loss_ranzinger2026.md` (atomic idea; `drop-in`; targets `foundation-features.pretraining`)
+  - `wiki/methods/siglip2.md` (stub — load-bearing teacher)
+  - `wiki/methods/phi-s.md` (stub — normalization method extended by the paper)
+  - `wiki/methods/featsharp.md` (stub — teacher-upsampling method used for SigLIP2)
+- Updated:
+  - `wiki/ideas/radiov25-agglomerative-distillation_heinrich2025.md` (added refined-by pointer to C-RADIOv4; bumped `updated`)
+  - `wiki/threads/open-vocab-2d-composition.md` (op:distilled-single-pass filler RADIOv2.5 → C-RADIOv4; lineage entry; Bet #018 flipped to `partially-realized`; new Bet #021 filed; capability gaps refreshed; added sam3-radio encoder-replacement as candidate for op:unified-promptable)
+  - `wiki/threads/lifting-foundation-models-to-3d.md` (candidate feature source RADIOv2.5 → C-RADIOv4; bumped Bets #014, #016, #020 to reference C-RADIOv4; lineage entry; new Bet #022 filed — shift-equivariant distillation for LangSplat autoencoder; capability gaps refreshed)
+  - `wiki/threads/foundation-features-for-geometry.md` (op:default multi-task frontend RADIOv2.5 → C-RADIOv4; lineage entry; Pass B note on applying shift-equivariance to matching-head training; sources updated)
+  - `index.md` (new paper, 3 new method stubs, thread-update dates, ideas/methods counts)
+- Pipeline impact:
+  - `open-vocab-2d-composition`:`op:distilled-single-pass`: filler swap RADIOv2.5 → C-RADIOv4. Rationale: commercial license unblock + matching DINOv3-7B on ADE20k at 10× fewer params + any-resolution support + ViTDet deployment mode.
+  - `open-vocab-2d-composition`:`op:unified-promptable`: sam3-radio (C-RADIOv4 as SAM3 encoder) added as candidate. Not promoted to SOTA due to 10-pt cgF1 gap vs stock SAM3 on SA-Co/Gold.
+  - `lifting-foundation-models-to-3d`:`op:per-scene-3dgs`, `op:voxel-online`: candidate feature-source bumped. All RADIO-referencing bets (#014, #016, #020) now target C-RADIOv4 with commercial-license risk resolved.
+  - `foundation-features-for-geometry`:`op:default`: multi-task frontend filler bumped. Probe3D NAVI 60.89 → 63.44, SPair 56.24 → 60.57.
+- Synthesis bets:
+  - **Bet #021** (open-vocab) — Trident composition over C-RADIOv4's three adaptor outputs (single-backbone modular): novel combination not in any paper; hypothesizes one-backbone Trident matches three-backbone Trident quality at 1/3 cost.
+  - **Bet #022** (lifting) — Shift-equivariant distillation for LangSplat's per-scene autoencoder: cross-thread transfer of [[shift-equivariant-distillation-loss_ranzinger2026]] mechanism to sharpen per-Gaussian language-feature boundaries. Low confidence, low cost, high learning-per-dollar.
+  - **Bet #018** (open-vocab): status flipped `proposed → partially-realized`. C-RADIOv4 matches the teacher set but does NOT distill SAM3's prompt-conditioning — residual "prompt-conditioned student" still open.
+- Notable:
+  - **Shift-equivariant distillation** is the most transferable mechanism atomized from this paper. It targets a named failure mode (teacher fixed-pattern positional noise) and the mechanism generalizes to any ViT-to-ViT distillation where the teacher has register tokens or ViTDet artifacts. Pass B surfaced it as a candidate for LangSplat (Bet #022) and for RoMa v2 matching-head training (flagged in foundation-features Pass B, not yet bet).
+  - **License unblock** is load-bearing. The NVIDIA Open Model License (commercial use permitted) is the principal practical delta over RADIOv2.5's NSCL. Every bet in [[lifting-foundation-models-to-3d]] and [[foundation-features-for-geometry]] referencing RADIOv2.5 had an implicit NSCL risk that's now resolved. Not treated as blocking for bet adoption per §6.15 (licenses don't block bets), but materially changes deployment readiness — cross-linked in bet bodies.
+  - **No per-change ablation** — paper reports full-system numbers only. Which of {stochastic resolutions, shift-equivariant loss, shift-equivariant MESA, angle-normalized summary loss} dominates is unknown. Flagged as primary open question on both idea pages.
+  - **Remaining capability gap**: 10-pt cgF1 gap on SA-Co/Gold between C-RADIOv4-as-SAM3-encoder and stock SAM3, largest on domain-specific queries (`fg_sports_equipment`, `wiki_common`). SAM3's encoder retains domain signal C-RADIOv4 doesn't capture. Search target noted in [[open-vocab-2d-composition]] capability gaps.
+  - **Wrapper-vs-atomic granularity**: filed Candidate A (wrapper) for threads/bets to reference the packaged backbone, and Candidate B (shift-equivariant loss) as a standalone because it's mechanism-independent. Other sub-contributions (stochastic resolutions, angle-normalized summary loss, ViTDet mode) live inside the wrapper — they're schedule/loss/deployment tweaks, not independently-composable mechanisms that threads would want to reference atomically.
+- Thread-level Pass B outcomes:
+  - `open-vocab-2d-composition`: 1 new bet (#021), 1 status flip (#018), 2 new capability gaps.
+  - `lifting-foundation-models-to-3d`: 1 new bet (#022), 3 bet bumps (#014/#016/#020), 1 new capability gap.
+  - `foundation-features-for-geometry`: 0 new bets, 1 Pass B hypothesis flagged for future bet-filing.
+- `raw/` now empty.
+
+## [2026-04-22] query | how to use RADIOv2.5 / C-RADIOv4 outputs for segmentation + depth
+- Created: `wiki/concepts/radio-dense-prediction.md` — task-by-task recipes (4 seg paths + 4 depth paths). Distinguishes what's shipped (sam3-radio for instance seg, RADSeg for open-vocab seg, DIY text-cosine paths) from what requires training (linear probe, DPT head).
+- Updated: `wiki/papers/ranzinger2026_c-radiov4.md`, `wiki/papers/heinrich2025_radiov25.md` (In-the-wiki sections cross-linked). `index.md` concept count 17→18.
+- Touched: NVlabs/RADIO README (adaptor-name table per version), C-RADIOv4-H HF model card, mranzinger/sam3-radio README, RADSeg README, Voxel51 C-RADIO plugin docs.
+- Key findings:
+  - **Instance seg without training is possible on C-RADIOv4** via the sam3-radio fork (RADIO replaces SAM3's ViT-L+ encoder; SAM3 decoder unchanged). Known 10-pt cgF1 gap vs stock SAM3 on SA-Co/Gold; fixes SAM3's "person"-query bug.
+  - **Open-vocab seg without training** via RADSeg (officially supports `c-radio_v3-l` + `lang_model=siglip2`). Four-line torch-hub call.
+  - **Depth without training is not possible** with RADIO-native heads — no released DPT / linear-probe weights in the NVlabs/RADIO repo or HF collection. Options: train a head (Probe3D or DPT), or compose RADIO with a standalone depth model (Depth Anything, Metric3Dv2).
+  - **Adaptor names differ per version**: RADIOv2.5 exposes `clip`, `siglip`, `dino_v2`, `sam`; C-RADIOv4 exposes `siglip2-g`, `dino_v3`, `sam3` (drops `clip`). Code that hard-codes `'clip'` adaptor fails silently on C-RADIOv4.
+  - **Speculative bridge path D4** (fine-tune a DINOv2/v3-trained DPT head on RADIO features) — not validated in any paper; flagged for future bet in [[foundation-features-for-geometry]].

@@ -3,8 +3,8 @@ title: Foundation Features for Geometry
 type: thread
 tags: [foundation-model, dinov2, dinov3, feature-matching, sfm, frozen-backbone]
 created: 2026-04-15
-updated: 2026-04-21
-sources: [wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/edstedt2025_roma-v2.md, wiki/papers/jang2025_pow3r.md, wiki/papers/zhang2025_feed-forward-3d-survey.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/radford2021_clip.md, wiki/papers/kirillov2023_sam.md, wiki/papers/leroy2024_mast3r.md]
+updated: 2026-04-22
+sources: [wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/edstedt2025_roma-v2.md, wiki/papers/jang2025_pow3r.md, wiki/papers/zhang2025_feed-forward-3d-survey.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/ranzinger2026_c-radiov4.md, wiki/papers/radford2021_clip.md, wiki/papers/kirillov2023_sam.md, wiki/papers/leroy2024_mast3r.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -29,7 +29,7 @@ required_capabilities: [patch-level-spatial-consistency, cross-domain-generaliza
 Stage-by-stage, for a generic geometry task ("given images, extract features used by a downstream geometric head"):
 
 1. **Image tokenization / patch embedding** — ViT patch embed, 14-px patches. Component: DINOv3 ViT-L/14 (default) or ViT-g/14 when compute allows. Paper: [[simeoni2025_dinov3]]. Gain over DINOv2: Gram anchoring improves patch-level consistency at high resolution; measured on dense-matching and segmentation downstream tasks. Failure mode: 14-px patches lose fine structure; silent failure on low-texture regions.
-2. **Frozen backbone forward pass** — extract per-patch features at the chosen layer. Component: DINOv3 (default) for pure geometry; [[heinrich2025_radiov25]] RADIOv2.5 when the task *also* needs semantic alignment (i.e., multi-task downstream). Failure mode: DINOv3 features are *not* text-aligned — projects that need language queries must route through a different backbone.
+2. **Frozen backbone forward pass** — extract per-patch features at the chosen layer. Component: DINOv3 (default) for pure geometry; [[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] (paper: [[ranzinger2026_c-radiov4]]) when the task *also* needs semantic alignment (i.e., multi-task downstream). Predecessor: [[heinrich2025_radiov25|RADIOv2.5]], retained as fallback under NSCL research license. C-RADIOv4 is best-in-family on Probe3D NAVI (63.44) and SPair (60.57) — the geometry-relevant Probe3D metrics. Failure mode: C-RADIOv4 / DINOv3 features are *not* text-aligned without the SigLIP2 adaptor — projects that need language queries must use the adaptor output rather than the raw student features.
 3. **Task head** — small transformer / regression head on frozen features. Examples: RoMa v2 dense-match head, Pow3R pointmap head, DUSt3R/MASt3R/VGGT pointmap heads, Metric3Dv2 depth head. Training cost: hours to 1–2 days on 1–8 GPUs.
 4. **Geometric refinement (optional)** — feed-forward output fed into classical BA / factor graph. See [[feed-forward-structure-from-motion]] Tier 2 for the hybrid pattern.
 
@@ -39,6 +39,7 @@ Stage-by-stage, for a generic geometry task ("given images, extract features use
 - 2023 · backbone: hand-crafted / task-trained → DINOv2 · driver: [[oquab2023_dinov2]]. Gain: first self-supervised ViT that beat task-specific descriptors on multiple downstream geometry heads without fine-tuning.
 - 2025 · backbone: DINOv2 → DINOv3 · driver: [[simeoni2025_dinov3]]. Gram anchoring for dense patch consistency.
 - 2025 · multi-task frontend: single-teacher DINOv2 → RADIOv2.5 distillation of DINOv2 + CLIP + SigLIP + SAM · driver: [[heinrich2025_radiov25]]. Used where geometry + semantics share a frontend.
+- 2026-04-22 · op:default · multi-task frontend filler-swap: RADIOv2.5 → [[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] (SigLIP2 + DINOv3 + SAM3 teacher set, commercial license, Probe3D NAVI/SPair best-in-family at +2.5 / +4.3 over RADIOv2.5-H) · driver: [[ranzinger2026_c-radiov4]]. RADIOv2.5 remains fallback for direct comparability with published baselines.
 - 2025 · dense-matching head: LoFTR / SuperGlue → RoMa v2 on DINOv3 · driver: [[edstedt2025_roma-v2]].
 - 2026 · repurposing the frozen backbone as training-dynamics source: TTT3R uses DINO attention alignment as a closed-form learning rate · driver: [[chen2026_ttt3r]]. This is a *new stage* in the taxonomy — the frozen features are not just inputs.
 
@@ -134,4 +135,5 @@ Between ~2023 and 2026, **frozen self-supervised ViT features** ([[dinov2|DINOv2
 
 ## Outstanding hypotheses
 - *(Provisional)* The next major gain comes from **joint self-supervised pretraining across 2D images and 3D geometry** (video-aware DINO, 4D pretraining) rather than scaling DINOv3 further. Watch for evidence in 2026.
+- *(Pass B 2026-04-22)* [[shift-equivariant-distillation-loss_ranzinger2026]] identifies a named failure mode — fixed-pattern positional noise inherited from teacher register tokens and ViTDet window borders. Published matching heads (RoMa v2, MASt3R, DUSt3R descriptor head) train on frozen DINO/CroCo features; none reports whether these artifacts degrade matching on repeated-texture or low-texture surfaces. Hypothesis: applying shift-equivariance at matching-head training time (random patch-aligned shifts of the query and target independently) would reduce false-positive matches on register-token grid patterns without changing the backbone. Low-cost test. Flagged as future bet candidate.
 

@@ -28,10 +28,21 @@ contradicts: []
 
 tags: [foundation-model, agglomerative-distillation, multi-resolution, unified-backbone]
 created: 2026-04-18
-updated: 2026-04-18
+updated: 2026-04-22
 status: unclaimed
 validated_in: []
 ---
+
+> **Refined by**: [[cradiov4-agglomerative-distillation_ranzinger2026]] (2026-01-27).
+> C-RADIOv4 upgrades the teacher set (SigLIP2/DINOv3/SAM3), adds stochastic
+> resolutions, shift-equivariant distillation loss + MESA, angle-normalized
+> summary loss, ViTDet deployment mode, and releases under the NVIDIA Open
+> Model License (commercial use permitted — resolves this idea's
+> `commercial-license-blocked-NSCL` assumption). For new adoption, prefer
+> C-RADIOv4 unless you specifically need RADIOv2.5's weights. The RADIOv2.5
+> mechanism below remains the canonical reference for the core
+> agglomerative-distillation pattern.
+
 
 ## Mechanism
 

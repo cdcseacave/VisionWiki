@@ -3,8 +3,8 @@ title: Lifting Foundation Models to 3D
 type: thread
 tags: [3dgs, sam, clip, dino, segmentation, open-vocabulary, scene-editing]
 created: 2026-04-15
-updated: 2026-04-18
-sources: [wiki/papers/ye2024_gaussian-grouping.md, wiki/papers/qin2024_langsplat.md, wiki/papers/jiao2025_clip-gs.md, wiki/papers/bao2025_seg-wild.md, wiki/papers/kim2026_gauss-explorer.md, wiki/papers/chen2025_sam-3d.md, wiki/papers/carion2026_sam-3.md, wiki/papers/jatavallabhula2023_conceptfusion.md, wiki/papers/wu2026_langsvr.md, wiki/designs/language-grounded-3dgs-2026.md]
+updated: 2026-04-22
+sources: [wiki/papers/ye2024_gaussian-grouping.md, wiki/papers/qin2024_langsplat.md, wiki/papers/jiao2025_clip-gs.md, wiki/papers/bao2025_seg-wild.md, wiki/papers/kim2026_gauss-explorer.md, wiki/papers/chen2025_sam-3d.md, wiki/papers/carion2026_sam-3.md, wiki/papers/jatavallabhula2023_conceptfusion.md, wiki/papers/wu2026_langsvr.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/ranzinger2026_c-radiov4.md, wiki/designs/language-grounded-3dgs-2026.md]
 operating_points: [op:per-scene-3dgs, op:zero-shot-3dgs, op:voxel-online]
 status: draft
 ---
@@ -125,11 +125,13 @@ required_capabilities: [open-vocab-query, instance-segmentation, scene-editing, 
 - 2025 · op:zero-shot-3dgs · new OP: contrastive scene-level alignment (3DGS ↔ CLIP). Driver: [[jiao2025_clip-gs]].
 - 2026 · op:voxel-online · one-stage sparse-voxel unified (language + geometry). Driver: [[wu2026_langsvr]].
 - 2026-04-18 · thread-split · Pipelines VI–VIII removed to sibling threads [[vlm-reasoning-over-3d-scenes]], [[generative-3d-from-2d-priors]], [[llm-native-structured-scenes]].
+- 2026-04-22 · op:per-scene-3dgs, op:voxel-online · candidate feature-source bump: [[radiov25-agglomerative-distillation_heinrich2025|RADIOv2.5]] → [[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] · driver: [[ranzinger2026_c-radiov4]] · rationale: commercial license (NVIDIA Open Model License) unblocks production use of RADIO-based lifting; 2026 teacher set (SigLIP2/DINOv3/SAM3); cleaner feature boundaries plausibly improve per-primitive lifting. Not yet a SOTA swap — remains a candidate pending LangSplat-style ablation on LERF / ScanNet++.
 
 ## Candidate components / not yet integrated
 
 - **SAM 3 masks with native instance IDs** ([[carion2026_sam-3]]) as Gaussian Grouping's supervision — kills the cross-view association module; mechanism is "drop in SAM 3, delete association loop." Target OP: `op:per-scene-3dgs`. Highest-priority bet in the thread.
-- **RADIOv2.5 as the per-Gaussian feature source** ([[heinrich2025_radiov25]]) instead of raw CLIP — one backbone distillation replaces CLIP + DINO + SAM leg-by-leg. Target OP: `op:per-scene-3dgs`, `op:voxel-online`.
+- **[[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] as the per-Gaussian feature source** (preferred as of 2026-04-22; supersedes the prior RADIOv2.5 candidate which remains listed as fallback under NSCL research-only license). Paper: [[ranzinger2026_c-radiov4]]. One backbone distillation replaces CLIP + DINO + SAM leg-by-leg, under the NVIDIA Open Model License (commercial use permitted). Cleaner per-image feature boundaries (Fig 1 of the paper) plausibly translate to cleaner per-Gaussian lifts. Target OP: `op:per-scene-3dgs`, `op:voxel-online`.
+- **[[radiov25-agglomerative-distillation_heinrich2025|RADIOv2.5]] as a fallback feature source** (research-only NSCL) — kept in candidates for direct comparability with published RADIOv2.5-based baselines.
 - **DINOv3 spatial coherence** for the LangSplat autoencoder's regularization slot (LangSplat explicitly dropped DINO; re-adding DINOv3 might revert that choice). Target OP: `op:per-scene-3dgs`.
 - **TTT3R-style per-token update** applied to LangSplat's autoencoder training — per-embedding learning rate from render-confidence. Target OP: `op:per-scene-3dgs`.
 - **Pipeline IX proposal — feature-augmented 3DGS with 2026-stack lifting** ([[language-grounded-3dgs-2026]]) — full pipeline composing SAM 3 native track-IDs + RADIOv2.5 unified features + DINOv3 depth/normal priors + LangSplat-style per-scene autoencoder into a one-stage 3DGS training recipe, plus two contributions no single paper provides: (a) a densification/pruning invariant rule set (NULL_ID sentinel, entropy-gated splits, boundary-Gaussian protection, no-reset on opacity-reset); (b) a precomputed interaction layer (VQ codebook + CSR identity hash + per-instance mean latents + FAISS IVF-PQ fallback) targeting click < 5 ms and text < 100 ms at 1 M Gaussians. **Kept in candidates** — not promoted to SOTA — until Build-Sequence verification passes (see design §Verification Plan). Target OP: `op:per-scene-3dgs`. Nerfstudio / visiofacto implementation plan: [[language-grounded-3dgs-nerfstudio]].
@@ -162,21 +164,22 @@ validating_experiment: Replace Gaussian Grouping's mask supervision with SAM 3 o
 triggers: [ingest-of-idea:sam3-id-stability-analysis]
 created: 2026-04-15 · updated: 2026-04-18
 
-### Bet #014 — LangSplat with RADIOv2.5 features + CoMe per-Gaussian weighting
+### Bet #014 — LangSplat with C-RADIOv4 features + CoMe per-Gaussian weighting
 status: proposed
-combines: [[qin2024_langsplat]], [[heinrich2025_radiov25]], [[radl2026_confidence-mesh-3dgs]]
+combines: [[qin2024_langsplat]], [[cradiov4-agglomerative-distillation_ranzinger2026]], [[radl2026_confidence-mesh-3dgs]]
 stage_target: lifting-foundation-models.feature-source
 op_target: op:per-scene-3dgs
 confidence: med
 magnitude: substantial
 cost: weeks
 breakage_risk: med
-hypothesis: Replace CLIP as LangSplat's feature source with RADIOv2.5 (unified backbone, already subsumes CLIP+DINO+SAM) and weight per-Gaussian feature updates by CoMe's self-supervised confidence. Unified feature encoder + unified uncertainty.
+hypothesis: Replace CLIP as LangSplat's feature source with [[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] (unified backbone, subsumes SigLIP2+DINOv3+SAM3) and weight per-Gaussian feature updates by CoMe's self-supervised confidence. Unified feature encoder + unified uncertainty, under a commercial license.
 expected_gain: 3D-OVS mIoU gain over LangSplat baseline; cleaner boundaries from CoMe confidence masking out low-confidence Gaussians.
-risk: RADIOv2.5's feature dimension differs from CLIP; autoencoder must be re-tuned. CoMe confidence was designed for geometry, may not map well to semantic features.
-validating_experiment: LangSplat with {CLIP, RADIOv2.5, RADIOv2.5+CoMe-weighting} on LERF 3D-OVS + ScanNet++.
+risk: C-RADIOv4's feature dimension differs from CLIP; autoencoder must be re-tuned. CoMe confidence was designed for geometry, may not map well to semantic features.
+validating_experiment: LangSplat with {CLIP, C-RADIOv4, C-RADIOv4+CoMe-weighting} on LERF 3D-OVS + ScanNet++.
 triggers: [ingest-of-idea:confidence-weighted-semantic-feature-lifting]
-created: 2026-04-15 · updated: 2026-04-18
+**Backbone bump 2026-04-22**: was RADIOv2.5 (NSCL, non-commercial). Upgraded to C-RADIOv4 for commercial licensability + better feature quality. Published RADIOv2.5-LangSplat ablations remain the direct comparison baseline.
+created: 2026-04-15 · updated: 2026-04-22
 
 ### Bet #015 — LangSVR with SAM 3 masks + DINOv3 geometry prior
 status: proposed
@@ -194,38 +197,55 @@ validating_experiment: Component-swap ablation {LangSVR, +SAM3, +DINOv3, +both} 
 triggers: [ingest-of-idea:multi-teacher-voxel-distillation]
 created: 2026-04-15 · updated: 2026-04-18
 
-### Bet #016 — ConceptFusion + RADIOv2.5 + VPGS-SLAM progressive submaps
+### Bet #016 — ConceptFusion + C-RADIOv4 + VPGS-SLAM progressive submaps
 status: proposed
-combines: [[jatavallabhula2023_conceptfusion]], [[heinrich2025_radiov25]], [[deng2026_vpgs-slam]]
+combines: [[jatavallabhula2023_conceptfusion]], [[cradiov4-agglomerative-distillation_ranzinger2026]], [[deng2026_vpgs-slam]]
 stage_target: lifting-foundation-models.online-fusion
 op_target: op:voxel-online
 confidence: low
 magnitude: paradigm
 cost: months
 breakage_risk: high
-hypothesis: ConceptFusion is RGB-D → voxel-TSDF + multimodal features (2023); VPGS-SLAM gives progressive submaps + loop closure (2026); RADIOv2.5 gives unified per-frame features (2025). Composing the three yields an online, multimodal, city-scale lifted 3D representation — no paper does this.
+hypothesis: ConceptFusion is RGB-D → voxel-TSDF + multimodal features (2023); VPGS-SLAM gives progressive submaps + loop closure (2026); C-RADIOv4 gives unified per-frame features under commercial license (2026), with ViTDet mode available for online latency. Composing the three yields an online, multimodal, city-scale lifted 3D representation — no paper does this.
 expected_gain: First demonstration of km²-scale online lifted 3D; qualitative validation on extended indoor+outdoor sequences.
-risk: Loop-closure re-voxelization invalidates accumulated features; no paper handles this. RADIOv2.5 inference cost may dominate the online budget.
-validating_experiment: Build the three-component pipeline; evaluate on extended ScanNet++ sequences + a custom outdoor walk.
+risk: Loop-closure re-voxelization invalidates accumulated features; no paper handles this. Even with ViTDet mode, C-RADIOv4 inference cost may dominate the online budget — measure before committing.
+validating_experiment: Build the three-component pipeline; evaluate on extended ScanNet++ sequences + a custom outdoor walk. Benchmark C-RADIOv4-SO400M-VDT12 (smallest + fastest) as the per-frame feature source.
 triggers: [ingest-of-idea:feature-preserving-loop-closure]
-created: 2026-04-15 · updated: 2026-04-18
+**Backbone bump 2026-04-22**: was RADIOv2.5. Upgraded to C-RADIOv4 for commercial licensability and ViTDet deployment mode (critical for online robotics budget).
+created: 2026-04-15 · updated: 2026-04-22
 
 ### Bet #020 — Feature-augmented 3DGS with the 2026-stack (Pipeline IX)
 status: in-design
-combines: [[carion2026_sam-3]], [[heinrich2025_radiov25]], [[simeoni2025_dinov3]], [[qin2024_langsplat]], [[ye2024_gaussian-grouping]]
+combines: [[carion2026_sam-3]], [[cradiov4-agglomerative-distillation_ranzinger2026]], [[simeoni2025_dinov3]], [[qin2024_langsplat]], [[ye2024_gaussian-grouping]]
 stage_target: lifting-foundation-models.per-primitive-feature-lifting
 op_target: op:per-scene-3dgs
 confidence: med
 magnitude: substantial
 cost: months
 breakage_risk: med
-hypothesis: Re-compose the 2024-era lifting baselines (LangSplat, Gaussian Grouping, Trident composition) on the 2026 foundation stack (SAM 3 native IDs, RADIOv2.5 unified features, DINOv3 geometric priors), plus two gaps no prior paper covers: (a) densification/pruning invariants (NULL_ID sentinel, entropy-gated splits, boundary-Gaussian protection, no-reset on opacity-reset); (b) precomputed interaction layer (VQ codebook + CSR identity hash + per-instance mean latents + FAISS IVF-PQ fallback) targeting click <5 ms, text <100 ms at 1 M Gaussians.
+hypothesis: Re-compose the 2024-era lifting baselines (LangSplat, Gaussian Grouping, Trident composition) on the 2026 foundation stack (SAM 3 native IDs, [[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] unified features, DINOv3 geometric priors), plus two gaps no prior paper covers: (a) densification/pruning invariants (NULL_ID sentinel, entropy-gated splits, boundary-Gaussian protection, no-reset on opacity-reset); (b) precomputed interaction layer (VQ codebook + CSR identity hash + per-instance mean latents + FAISS IVF-PQ fallback) targeting click <5 ms, text <100 ms at 1 M Gaussians.
 expected_gain: LangSplat-quality OVS + Gaussian-Grouping-quality identity + interaction latency at deployment-ready scale. No single paper delivers all three simultaneously.
 risk: Densification invariants are the load-bearing uncertainty — if features don't survive split/clone/prune coherently, the whole pipeline fails silently. Interaction-layer latency claims need real benchmarks.
 validating_experiment: Build-sequence verification per [[language-grounded-3dgs-2026]] §Verification Plan. Phased implementation in [[language-grounded-3dgs-nerfstudio]].
 triggers: [design-outcome:language-grounded-3dgs-2026]
 design: wiki/designs/language-grounded-3dgs-2026.md
 created: 2026-04-15 · updated: 2026-04-18
+
+### Bet #022 — Shift-equivariant distillation for LangSplat's per-scene autoencoder
+status: proposed
+combines: [[qin2024_langsplat]], [[shift-equivariant-distillation-loss_ranzinger2026]]
+stage_target: lifting-foundation-models.feature-source
+op_target: op:per-scene-3dgs
+confidence: low
+magnitude: incremental
+cost: days
+breakage_risk: low
+hypothesis: LangSplat's per-scene autoencoder distills CLIP features into a per-Gaussian latent space. CLIP's output features carry positional artifacts (register-token bleed, ViTDet-border patterns inherited from SAM-mask prefix conditioning) — the same class of fixed-pattern noise that C-RADIOv4's shift-equivariant loss was designed to kill. Applying the mechanism to the LangSplat autoencoder — random patch-aligned crop-shifts between the training view and the CLIP teacher's input, loss computed on shared positions — should sharpen per-Gaussian language features at scene-geometry boundaries where CLIP's positional noise is most visible.
+expected_gain: Qualitative: cleaner per-Gaussian language features on object boundaries (matching the Fig 1 improvement C-RADIOv4 shows at the image level). Quantitative: 0.5–2% 3D-OVS mIoU on LERF fine-structure queries; uncertain magnitude.
+risk: The dominant failure mode of LangSplat's autoencoder is probably *compression bottleneck* (losing CLIP signal in the autoencoder latent), not positional noise. If so, shift-equivariance doesn't help — it removes a failure mode that isn't load-bearing. Worth running precisely *because* it's cheap to test: days, not weeks. Low-risk, low-confidence, high-learning-per-dollar.
+validating_experiment: LangSplat with {standard per-scene autoencoder, shift-equivariant per-scene autoencoder} on LERF 3D-OVS. Qualitative inspection of per-Gaussian feature PCA at object boundaries.
+triggers: [ingest-of-idea:positional-noise-in-clip-features, benchmark:langsplat-boundary-fidelity]
+created: 2026-04-22 · updated: 2026-04-22
 
 ### Other open questions (not yet bets)
 
@@ -237,6 +257,7 @@ created: 2026-04-15 · updated: 2026-04-18
 
 - **Per-primitive feature compression at scene scale** (memory-efficient lifting) — per-Gaussian features explode at city scale. Would unlock: all OPs at larger scales. Search target: codebook-VQ applied to feature channels, quantization, or hashing schemes on lifted features.
 - **Densification / pruning invariants for lifted features** — current 3DGS methods handle this ad hoc; features split/merge incorrectly. Would unlock: robust training dynamics for feature-augmented 3DGS. Search target: densification rules that preserve per-primitive identity and language channels.
+- **Positional-noise hygiene in lifted features** — [[shift-equivariant-distillation-loss_ranzinger2026]] shows ViT teachers inject fixed-pattern noise that students mimic; lifted 3DGS features inherit whatever noise is in the 2D feature source. No paper measures how much of per-Gaussian feature degradation is from positional noise vs. other causes. Would unlock Bet #022 and any future "clean-lift" methods. Search target: papers analyzing PCA / spectrum of per-Gaussian features vs. per-image features at object boundaries.
 - **Harmonized 3D-OVS benchmark** — cross-paper comparison is noisy. Meta-gap, not a paper target.
 
 ## Contradictions & tensions

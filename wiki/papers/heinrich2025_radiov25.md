@@ -96,5 +96,7 @@ NVIDIA Source Code License (NSCL) — non-commercial research use only. The C-RA
 
 
 ## In the wiki
+- Task-by-task recipes for using RADIOv2.5 outputs for segmentation (SAM-style class-agnostic masks, open-vocab semantic seg) and depth heads: [[radio-dense-prediction]].
 - Part of the [[foundation-model]] family (agglomerative distillation).
 - Referenced by [[open-vocab-2d-composition]] as a distillation alternative to Trident-style composition.
+- Superseded by [[ranzinger2026_c-radiov4|C-RADIOv4]] for new work (commercial license + better dense performance + any-resolution support).

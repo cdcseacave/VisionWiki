@@ -3,8 +3,8 @@ title: Open-Vocabulary 2D Composition (CLIP + DINO + SAM)
 type: thread
 tags: [open-vocabulary, segmentation, foundation-model, training-free, composition]
 created: 2026-04-15
-updated: 2026-04-18
-sources: [wiki/papers/shi2024_open-vocab-segmentation.md, wiki/papers/carion2026_sam-3.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/radford2021_clip.md, wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/kirillov2023_sam.md, wiki/papers/shi2026_self-distilled-roi.md]
+updated: 2026-04-22
+sources: [wiki/papers/shi2024_open-vocab-segmentation.md, wiki/papers/carion2026_sam-3.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/ranzinger2026_c-radiov4.md, wiki/papers/radford2021_clip.md, wiki/papers/oquab2023_dinov2.md, wiki/papers/simeoni2025_dinov3.md, wiki/papers/kirillov2023_sam.md, wiki/papers/shi2026_self-distilled-roi.md]
 operating_points: [op:modular-training-free, op:unified-promptable, op:distilled-single-pass]
 status: draft
 ---
@@ -37,7 +37,9 @@ required_capabilities: [semantic-alignment, spatial-coherence, mask-boundary-pre
 
 ### op:distilled-single-pass (current default when inference budget is tightest)
 
-1. **Single RADIOv2.5 forward pass** — outputs subsume DFN-CLIP + SigLIP + DINOv2 + SAM teacher capabilities. Paper: [[heinrich2025_radiov25]]. Task head on the unified features. Trade: capability frozen at distillation time.
+1. **Single [[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] forward pass** — unified student distilled from SigLIP2 + DINOv3 + SAM3. Paper: [[ranzinger2026_c-radiov4]]. Task head on the unified features. **Commercial license** (NVIDIA Open Model License — first RADIO production-usable). Matches DINOv3-7B on ADE20k dense prediction at ~10× fewer parameters. Ships with optional ViTDet mode for high-res latency. Trade: capability frozen at distillation time.
+
+   Prior filler: [[radiov25-agglomerative-distillation_heinrich2025|RADIOv2.5]] (2025) — ~~superseded by C-RADIOv4 2026-04-22~~. Keep for reference; still the canonical citation for the core agglomerative-distillation mechanism. License (NSCL non-commercial) was the binding blocker for production use.
 
 ## Pipeline lineage
 
@@ -49,12 +51,14 @@ required_capabilities: [semantic-alignment, spatial-coherence, mask-boundary-pre
 - 2025 · op:distilled-single-pass · new OP: three-ViT inference → single distilled backbone · driver: [[heinrich2025_radiov25]].
 - 2026 · op:unified-promptable · new OP: CLIP + SAM separate → SAM 3 single model · driver: [[carion2026_sam-3]].
 - 2026 · op:modular-training-free · zero-label RoI selection: external proposer → MLLM self-distilled attention · driver: [[shi2026_self-distilled-roi]] (adjacent pattern; not yet in the main pipelines).
+- 2026-04-22 · op:distilled-single-pass · filler-swap: [[radiov25-agglomerative-distillation_heinrich2025|RADIOv2.5]] → [[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] · driver: [[ranzinger2026_c-radiov4]] · gain: commercial license unblock + matches DINOv3-7B on ADE20k dense prediction at 10× fewer params + any-resolution support + ViTDet deployment mode · rationale: same multi-stage-collapse, 2026 teacher set (SigLIP2/DINOv3/SAM3), four training-side refinements (stochastic resolutions, shift-equivariant loss + MESA, angle-normalized summary loss).
 
 ## Candidate components / not yet integrated
 
-- **SigLIP** (Zhai 2023, no wiki page yet) — pairwise sigmoid contrastive. Drop-in candidate for CLIP in Pipeline A's semantic-alignment stage. Expected gain: ~2–4% open-vocab mIoU at equal compute, larger effective batch. Blocked on: no stub; no direct Pipeline-A ablation comparing CLIP vs SigLIP in the Trident composition.
-- **SAM 2** (Ravi 2024, no wiki page) — video SAM. Candidate for Pipeline A's mask stage when video is needed, before committing to full SAM 3. Blocked on: stub.
-- **MLLM self-attention as spatial signal** (SD-RPN pattern, [[shi2026_self-distilled-roi]]) — could replace DINO in the spatial-coherence stage of Pipeline A. Blocked on: MLLM dependency; per-backbone threshold tuning.
+- **[[siglip2|SigLIP 2]]** (Alabdulmohsin 2025, stub) — the successor to SigLIP, already in the C-RADIOv4 teacher set. Drop-in candidate for CLIP in op:modular-training-free's semantic-alignment stage. Expected gain: ~2–4% open-vocab mIoU at equal compute. Blocked on: no direct Trident ablation comparing DFN-CLIP vs SigLIP2 in the inference-time composition.
+- **SAM 2** (Ravi 2024, no wiki page) — video SAM. Candidate for op:modular-training-free's mask stage when video is needed, before committing to full SAM 3. Blocked on: stub.
+- **MLLM self-attention as spatial signal** (SD-RPN pattern, [[shi2026_self-distilled-roi]]) — could replace DINO in the spatial-coherence stage of op:modular-training-free. Blocked on: MLLM dependency; per-backbone threshold tuning.
+- **[[cradiov4-agglomerative-distillation_ranzinger2026|C-RADIOv4]] as SAM3 vision-encoder drop-in** (op:unified-promptable variant) — [github.com/mranzinger/sam3-radio](https://github.com/mranzinger/sam3-radio) ships a fork where SAM3's ViT-L+ encoder is replaced by C-RADIOv4, decoder unchanged. Paper: [[ranzinger2026_c-radiov4]] Table 5 + Figures 6–8. Latency win via ViTDet mode (Figures 5, 9); qualitative matches SAM3 on text/box prompts; *fixes* SAM3's known `"person"` prompt bug (issue #253). Not promoted to SOTA because the 10-point cgF1 gap to SAM3 on SA-Co/Gold is still too large on domain-specific queries (`fg_sports_equipment`, `wiki_common`). OP considered: op:unified-promptable. Why it loses as SOTA: domain-specific gap. Condition that would flip it: a variant that closes the domain gap — either by fine-tuning C-RADIOv4's SAM3-adaptor on SA-Co, or by targeted auxiliary distillation from SAM3's late-layer domain-specific signal.
 
 ## Open questions & synthesis bets
 
@@ -75,20 +79,37 @@ triggers: [ingest-of-idea:siglip-wiki-page, benchmark:video-trident]
 created: 2026-04-15 · updated: 2026-04-18
 
 ### Bet #018 — Distill SAM 3 + DINOv3 into a RADIO-style student
-status: proposed
-combines: [[heinrich2025_radiov25]], [[carion2026_sam-3]], [[simeoni2025_dinov3]]
+status: **partially-realized** (teacher set matched by [[ranzinger2026_c-radiov4|C-RADIOv4]] 2026-01-27; prompt-conditioning sub-bet still open)
+combines: [[heinrich2025_radiov25]], [[carion2026_sam-3]], [[simeoni2025_dinov3]], [[ranzinger2026_c-radiov4]]
 stage_target: open-vocab-2d.unified-backbone
 op_target: op:distilled-single-pass
 confidence: med
 magnitude: substantial
 cost: months
 breakage_risk: med
-hypothesis: RADIO distillation recipe applied to SAM 3 + DINOv3 (instead of RADIOv2.5's original teacher set) gives Pipeline B's promptable-concept capabilities at Pipeline C's single-pass inference cost.
-expected_gain: Pipeline B capabilities (video, instance IDs, text prompts) in a single ViT forward pass; ~3× inference speedup over running SAM 3 + DINOv3 separately.
+hypothesis: RADIO distillation recipe applied to SAM 3 + DINOv3 (instead of RADIOv2.5's original teacher set) gives op:unified-promptable's promptable-concept capabilities at op:distilled-single-pass's single-pass inference cost.
+expected_gain: op:unified-promptable capabilities (video, instance IDs, text prompts) in a single ViT forward pass; ~3× inference speedup over running SAM 3 + DINOv3 separately.
 risk: SAM 3's prompt-conditioning head doesn't distill into a classifier-free student trivially. RADIO recipe may not generalize to prompt-based teachers.
-validating_experiment: Train RADIO-style agglomerative student on SAM 3 + DINOv3; compare vs. Pipeline B (SAM 3 alone) on segmentation + vs. Pipeline C (RADIOv2.5) on spatial benchmarks.
-triggers: [ingest-of-idea:prompt-conditional-distillation]
-created: 2026-04-15 · updated: 2026-04-18
+validating_experiment: Train RADIO-style agglomerative student on SAM 3 + DINOv3; compare vs. op:unified-promptable (SAM 3 alone) on segmentation + vs. op:distilled-single-pass (RADIOv2.5) on spatial benchmarks.
+**Partial outcome (2026-04-22)**: C-RADIOv4 realizes the teacher-set component of this bet (SigLIP2 + DINOv3-7B + SAM3), and the SAM3-encoder-replacement fork demonstrates usable instance-mask outputs by routing through SAM3's *frozen* decoder. But **the student itself does not carry over prompt conditioning** — text/box prompt handling still requires SAM3's original decoder. The "single ViT forward pass for promptable concepts" hypothesis is **not** validated by C-RADIOv4 alone. Residual sub-bet (still open): design a student that ingests prompts directly — e.g. an auxiliary prompt-encoder head distilled from SAM3's prompt-conditioning pathway — so the decoder becomes optional.
+triggers: [ingest-of-idea:prompt-conditional-distillation, design-closure:sam3-radio-fork]
+created: 2026-04-15 · updated: 2026-04-22
+
+### Bet #021 — Trident composition over C-RADIOv4 three-adaptor outputs (single-backbone modular)
+status: proposed
+combines: [[cradiov4-agglomerative-distillation_ranzinger2026]], [[shi2024_open-vocab-segmentation]]
+stage_target: open-vocab-2d.composition
+op_target: op:distilled-single-pass
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: Apply Trident's "Feature Splicing → Spatial Correlation → Global Aggregation" recipe *not* over three separate backbones but over C-RADIOv4's three adaptor outputs (SigLIP2 adaptor for semantics, DINOv3 adaptor for spatial affinity, SAM3 adaptor for masks). One forward pass delivers all three signals; Trident's explicit composition exploits them more rigorously than a generic task head. Best-of-both-worlds: op:distilled-single-pass inference cost + op:modular-training-free composition quality. No paper does this — C-RADIOv4 is the first RADIO where all three teacher adaptors are simultaneously high-quality and commercially-usable.
+expected_gain: ≥ op:modular-training-free Trident quality at ~1/3 the inference cost; within 1–2 mIoU of three-backbone Trident on ADE20K open-vocab.
+risk: C-RADIOv4's adaptor outputs may be *too similar* to each other (the student is one ViT; the three adaptors are post-hoc projections) — insufficient orthogonality for Trident's composition to recover a win. If this fails, the mechanism tells us something: distilled unified backbones sacrifice teacher-orthogonality in a way no paper has measured.
+validating_experiment: Re-run Trident's ADE20K open-vocab pipeline with {three separate backbones, three C-RADIOv4 adaptor outputs} as inputs; ablate by swapping one leg at a time.
+triggers: [ingest-of-idea:adaptor-output-orthogonality-analysis, benchmark:trident-ade20k-with-cradiov4]
+created: 2026-04-22 · updated: 2026-04-22
 
 ### Bet #019 — SD-RPN attention-denoising on DINOv3 as spatial stage
 status: proposed
@@ -108,8 +129,10 @@ created: 2026-04-15 · updated: 2026-04-18
 
 ## Capability gaps
 
-- **Compositional-prompt reasoning** ("red chair *without* armrests") — CLIP is weak; SAM 3 exemplars partly help but don't generalize. Would unlock: compositional-query benchmarks. Search target: VLM + SAM 3 hybrids with explicit logical reasoning.
-- **Fine-structure segmentation at sub-patch scale** — all three backbones operate at 14–16 px patches. Would unlock: thin-object benchmarks. Search target: dual-resolution or cascaded-ViT approaches.
+- **Compositional-prompt reasoning** ("red chair *without* armrests") — CLIP is weak; SAM 3 exemplars partly help but don't generalize. Would unlock Bet #018-residual (prompt-conditioned distilled student). Search target: VLM + SAM 3 hybrids with explicit logical reasoning.
+- **Fine-structure segmentation at sub-patch scale** — all three backbones operate at 14–16 px patches. C-RADIOv4's any-resolution support partly compensates (run at 1152px → effective 72 px/patch in image space) but doesn't fundamentally solve it. Would unlock: thin-object benchmarks. Search target: dual-resolution or cascaded-ViT approaches.
+- **Domain-specific vision signal preserved in distilled students** — C-RADIOv4 replaces SAM3's encoder with a 10-point cgF1 drop on `fg_sports_equipment`/`wiki_common`. Distillation is discarding signal that SAM3's original encoder carried. Would unlock: SOTA promotion of RADIO-as-SAM3-encoder on op:unified-promptable. Search target: papers analyzing what domain-specific signal is lost during multi-teacher distillation, or methods for domain-targeted adaptor fine-tuning post-distillation.
+- **Prompt conditioning as a distillation target** — no paper has shown how to distill SAM3's prompt-conditioning pathway into a classifier-free student. Would unlock: Bet #018-residual and a true single-backbone op:unified-promptable filler. Search target: 2026+ work on prompt-conditional multi-teacher distillation.
 - **Harmonized open-vocab benchmark** — cross-paper numbers are apples-to-oranges. Not a paper-search target; a meta-benchmark gap the thread must track.
 
 ## Contradictions & tensions
