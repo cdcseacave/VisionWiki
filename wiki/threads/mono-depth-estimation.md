@@ -3,8 +3,8 @@ title: Monocular Depth Estimation
 type: thread
 tags: [depth-estimation, monocular, metric-depth, relative-depth, foundation-model]
 created: 2026-04-12
-updated: 2026-04-21
-sources: [papers/pataki2025_mp-sfm.md, papers/zhong2026_instantsfm.md, papers/li2025_megasam.md, papers/tang2025_dronesplat.md, papers/kim2025_multiview-geometric-gs.md, papers/chebbi2025_multiview-dense-matching.md, papers/yu2025_madpose.md, papers/wang2025_moge.md]
+updated: 2026-04-24
+sources: [papers/pataki2025_mp-sfm.md, papers/zhong2026_instantsfm.md, papers/li2025_megasam.md, papers/tang2025_dronesplat.md, papers/kim2025_multiview-geometric-gs.md, papers/chebbi2025_multiview-dense-matching.md, papers/yu2025_madpose.md, papers/wang2025_moge.md, papers/meng2026_seen2scene.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -115,9 +115,35 @@ bets filed directly in this thread — mono-depth is consumed by others, and
 bets live where the consumption happens. No refuted or shelved bets this
 pass.
 
+## Pass B note (2026-04-24 ingest of [[meng2026_seen2scene|Seen2Scene]])
+
+A new consumer surfaced: **mono-depth → fused partial TSDF → generative
+scene completion**. Prior consumers of mono-depth fed it into BA, 3DGS
+regularization, MVS cost-volume fusion, or two-view pose; none routed
+through a *visibility-aware partial 3D scan intermediate*. Seen2Scene's
+visibility-guided masked flow matching makes such an intermediate
+principled — a fused partial TSDF (with explicit unobserved regions
+recoverable from the synthetic camera's frustums) becomes input to a
+generative completion that respects observed surfaces and synthesizes the
+rest. This is qualitatively different from "use mono-depth as a prior" —
+mono-depth here becomes the *only* sensor input, with the generative prior
+providing the scene-knowledge that multi-view geometry would otherwise
+provide.
+
+Bet filed at the consumer thread: [[3d-scene-completion]] Bet #002 — turns
+any RGB image into a complete 3D scene via mono-depth fusion + Seen2Scene
+completion. The mono-depth-to-TSDF fusion sub-step (and the inevitable
+mono-depth scale + alignment errors propagating into the partial TSDF) is
+the load-bearing risk; this thread surfaces it as an open question for
+mono-depth research even though the bet itself lives downstream.
+
+No bets filed directly here (consumption-thread rule preserved). No
+refuted or shelved bets this pass.
+
 ## Related threads
 - [[feed-forward-structure-from-motion]] — mono depth as prior for SfM
 - [[relative-pose-estimation]] — mono depth as prior for two-view pose (new 2026-04-21)
 - [[radiance-field-evolution]] — mono depth for sparse-view 3DGS
 - [[gaussian-to-mesh-pipelines]] — depth supervision improves mesh quality
+- [[3d-scene-completion]] — mono depth as input for visibility-aware generative scene completion (new 2026-04-24)
 

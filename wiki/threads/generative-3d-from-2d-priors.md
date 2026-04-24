@@ -3,8 +3,8 @@ title: Generative 3D from 2D Priors
 type: thread
 tags: [generative-3d, single-image, flow-matching, sam-3d, latent-diffusion, video-world, explorable-3d, lyra-2]
 created: 2026-04-18
-updated: 2026-04-21
-sources: [wiki/papers/chen2025_sam-3d.md, wiki/papers/wang2026_feed-forward-3d-scene-modeling.md, wiki/papers/shen2026_lyra2.md, wiki/papers/bahmani2025_lyra.md]
+updated: 2026-04-24
+sources: [wiki/papers/chen2025_sam-3d.md, wiki/papers/wang2026_feed-forward-3d-scene-modeling.md, wiki/papers/shen2026_lyra2.md, wiki/papers/bahmani2025_lyra.md, wiki/papers/meng2026_seen2scene.md]
 operating_points: [op:default, op:explorable-scene]
 status: draft
 ---
@@ -143,11 +143,27 @@ validating_experiment: Hybrid pipeline injection of warped canonical coords (fro
 triggers: [ingest-of-paper:sam-3d-architecture-details-needed-for-injection-point]
 created: 2026-04-21 · updated: 2026-04-21
 
+### Bet #027 — Lyra-2.0 video-world geometry → Seen2Scene completion (cross-thread to 3d-scene-completion)
+status: proposed
+combines: [[per-frame-3d-cache-retrieval_shen2026]], [[downsampled-gaussian-dpt-head_shen2026]], [[controlnet-frozen-flow-self-supervised-completion_meng2026]], [[visibility-guided-masked-flow-matching_meng2026]]
+stage_target: scene-completion.condition-injection (cross-thread)
+op_target: op:explorable-scene (cross-thread to 3d-scene-completion:op:default)
+confidence: low
+magnitude: paradigm
+cost: months
+breakage_risk: high
+hypothesis: Lyra 2.0 generates an explorable 3DGS world from a single image, but the resulting geometry only covers regions the generated camera trajectory actually visited — the rest of the scene remains uncovered, and the geometry that *is* generated exhibits artifacts (DL3DV exposure variation propagation per Lyra 2.0 §6). Lifting the Lyra-2.0 3DGS to a partial TSDF (via per-Gaussian depth fusion with explicit visibility tracking from the generated trajectory) and running [[meng2026_seen2scene|Seen2Scene]] completion would (a) repair occluded regions the trajectory never saw, and (b) produce a globally coherent volumetric output that downstream applications can consume as a TSDF/mesh. This bridges video-world `op:explorable-scene` to a scene-completion `op:default`-style geometric output, closing the trajectory-coverage gap with a generative completion prior rather than re-generating new trajectories to fill gaps. Mirror-image to Bet #023 (generation-first then reconstruction); also a cross-thread test of how Seen2Scene's indoor-trained generative prior handles non-sensor (model-hallucinated) partial input. Cross-thread bet — primary owner [[3d-scene-completion]] Bet #003.
+expected_gain: Combined pipeline produces an *explorable + complete* 3D scene from a single image; closes the "Bridge to multi-view reconstruction" capability gap. Quantifiable on a single-image-to-scene benchmark by completion fidelity at unseen viewpoints + geometric coherence (no holes in completed regions).
+risk: Lyra 2.0's 3DGS uses its own coordinate frame + photometric biases; fusing to partial TSDF then completing introduces compound failure modes that neither model was designed to handle. Latency is also a concern — single-image → video-world generation → 3DGS extract → TSDF fuse → Seen2Scene complete is the slowest possible inference path. Seen2Scene is indoor-only; outdoor exploration regimes are blocked until an outdoor-trained successor exists. The visibility-aware encoder may be confused by Lyra-derived TSDFs (depth from a generative model is structurally different from sensor-grade depth).
+validating_experiment: Pipeline: held-out single-image → Lyra 2.0 op:explorable-scene end-to-end → fuse the resulting 3DGS to partial TSDF with visibility tracking from the generated camera trajectory → run Seen2Scene completion → compare geometric completeness + viewpoint-novel-PSNR/LPIPS to (a) Lyra-only output and (b) Seen2Scene-on-mono-depth-fusion-of-same-image (Bet #002 of 3d-scene-completion).
+triggers: [ingest-of-paper:gaussian-to-tsdf-with-visibility, real-world-deployment-latency-acceptable, ingest-of-paper:outdoor-trained-seen2scene-successor]
+created: 2026-04-24 · updated: 2026-04-24
+
 ## Capability gaps
 
 - **Reconstruction-vs-generation disentanglement** — no principled way to know when the output is reconstructed from the input image vs. hallucinated. Would unlock: credibility for downstream asset creation. Search target: uncertainty estimation in flow-matching / diffusion 3D generators. **Reinforced by [[wang2026_feed-forward-3d-scene-modeling]] §7.6**: the second feed-forward-3D survey names this explicitly as the "reconstruction-vs-generation spectrum" — a continuum, not a dichotomy, with the design question being *where* on the spectrum a method should sit for a given deployment. Confirms this gap is real and cross-thread.
 - **Compositing with existing scene** — generated objects need lighting + shadow consistency with their host scene. Would unlock: scene editing pipelines. Search target: relighting-aware 3D generation.
-- **Bridge to multi-view reconstruction** — when 2+ views are available, the generative prior should yield gracefully to photometric fitting. Would unlock: unified generative-reconstructive pipeline. Search target: Bet #023's hypothesis becoming a paper. [[wang2026_feed-forward-3d-scene-modeling]] §4.4.2 (Visual Augmentation) documents an adjacent pattern — *post-hoc* generative polish applied after feed-forward reconstruction to fix artifacts / hallucinate occluded regions — which is the mirror-image architecture of Bet #023 (generation-first, reconstruction-second vs. reconstruction-first, generation-second).
+- **Bridge to multi-view reconstruction** — when 2+ views are available, the generative prior should yield gracefully to photometric fitting. Would unlock: unified generative-reconstructive pipeline. Search target: Bet #023's hypothesis becoming a paper. [[wang2026_feed-forward-3d-scene-modeling]] §4.4.2 (Visual Augmentation) documents an adjacent pattern — *post-hoc* generative polish applied after feed-forward reconstruction to fix artifacts / hallucinate occluded regions — which is the mirror-image architecture of Bet #023 (generation-first, reconstruction-second vs. reconstruction-first, generation-second). **Partially addressed by Bet #027** (2026-04-24) which adapts a *3D-to-3D* generative completion prior ([[meng2026_seen2scene]]) as a post-processor for video-world-derived geometry — a different mirror-image specifically for `op:explorable-scene`'s coverage-gap problem.
 - ~~**Video-world vs 3D-world paradigm choice**~~ **Closed 2026-04-21** by [[shen2026_lyra2|Lyra 2.0]] ingest. The thread now tracks both paradigms as separate OPs: `op:default` (3D-world: SAM 3D) and `op:explorable-scene` (video-world: Lyra 2.0). The internal design-principle axis *within* the video-world paradigm (rendering-memory vs routing) is captured as [[information-routing-vs-3d-rendering-memory]] concept page. What was a search target has become a cross-paradigm composition question (Bet #025).
 - **Rendering-memory video-world variants not yet in wiki** — Gen3C, SPMem, WorldMem, Context-as-Memory, VMem all belong to the global-3D-memory family that Lyra 2.0 argues against. None are ingested yet. Would unlock: quantitative confirmation of Lyra 2.0's Table 3 ablation against in-wiki baselines, and a competing family to track under `op:explorable-scene` if the routing vs rendering choice shifts for larger-scene or denser-view regimes. Search target: Gen3C (the strongest baseline per Table 1 camera controllability) or SPMem (CaM-strongest on quality metrics).
 - **Long-horizon evaluation protocol** — Lyra 2.0 reports at ~800 frames; there is no in-wiki benchmark past that horizon. Scene exploration tools will routinely exceed thousands of frames. Search target: a benchmark paper that specifically tests consistency at 2K+ frames with revisits.

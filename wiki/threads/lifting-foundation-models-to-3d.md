@@ -3,8 +3,8 @@ title: Lifting Foundation Models to 3D
 type: thread
 tags: [3dgs, sam, clip, dino, segmentation, open-vocabulary, scene-editing]
 created: 2026-04-15
-updated: 2026-04-22
-sources: [wiki/papers/ye2024_gaussian-grouping.md, wiki/papers/qin2024_langsplat.md, wiki/papers/jiao2025_clip-gs.md, wiki/papers/bao2025_seg-wild.md, wiki/papers/kim2026_gauss-explorer.md, wiki/papers/chen2025_sam-3d.md, wiki/papers/carion2026_sam-3.md, wiki/papers/jatavallabhula2023_conceptfusion.md, wiki/papers/wu2026_langsvr.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/ranzinger2026_c-radiov4.md, wiki/designs/language-grounded-3dgs-2026.md]
+updated: 2026-04-24
+sources: [wiki/papers/ye2024_gaussian-grouping.md, wiki/papers/qin2024_langsplat.md, wiki/papers/jiao2025_clip-gs.md, wiki/papers/bao2025_seg-wild.md, wiki/papers/kim2026_gauss-explorer.md, wiki/papers/chen2025_sam-3d.md, wiki/papers/carion2026_sam-3.md, wiki/papers/jatavallabhula2023_conceptfusion.md, wiki/papers/wu2026_langsvr.md, wiki/papers/heinrich2025_radiov25.md, wiki/papers/ranzinger2026_c-radiov4.md, wiki/papers/meng2026_seen2scene.md, wiki/designs/language-grounded-3dgs-2026.md]
 operating_points: [op:per-scene-3dgs, op:zero-shot-3dgs, op:voxel-online]
 status: draft
 ---
@@ -247,6 +247,22 @@ validating_experiment: LangSplat with {standard per-scene autoencoder, shift-equ
 triggers: [ingest-of-idea:positional-noise-in-clip-features, benchmark:langsplat-boundary-fidelity]
 created: 2026-04-22 · updated: 2026-04-22
 
+### Bet #023 — Visibility-aware 3-state voxel encoding for ConceptFusion-style online voxel feature fusion
+status: proposed
+combines: [[jatavallabhula2023_conceptfusion]], [[visibility-aware-masked-sparse-vae_meng2026]]
+stage_target: lifting-foundation-models.online-voxel-feature-fusion
+op_target: op:voxel-online
+confidence: med
+magnitude: incremental
+cost: weeks
+breakage_risk: low
+hypothesis: ConceptFusion's voxel TSDF + per-voxel multimodal feature fusion currently encodes only two voxel states (observed-with-feature, no-feature-yet). It does not distinguish "observed-but-no-object-here" from "never-observed". Importing [[meng2026_seen2scene]]'s 3-state encoding (surface / observed-empty / unknown) plus the learnable empty embedding for unobserved voxels would let downstream open-vocab queries (CLIP cosine over a region, planning queries asking "is there an object here?") return *calibrated* answers — explicitly indicating "I haven't seen there" rather than silently returning low-confidence-no-object. The mechanism is generic: it's a 3-state voxel substrate, not flow-matching-specific.
+expected_gain: Reduced false-positive open-vocab segmentation in occluded cavities on partial scans (e.g., under tables, inside cabinets). Quantifiable on a partial-scan held-out subset of ScanNet++ where ground truth is known but the scan didn't observe it — the metric is "did the model correctly say I-don't-know vs hallucinate".
+risk: 3-state encoding adds memory (~1 bit per voxel for visibility state, plus the learnable embedding parameters). Most existing ConceptFusion benchmarks are dense / well-observed where the gain is small. Negative-result reporting ("avoid wrong answers in unobserved regions") is harder to publish than positive metric improvements.
+validating_experiment: Modify ConceptFusion to use 3-state voxels + learnable empty embedding for unobserved cells. Benchmark open-vocab seg precision/recall on partial-scan subsets (mask out a held-out subset of input frames before fusion). Compare to vanilla ConceptFusion on the same subsets.
+triggers: [ingest-of-paper:open-vocab-3d-seg-failure-mode-analysis-on-partial-scans]
+created: 2026-04-24 · updated: 2026-04-24
+
 ### Other open questions (not yet bets)
 
 - **Memory**: per-Gaussian features at scene scale explode memory. EA-3DGS-style codebook VQ applied to feature channels? No paper tries this — candidate for a future bet once an explicit codebook-for-semantics paper lands.
@@ -258,6 +274,7 @@ created: 2026-04-22 · updated: 2026-04-22
 - **Per-primitive feature compression at scene scale** (memory-efficient lifting) — per-Gaussian features explode at city scale. Would unlock: all OPs at larger scales. Search target: codebook-VQ applied to feature channels, quantization, or hashing schemes on lifted features.
 - **Densification / pruning invariants for lifted features** — current 3DGS methods handle this ad hoc; features split/merge incorrectly. Would unlock: robust training dynamics for feature-augmented 3DGS. Search target: densification rules that preserve per-primitive identity and language channels.
 - **Positional-noise hygiene in lifted features** — [[shift-equivariant-distillation-loss_ranzinger2026]] shows ViT teachers inject fixed-pattern noise that students mimic; lifted 3DGS features inherit whatever noise is in the 2D feature source. No paper measures how much of per-Gaussian feature degradation is from positional noise vs. other causes. Would unlock Bet #022 and any future "clean-lift" methods. Search target: papers analyzing PCA / spectrum of per-Gaussian features vs. per-image features at object boundaries.
+- **Visibility-awareness in voxel-substrate fillers** — current fillers conflate "unobserved" with "no object" (or with unfused-but-observed-empty). [[meng2026_seen2scene]] showed this is a learnable distinction worth explicit encoding for generative scene priors; cross-thread Bet #023 imports the same primitive into open-vocab feature lifting. Would unlock: calibrated open-vocab queries on partial scans. Search target: papers exposing open-vocab failure modes in occluded regions.
 - **Harmonized 3D-OVS benchmark** — cross-paper comparison is noisy. Meta-gap, not a paper target.
 
 ## Contradictions & tensions

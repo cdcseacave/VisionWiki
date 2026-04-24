@@ -689,3 +689,55 @@ Single-paper ingest from `raw/2604.13036v1.pdf` (13 MB arxiv-named PDF). Lyra 2.
   - **Depth without training is not possible** with RADIO-native heads — no released DPT / linear-probe weights in the NVlabs/RADIO repo or HF collection. Options: train a head (Probe3D or DPT), or compose RADIO with a standalone depth model (Depth Anything, Metric3Dv2).
   - **Adaptor names differ per version**: RADIOv2.5 exposes `clip`, `siglip`, `dino_v2`, `sam`; C-RADIOv4 exposes `siglip2-g`, `dino_v3`, `sam3` (drops `clip`). Code that hard-codes `'clip'` adaptor fails silently on C-RADIOv4.
   - **Speculative bridge path D4** (fine-tune a DINOv2/v3-trained DPT head on RADIO features) — not validated in any paper; flagged for future bet in [[foundation-features-for-geometry]].
+
+## [2026-04-24] ingest | Seen2Scene — Meng et al. 2026 (TUM + UVA)
+- Created:
+  - `wiki/papers/meng2026_seen2scene.md` (paper page; arXiv 2603.28548; project page; code at github.com/quan-meng/seen2scene with no LICENSE → `license_code: unknown`)
+  - `wiki/ideas/visibility-guided-masked-flow-matching_meng2026.md` (`scope: stage-swap`; targets `scene-completion.generative-prior`; `co_requires:` visibility-aware-masked-sparse-vae_meng2026)
+  - `wiki/ideas/visibility-aware-masked-sparse-vae_meng2026.md` (`scope: stage-swap`; targets `scene-completion.partial-scan-latent-encoding`)
+  - `wiki/ideas/controlnet-frozen-flow-self-supervised-completion_meng2026.md` (`scope: stage-swap`; targets `scene-completion.condition-injection`; `requires:` both ideas above)
+  - `wiki/ideas/clip-painted-3d-layout-conditioning_meng2026.md` (`scope: stage-swap`; targets `scene-completion.generative-prior` (conditioning sub-component); reusable across other layout-conditional 3D generators)
+  - `wiki/stages/scene-completion.partial-scan-latent-encoding.md` (new domain `scene-completion.*`)
+  - `wiki/stages/scene-completion.generative-prior.md`
+  - `wiki/stages/scene-completion.condition-injection.md`
+  - `wiki/threads/3d-scene-completion.md` (**new thread**, 1 OP `op:default`; goal-first §3.3 workflow run with auto-mode user pre-approval; cap check passes; nodes n1–n4 from Seen2Scene fully populate the SOTA pipeline)
+  - `wiki/papers/dai2020_sg-nn.md` (stub — load-bearing baseline; SG-NN is conceptual ancestor of Seen2Scene's frame-drop pretext)
+  - `wiki/methods/controlnet.md` (stub — load-bearing conditioning method; likely re-cited)
+- Updated:
+  - `wiki/concepts/tsdf.md` (added 3-state visibility-aware encoding section + cross-link to Seen2Scene; bumped `updated`; added meng2026 to `sources:`)
+  - `wiki/threads/lifting-foundation-models-to-3d.md` (Pass A: visibility-aware voxel encoding doesn't beat current SOTA fillers but is candidate component; Pass B: **Bet #023** filed — 3-state visibility-aware voxel encoding for ConceptFusion-style online voxel feature fusion; capability gaps refreshed; `updated` + `sources:` bumped)
+  - `wiki/threads/gaussian-to-mesh-pipelines.md` (Pass B: **Bet #008** filed — Seen2Scene completion as a sparse-view 3DGS-mesh post-processor; capability gap added on generative-completion-of-holes; `updated` + `sources:` bumped)
+  - `wiki/threads/mono-depth-estimation.md` (Pass B note added pointing to [[3d-scene-completion]] Bet #002 — mono-depth → fused partial TSDF → Seen2Scene completion turns any RGB image into a complete 3D scene; consumption-thread rule preserved (no bet filed locally); related-threads list extended; `updated` + `sources:` bumped)
+  - `wiki/threads/generative-3d-from-2d-priors.md` (Pass B: **Bet #027** filed — Lyra-2.0 video-world geometry → Seen2Scene completion bridges `op:explorable-scene` to volumetric output; "Bridge to multi-view reconstruction" capability gap partially-addressed marker added; `updated` + `sources:` bumped)
+  - `index.md` (added Seen2Scene + SG-NN to Mesh Reconstruction; ControlNet to Methods; bumped TSDF concept; new thread `3d-scene-completion`; refreshed thread `updated` dates; updated Ideas paragraph (97→103) + Stages paragraph (100→103, new `scene-completion.*` namespace); footer counts: 71 papers / 32 methods / 20 concepts / 14 threads / 3 designs / 103 ideas / 103 stages / 1 meta — corrected over the prior footer's undercounts on methods + concepts)
+- Pipeline impact:
+  - **NEW thread `3d-scene-completion` op:default**: full SOTA pipeline created from scratch (n1=visibility-aware-masked-sparse-vae, n2=visibility-guided-masked-flow-matching, n3=clip-painted-3d-layout-conditioning, n4=controlnet-frozen-flow-self-supervised-completion). All 4 nodes are bundled (n1↔n2 hard `co_requires:`; n4 `requires:` n1+n2). Single-source pipeline — every node sourced from [[meng2026_seen2scene]] alone.
+  - `lifting-foundation-models-to-3d`:`op:voxel-online`: no filler swap; visibility-aware encoding flagged as candidate-component for ConceptFusion-style fusion (Bet #023).
+  - `gaussian-to-mesh-pipelines`: no filler swap; cross-thread Bet #008 surfaces generative completion as a sparse-view 3DGS-mesh post-processor.
+  - `mono-depth-estimation`: no consumer-stage swap; new consumption pathway documented (mono-depth → partial TSDF → Seen2Scene), bet filed at consumer thread (3d-scene-completion Bet #002).
+  - `generative-3d-from-2d-priors`:`op:explorable-scene`: no filler swap; cross-paradigm bridge surfaced via Bet #027.
+- Synthesis bets: 7 bets filed across the wiki (4 in the new thread + 3 cross-thread mirrors):
+  - **3d-scene-completion Bet #001** — visibility-aware voxel encoding for `lifting-foundation-models.online-voxel-feature-fusion` (mirrored at lifting Bet #023). Med-confidence, incremental-magnitude.
+  - **3d-scene-completion Bet #002** — mono-depth → partial TSDF → Seen2Scene (no mirror in mono-depth; Pass B note instead per consumption-thread rule). Low-confidence, paradigm-magnitude.
+  - **3d-scene-completion Bet #003** — Lyra-2.0 video-world geometry → Seen2Scene (mirrored at generative-3d-from-2d-priors Bet #027). Low-confidence, paradigm-magnitude.
+  - **3d-scene-completion Bet #004** — Seen2Scene as sparse-view 3DGS-mesh post-processor (mirrored at gaussian-to-mesh-pipelines Bet #008). Med-confidence, substantial-magnitude.
+- Notable:
+  - **Visibility-guided masking is the load-bearing trick.** Table 3 ablation in the paper jointly toggles VAE-masking + flow-loss-masking — both idea pages flag this evidence-conflation explicitly. Bets predicated on either idea in isolation should acknowledge the joint-evidence caveat.
+  - **The 3-state TSDF (surface / observed-empty / unknown) is a primitive worth its own concept-page section.** Updated `wiki/concepts/tsdf.md` accordingly. The encoding is sentinel-TSDF-specific (VDBFusion-native) — porting to point-cloud / 3DGS / mesh substrates is an open question carried on every relevant idea page.
+  - **No isolated ablation of ControlNet vs frame-drop self-supervision** in [[controlnet-frozen-flow-self-supervised-completion_meng2026]] — both demonstrated jointly via the headline Tables 1+2. Cross-thread bets that import only one component need this answered first; flagged in the idea page's Open questions and as a capability gap on the new thread.
+  - **License gap**: official repo at github.com/quan-meng/seen2scene has no LICENSE file as of 2026-04-24 → `license_code: unknown`, treated as default-restrictive for downstream commercial planning. Per §6.15 this does not block bet adoption; tracked in `wiki/meta/license-audit.md` (entry pending — not added in this ingest; user can run `lint licenses` to formalize). `lint find-code` should re-check after 6 months.
+  - **Pass B explicit silent-result note**: on `gaussian-to-mesh-pipelines`, `lifting-foundation-models-to-3d`, and `generative-3d-from-2d-priors`, no Pass A filler swap was warranted (Seen2Scene operates downstream / orthogonal to these threads' SOTA filler regions). Pass B *did* surface novel cross-thread combinations on all three (Bets #008, #023, #027) and a Pass B note on mono-depth; this is the synthesis-pressure-evidence the project's core ambition demands.
+  - **New domain stage namespace `scene-completion.*`** opened. Justification: Seen2Scene's input regime (partial 3D scan with visibility tracking) is qualitatively distinct from `generative-3d.*` (which targets single-image / underconstrained 2D inputs), and the type system gains by keeping them separate. If future ingests blur the line (e.g., a paper that takes both 2D images and partial 3D scans as condition signals) this can be revisited.
+- **Not created (deferred per §6.5):**
+  - 3D-FRONT, ScanNet++, ARKitScenes dataset pages — single-paper references; promote when a second paper uses them.
+  - People pages for Nießner / Dai / Chen / Meng — well-earned (multiple in-wiki papers across Nießner / Dai) but deferred to a dedicated pass per the open-question reply.
+  - NKSR (Huang 2023) baseline — single-paper reference; promote on second mention.
+  - BlockFusion / LT3SD / WorldGrow generative baselines — promote when one is the SOTA filler of a thread node.
+  - Wan / fVDB / VDBFusion / Qwen3-VL / OpenVDB — implementation libraries; outside scope.
+  - Lipman 2022/2023 (flow matching foundational papers) — would unlock cleaner attribution on `[[two-stage-latent-flow-matching-scene_chen2025]]` and `[[visibility-guided-masked-flow-matching_meng2026]]` `sources:` fields. Worth ingesting as a Fundamentals stub on next pass.
+- **Search targets for future ingest:**
+  - **Outdoor-trained Seen2Scene successor** — would unlock outdoor scan completion + outdoor cross-thread Bets #008 and #027. Highest leverage future ingest for this thread.
+  - **A paper with the missing isolated ControlNet-vs-frame-drop ablation** — would unblock cross-thread bets that want to import only one component.
+  - **Hierarchical / globally-attended sparse generation** — would address the resolution-ceiling capability gap and the patch-boundary fusion seam issue.
+  - **Visibility-aware generative priors over non-TSDF substrates** (point-cloud, 3DGS, mesh-native) — would broaden the cross-thread reach of the visibility-mask trick.
+- `raw/` now empty.

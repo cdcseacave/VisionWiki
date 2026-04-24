@@ -37,6 +37,8 @@ see [CLAUDE.md](CLAUDE.md).
 - [Confidence Mesh from 3DGS](wiki/papers/radl2026_confidence-mesh-3dgs.md) — per-Gaussian confidence for geometry/appearance balance · _2026-04-12_
 - [VGG-T3](wiki/papers/elflein2026_vgg-t3.md) — O(n) feed-forward 3D reconstruction via test-time-trained MLPs · _2026-04-12_
 - [SpatialLM](wiki/papers/mao2025_spatiallm.md) — LLM fine-tuned on point clouds for structured indoor modeling · _2026-04-12_
+- [Seen2Scene (Meng 2026)](wiki/papers/meng2026_seen2scene.md) — first flow-matching scene completion trained directly on incomplete real scans; visibility-guided masking + sparse-VAE TSDF + ControlNet completion · _2026-04-24_
+- [SG-NN (Dai 2020)](wiki/papers/dai2020_sg-nn.md) — sparse self-supervised generative scene completion from partial scans; conceptual ancestor of Seen2Scene's frame-drop pretext _(stub)_ · _2026-04-24_
 
 ### Radiance Fields
 - [ConceptFusion](wiki/papers/jatavallabhula2023_conceptfusion.md) — voxel-TSDF fusion of CLIP/DINO/AudioCLIP for open-set multimodal 3D mapping · _2026-04-15_
@@ -120,6 +122,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [SigLIP 2](wiki/methods/siglip2.md) — sigmoid-loss text-image encoder; teacher in C-RADIOv4 · _stub (2026-04-22)_
 - [PHI-S](wiki/methods/phi-s.md) — distribution-balancing normalization for multi-teacher distillation · _stub (2026-04-22)_
 - [FeatSharp](wiki/methods/featsharp.md) — feature-upsampling for fixed-resolution ViT teachers · _stub (2026-04-22)_
+- [ControlNet](wiki/methods/controlnet.md) — frozen-backbone + parallel branch conditional generation pattern; used by Seen2Scene · _stub (2026-04-24)_
 
 ## Concepts
 - [Neural Implicit Surfaces](wiki/concepts/neural-implicit-surfaces.md) — SDF-based continuous surfaces; NeuS→Neuralangelo lineage · _stub_
@@ -130,7 +133,7 @@ see [CLAUDE.md](CLAUDE.md).
 - [Open-Vocabulary Segmentation](wiki/concepts/open-vocabulary-segmentation.md) — Trident pattern and 3D lifting · _2026-04-15_
 - [Structure from Motion](wiki/concepts/structure-from-motion.md) — classical pipeline and paradigms · _stub_
 - [Multi-View Stereo](wiki/concepts/multi-view-stereo.md) — dense reconstruction from posed images · _stub_
-- [TSDF](wiki/concepts/tsdf.md) — truncated signed distance field for depth fusion · _stub_
+- [TSDF](wiki/concepts/tsdf.md) — truncated signed distance field for depth fusion; 3-state visibility-aware variant added 2026-04-24 · _updated 2026-04-24_
 - [Bundle Adjustment](wiki/concepts/bundle-adjustment.md) — joint optimization of cameras + 3D points · _stub_
 - [Signed Distance Field](wiki/concepts/signed-distance-field.md) — implicit surface representation · _stub_
 - [Differentiable Rendering](wiki/concepts/differentiable-rendering.md) — gradient-based 3D optimization via rendering · _stub_
@@ -153,17 +156,18 @@ see [CLAUDE.md](CLAUDE.md).
 _(empty)_
 
 ## Threads
-- [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS/voxel primitives, 3 OPs · _updated 2026-04-22_
+- [Lifting Foundation Models to 3D](wiki/threads/lifting-foundation-models-to-3d.md) — SAM/CLIP/DINO distilled into 3DGS/voxel primitives, 3 OPs · _updated 2026-04-24_
 - [Foundation Features for Geometry](wiki/threads/foundation-features-for-geometry.md) — frozen DINO backbones replacing SIFT across SfM / matching / depth · _updated 2026-04-22_
 - [Open-Vocab 2D Composition](wiki/threads/open-vocab-2d-composition.md) — CLIP + DINO + SAM as complementary backbones (Trident, SAM 3, RADIO), 3 OPs · _updated 2026-04-22_
 - [Radiance Field Evolution](wiki/threads/radiance-field-evolution.md) — NeRF → 3DGS lineage, 3 OPs (quality-per-scene / city-scale / neural-free) · _updated 2026-04-21_
-- [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting meshes from Gaussian splats, 3 OPs (regularized-3dgs / mesh-in-loop / natively-extractable) · _updated 2026-04-21_
+- [Gaussian-to-Mesh Pipelines](wiki/threads/gaussian-to-mesh-pipelines.md) — extracting meshes from Gaussian splats, 3 OPs (regularized-3dgs / mesh-in-loop / natively-extractable) · _updated 2026-04-24_
 - [Feed-Forward Structure from Motion](wiki/threads/feed-forward-structure-from-motion.md) — three-tier SfM taxonomy: classical → hybrid → fully feed-forward · _updated 2026-04-21_
 - [GPU-Native SfM (Tier 1)](wiki/threads/gpu-native-sfm.md) — 2 OPs (general-purpose InstantSfM / sequential-slam-prior CuSfM) · _updated 2026-04-18_
-- [Monocular Depth Estimation](wiki/threads/mono-depth-estimation.md) — mono depth as load-bearing prior for SfM/3DGS/MVS · _updated 2026-04-18_
+- [Monocular Depth Estimation](wiki/threads/mono-depth-estimation.md) — mono depth as load-bearing prior for SfM/3DGS/MVS/scene-completion · _updated 2026-04-24_
 - [Nerfstudio + gsplat Codebase](wiki/threads/nerfstudio.md) — local visiofacto fork architecture reference · _updated 2026-04-18_
 - [VLM Reasoning over 3D Scenes](wiki/threads/vlm-reasoning-over-3d-scenes.md) — inference-time VLM reasoning on reconstructed 3DGS scenes (GaussExplorer) · _2026-04-18_
-- [Generative 3D from 2D Priors](wiki/threads/generative-3d-from-2d-priors.md) — single-image generative 3D, 2 OPs (`op:default` SAM 3D 3D-world + `op:explorable-scene` Lyra 2.0 video-world) · _updated 2026-04-21_
+- [Generative 3D from 2D Priors](wiki/threads/generative-3d-from-2d-priors.md) — single-image generative 3D, 2 OPs (`op:default` SAM 3D 3D-world + `op:explorable-scene` Lyra 2.0 video-world) · _updated 2026-04-24_
+- [3D Scene Completion](wiki/threads/3d-scene-completion.md) — generative completion of partial real 3D scans (Seen2Scene); 1 OP (`op:default`); new thread 2026-04-24 · _updated 2026-04-24_
 - [LLM-Native Structured Scenes](wiki/threads/llm-native-structured-scenes.md) — point-cloud → LLM-emitted structured scene scripts (SpatialLM) · _2026-04-18_
 - [Relative Pose Estimation](wiki/threads/relative-pose-estimation.md) — depth-aware two-view pose (MADPose); calibrated / shared-focal / uncalibrated · _updated 2026-04-21_
 
@@ -175,15 +179,15 @@ _(empty)_
 
 ## Ideas
 
-97 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by Bets #001–#026 (this thread) and #001–#030 (cross-wiki): CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, DetectorFreeSfM bridge + transformer refinement + track-topology adjustment, MADPose affine-corrected solvers + depth-induced scoring + hybrid LO-MSAC, MASt3R dual-head matching + metric-scale pointmap loss + fast reciprocal-NN + coarse-to-fine window covering, **VGGT-compression family** (FastVGGT three-part token merge + block-sparse pooled-Q̄K̄ attention + QuantVGGT DSFQ/NFDS), **Lyra 2.0 video-world cluster** (per-frame 3D cache + canonical-coord warp injection + self-augmented training + DMD-with-self-aug + downsampled Gaussian DPT head + hierarchical sparse-grid mesh extraction), plus 77 more.
+101 idea pages live in [wiki/ideas/](wiki/ideas/). Listing them individually in this index would push it past the 300-line split threshold; browse the directory directly or query by stage via `lint stage-coverage`. Key ideas referenced by recent thread bets: CoMe confidence, Gaussian Grouping identity, SAM 3 concept segmentation, LangSplat autoencoder, InstantSfM depth-constrained Jacobian, VastGaussian partitioning + decoupled appearance, DINOv3 Gram anchoring, RADIOv2.5 agglomerative distillation, MILo mesh-in-loop, TTT3R closed-form LR, MP-SfM uncertainty-calibration + bilateral-normal-integration + matcher-score next-view, DetectorFreeSfM bridge + transformer refinement + track-topology adjustment, MADPose affine-corrected solvers + depth-induced scoring + hybrid LO-MSAC, MASt3R dual-head matching + metric-scale pointmap loss + fast reciprocal-NN + coarse-to-fine window covering, **VGGT-compression family** (FastVGGT three-part token merge + block-sparse pooled-Q̄K̄ attention + QuantVGGT DSFQ/NFDS), **Lyra 2.0 video-world cluster** (per-frame 3D cache + canonical-coord warp injection + self-augmented training + DMD-with-self-aug + downsampled Gaussian DPT head + hierarchical sparse-grid mesh extraction), **Seen2Scene scene-completion cluster** (visibility-guided masked flow matching + visibility-aware masked sparse VAE + ControlNet frozen-flow self-supervised completion + CLIP-painted 3D layout conditioning, new 2026-04-24), plus 80 more.
 
 ## Stages
 
-100 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (17), `feed-forward-sfm.*` (18), `pose-estimation.*` (3), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (3), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), `video-world.*` (4, new), plus `relighting.*`, `active-reconstruction.*`. New 2026-04-21: `video-world.spatial-memory`, `video-world.correspondence-injection`, `video-world.drift-mitigation-training`, `video-world.distillation`. Browse the directory or query via `lint stage-coverage`.
+103 stage pages live in [wiki/stages/](wiki/stages/) — typed slots for pipeline composition. Organized by domain: `radiance-fields.*` (16), `sfm.*` (17), `feed-forward-sfm.*` (18), `pose-estimation.*` (3), `open-vocab-2d.*` (5), `lifting-foundation-models.*` (12), `mvs.*` (4), `mesh-reconstruction.*` (2), `feature-matching.*` (3), `foundation-features.*` (1), `vlm-reasoning.*` (3), `generative-3d.*` (3), `llm-structured-scenes.*` (3), `video-world.*` (4), `scene-completion.*` (3, new), plus `relighting.*`, `active-reconstruction.*`. New 2026-04-24: `scene-completion.partial-scan-latent-encoding`, `scene-completion.generative-prior`, `scene-completion.condition-injection`. Browse the directory or query via `lint stage-coverage`.
 
 ## Meta
 - [License Audit](wiki/meta/license-audit.md) — commercial-use readiness of all 55 wiki papers; bet-level commercial-readiness table; remediation checklist · _2026-04-18_
 
 ---
 
-_Last rebuilt: 2026-04-22 · 68 papers, 18 methods, 18 concepts, 13 threads, 4 designs, 99 ideas, 100 stages, 1 meta_
+_Last rebuilt: 2026-04-24 · 71 papers, 32 methods, 20 concepts, 14 threads, 3 designs, 103 ideas, 103 stages, 1 meta_

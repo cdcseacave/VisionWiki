@@ -3,8 +3,8 @@ title: Gaussian-to-Mesh Pipelines
 type: thread
 tags: [3dgs, mesh-reconstruction, surface-extraction, marching-cubes, sdf, tsdf, hierarchical-sparse-grid]
 created: 2026-04-12
-updated: 2026-04-21
-sources: [papers/li2025_geosvr.md, papers/li2025_va-gs.md, papers/gao2025_anisdf.md, papers/radl2025_sof.md, papers/guedon2025_milo.md, papers/radl2026_confidence-mesh-3dgs.md, papers/elflein2026_vgg-t3.md, papers/kim2025_multiview-geometric-gs.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/chen2024_pgsr.md, papers/shen2026_lyra2.md]
+updated: 2026-04-24
+sources: [papers/li2025_geosvr.md, papers/li2025_va-gs.md, papers/gao2025_anisdf.md, papers/radl2025_sof.md, papers/guedon2025_milo.md, papers/radl2026_confidence-mesh-3dgs.md, papers/elflein2026_vgg-t3.md, papers/kim2025_multiview-geometric-gs.md, papers/zhu2025_gs-discretized-sdf.md, papers/sun2025_sparse-voxels-rasterization.md, papers/chen2024_pgsr.md, papers/shen2026_lyra2.md, papers/meng2026_seen2scene.md]
 operating_points: [op:regularized-3dgs, op:mesh-in-loop, op:natively-extractable]
 status: draft
 ---
@@ -222,13 +222,30 @@ validating_experiment: Render-then-unwrap a SVRaster mesh; compare {naive, MRF-s
 triggers: [ingest-of-idea:learned-texture-unwrapping]
 created: 2026-04-15 · updated: 2026-04-18
 
+### Bet #008 — Generative scene completion as a sparse-view 3DGS-mesh post-processor
+status: proposed
+combines: [[guedon2025_milo|MILo]], [[controlnet-frozen-flow-self-supervised-completion_meng2026]], [[visibility-guided-masked-flow-matching_meng2026]]
+stage_target: mesh-reconstruction.extraction
+op_target: op:mesh-in-loop (and cross-OP to op:regularized-3dgs)
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: Sparse-view 3DGS-extracted meshes have large holes in occluded regions (areas not visible from any input view). [[meng2026_seen2scene]]'s ControlNet completion accepts a partial TSDF and fills it with a generative scene prior trained directly on real partial scans. Pipeline: render depth from input views of the 3DGS, fuse to partial TSDF with explicit visibility tracking from the input camera trajectory, run Seen2Scene completion, extract mesh via marching cubes. The frame-drop self-supervised pretext task in Seen2Scene is structurally similar to the gap between "what a few input views see" and "the full scene" — so the generative prior is well-matched to this regime. Cross-thread bet — primary owner [[3d-scene-completion]] Bet #004.
+expected_gain: Holes-filled sparse-view 3DGS meshes; quantifiable on a sparse-view benchmark (1-5 input views) by completion fidelity at held-out test views. Should beat MILo and Gaussian Surfels on hole-completeness while preserving observed-region chamfer on the views that *were* used.
+risk: Sparse-view 3DGS depth estimates are noisy; partial TSDFs derived from them may be too biased for Seen2Scene's visibility-aware encoder, which was trained on sensor-grade RGB-D / LiDAR fusion. Completion fills geometry plausibly but not photometrically — the completed regions have no color/texture, so this addresses the geometry side of "deployment to game engine" but not the texture side (which is Bet #007's territory). Also, Seen2Scene is indoor-trained; outdoor sparse-view 3DGS meshes won't benefit until an outdoor-trained Seen2Scene successor exists.
+validating_experiment: Pipeline: sparse-view 3DGS (1-5 input views) → render depth from input views → VDBFusion to partial TSDF (with visibility tracking) → Seen2Scene complete → marching cubes for mesh. Compare hole-completeness + chamfer-on-held-out-views to MILo, CoMe, and Gaussian Surfels on a sparse-view subset of ScanNet++.
+triggers: [ingest-of-paper:sparse-view-3dgs-mesh-extraction-benchmark, ingest-of-paper:outdoor-trained-seen2scene-successor]
+created: 2026-04-24 · updated: 2026-04-24
+
 ## Capability gaps
 
 - **Watertight mesh in one step without a separate extraction pass** — MILo is closest but 3× slower than TSDF-based. Would unlock: op:one-shot-mesh fourth OP or op:mesh-in-loop becoming the default. Search target: differentiable mesh-head architectures with sub-CoMe training cost.
 - **Principled switch between external-MVS-depth and self-supervised-3DGS-depth** — external wins on controlled capture, self-supervised wins on sparse/textureless. No paper has a confidence-based switch. Search target: depth-reliability estimators that compose with both sources.
 - **Texturing pipeline from splat/voxel to game-engine mesh** — every paper stops at geometry. Would unlock: deployment-ready pipelines. Search target: render-then-unwrap with foundation-feature seam-minimization.
-- **Sparse-view benchmarks** (3–10 views) — most current benchmarks are dense-capture (DTU 49 views). Would unlock: real-world phone-scan regimes. Search target: sparse-view mesh benchmarks (ScanNet++, DL3DV subsets).
+- **Sparse-view benchmarks** (3–10 views) — most current benchmarks are dense-capture (DTU 49 views). Would unlock: real-world phone-scan regimes + Bet #008 evaluation. Search target: sparse-view mesh benchmarks (ScanNet++, DL3DV subsets).
 - **Large-scale scene extraction benchmark** — no in-wiki filler has been quantitatively demonstrated at scene scale (multi-room, multi-building). [[shen2026_lyra2|Lyra 2.0]]'s [[hierarchical-sparse-grid-mesh-extraction_shen2026]] is the first in-wiki filler targeting this regime but has no isolated ablation vs alternatives. Would unlock: a fourth OP (`op:large-scale-scene`) where hierarchical allocation is load-bearing. Search target: (a) a paper that explicitly benchmarks mesh-extraction methods at scene scale against a ground-truth mesh (Matterport3D-GT, Replica-GT, or a synthetic scene benchmark), or (b) a MILo / CoMe variant that scales to scene-level capture without memory blowup.
+- **Generative completion of holes from missing views** — current pipelines have no mechanism to fill regions no input view observed; output meshes have geometric holes in those regions. [[meng2026_seen2scene]] is the first in-wiki filler that addresses this (cross-thread Bet #008). Would unlock: deployable meshes from phone-scans (which are intrinsically partial). Search target: a paper benchmarking generative-completion-after-mesh-extraction quantitatively, or an outdoor variant of Seen2Scene.
 
 ## Contradictions & tensions
 
