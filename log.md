@@ -741,3 +741,52 @@ Single-paper ingest from `raw/2604.13036v1.pdf` (13 MB arxiv-named PDF). Lyra 2.
   - **Hierarchical / globally-attended sparse generation** — would address the resolution-ceiling capability gap and the patch-boundary fusion seam issue.
   - **Visibility-aware generative priors over non-TSDF substrates** (point-cloud, 3DGS, mesh-native) — would broaden the cross-thread reach of the visibility-mask trick.
 - `raw/` now empty.
+
+## [2026-04-24] ingest | LingBot-Map: Geometric Context Transformer for Streaming 3D Reconstruction (Chen 2026)
+
+- local_paper: `papers/sfm-slam/chen_2026_lingbot-map.pdf` (arXiv 2604.14141v2, 16 Apr 2026, Ant Group)
+- Created:
+  - `wiki/papers/chen2026_lingbot-map.md` (draft, full paper page)
+  - `wiki/stages/feed-forward-sfm.coordinate-grounding.md` (new stage for scale + reference-frame establishment)
+  - `wiki/ideas/three-context-geometric-attention_chen2026.md` (composite, topology-rewrite, co_requires 3 sub-ideas)
+  - `wiki/ideas/anchor-frame-scale-grounding_chen2026.md` (stage-swap — new coordinate-grounding stage)
+  - `wiki/ideas/compact-trajectory-memory-tokens_chen2026.md` (stage-swap at long-context-memory)
+  - `wiki/ideas/video-rope-on-trajectory-tokens_chen2026.md` (drop-in refinement, co_requires compact-trajectory-memory)
+  - `wiki/ideas/sliding-window-pairwise-pose-loss_chen2026.md` (drop-in training objective at training-recipe)
+  - `wiki/ideas/camera-to-world-pose-parameterization_chen2026.md` (drop-in, **weak evidence — flagged unablated**)
+  - `wiki/ideas/paged-kv-cache-streaming-sfm_chen2026.md` (drop-in systems optimization)
+- Updated:
+  - `wiki/stages/feed-forward-sfm.attention-mechanism.md` (was alias of global-attention; now umbrella with four filler families — full/causal/TTT/structured-decomposition)
+  - `wiki/stages/feed-forward-sfm.long-context-memory.md` (added compact-trajectory-memory + video-rope + paged-kv-cache to family structure)
+  - `wiki/threads/feed-forward-structure-from-motion.md` (Tier 3 evidence entry, emerging-patterns third family, capability gaps refresh, open questions refresh, Bet #030 superseded, Bets #031/#032/#033/#034 added, sources + updated)
+  - `index.md` (LingBot-Map paper entry, Ideas count 103→110, Stages 103→104 + feed-forward-sfm.* 18→19, Ideas-cluster descriptor added)
+- Pipeline impact:
+  - `feed-forward-structure-from-motion`:op:default: **third long-sequence scaling family added** — structured-attention decomposition (GCA) now coexists with TTT (LoGeR/ZipMap/TTT3R) and VGGT-compression (FastVGGT/Faster-VGGT/QuantVGGT). Tier-3 Evidence now lists LingBot-Map as the streaming-SOTA (Oxford-Spires dense ATE 7.11 at 3840 frames, +0.69 m over sparse — an order of magnitude better than next-best TTT3R's +5.70 m; 2.8× better than best online at sparse). New stage `feed-forward-sfm.coordinate-grounding` introduced.
+  - `feed-forward-structure-from-motion`: **two capability gaps closed** (1) gauge-decoupled streaming — anchor-frame-scale-grounding concretizes the LongStream search target; (2) calibration-grade outdoor streaming at the up-to-scale regime — LingBot beats all offline/optim baselines on Oxford-Spires. Remaining metric-scale gap still open.
+  - `feed-forward-structure-from-motion`: capability gap reframed — VGGT-efficiency sub-family is now a three-way head-to-head, not two-way (Bet #030 superseded by Bet #031).
+  - `gpu-native-sfm`: no Pass A filler swap (LingBot is feed-forward not GPU-accelerated classical); Pass B note — LingBot's paged-KV-cache systems trick could transfer if a GPU classical pipeline maintained analogous cache structures (low priority, no bet filed).
+  - `lifting-foundation-models-to-3d`: no Pass A filler swap; Pass B note — LingBot is a feed-forward SfM, not a lifter; cross-thread transfer not mechanically well-defined.
+- Synthesis bets filed:
+  - **Bet #030 (superseded)**: two-family head-to-head now incomplete given GCA's entry as a third family.
+  - **Bet #031 — three-way scaling-family head-to-head** (TTT × VGGT-compression × structured-attention) on common long-sequence benchmark. high-confidence, substantial-magnitude, weeks-cost, low-risk.
+  - **Bet #032 — compact-trajectory-memory replaces CUT3R's RNN state** (structured-per-frame eviction vs monolithic RNN compression). med-confidence, substantial-magnitude, weeks-cost, med-risk.
+  - **Bet #033 — GCA + TTT3R closed-form adaptation stacked** on GCA's compact-trajectory-memory tokens for OOD robustness. med-confidence, substantial-magnitude, weeks-cost, med-risk.
+  - **Bet #034 — GCA + classical loop-closure backend** (close LingBot's stated no-loop-closure limitation via revisit-triggered BA). med-confidence, substantial-magnitude, weeks-cost, med-risk.
+- Notable:
+  - **Counter-intuitive Table 7 result**: bounded pose-reference window (k=64) beats full causal attention on ATE (5.98 vs 6.60) and RPE-trans (1.33 vs 1.50), with 1.7× higher FPS and 2.7× lower memory. Losing only on RPE-rot (1.71 vs 1.93). Paper hypothesis: *distant image tokens add noise, not signal*. Not formally proven — but structural argument for why eviction isn't purely an efficiency tactic. Captured as an emerging pattern on the thread.
+  - **Video RoPE is the single largest ATE mover in the ablation** (7.46 → 5.98, -1.48 m). Paper frames it as the "missing ingredient" that activates the trajectory memory's drift-correction capability. Compressed memory without temporal ordering is near-useless; this insight transfers to any streaming model with latent-token memory.
+  - **Contradicts the TTT paradigm's implicit premise**: LingBot demonstrates that inference-time parameter updates are not necessary for long-sequence streaming. A purely feed-forward structured-attention model beats TTT3R (25.05 ATE) at 3840 frames with 7.11 ATE. This is a load-bearing contradiction for the Tier-3 framing: TTT went from "dominant scaling paradigm" (last ingest) to "one-of-three competing paradigms."
+  - **No LICENSE file in official repo** as of 2026-04-24 (404 on both `main` and `master`). `license_code: unknown`; `lint find-code` / `lint licenses` should re-check in 6 months. Doesn't block bet adoption per §6.15.
+  - **Unablated sub-ideas flagged**: `camera-to-world-pose-parameterization_chen2026` has no isolated ablation in the paper; flagged "weak evidence — unablated hypothesis" on the idea page. Future bets using it must include a w2c-vs-c2w ablation.
+  - **Foldback video sampler + optical-flow keyframe selection + two-stage curriculum**: intentionally not extracted as idea pages — no isolated ablation + data-loading-only tweaks. Mentioned on paper page only. Easy to extract later if a future ingest demonstrates independent value.
+- Pass B silent-result notes:
+  - `feed-forward-structure-from-motion`: **not silent** — 4 new bets + capability-gap refresh + third-family emerging-pattern.
+  - `gpu-native-sfm`: Pass B explicit — LingBot is out-of-band (feed-forward, not GPU-accelerated classical). No new composition compositionally plausible; no bet filed.
+  - `lifting-foundation-models-to-3d`: Pass B explicit — mechanism mismatch (SfM vs 2D-foundation-lifting); no bet filed.
+- **Search targets for future ingest:**
+  - **π³ paper** (ref [83] in LingBot-Map) — source of the relative pose loss formulation inherited by LingBot. Would unlock cleaner `sources:` attribution on `sliding-window-pairwise-pose-loss_chen2026`.
+  - **Video RoPE source paper** (ref [72] in LingBot-Map) — would unlock cleaner attribution on `video-rope-on-trajectory-tokens_chen2026` and potentially support a concept page.
+  - **PagedAttention / vLLM papers** (Kwon 2023, inference-systems, load-bearing for `paged-kv-cache-streaming-sfm_chen2026`) — low priority; probably borderline on-topic for this wiki (LLM-inference-systems).
+  - **A streaming feed-forward model that is explicitly metric-scale** (combines LingBot's long-sequence architecture with MASt3R-style metric pointmap output) — would close the remaining metric-scale portion of the calibration-grade outdoor gap.
+  - **Anchor-degenerate-geometry analysis** — no paper yet characterizes failure modes of first-n-frames-as-reference when those frames have poor parallax / near-planar geometry. Search target.
+- `raw/` now empty.

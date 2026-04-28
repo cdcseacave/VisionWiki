@@ -3,8 +3,8 @@ title: Feed-Forward Structure from Motion
 type: thread
 tags: [sfm, pose-estimation, feed-forward, dust3r, mast3r, rommav2, transformer, test-time-training]
 created: 2026-04-12
-updated: 2026-04-21
-sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/wang2026_feed-forward-3d-scene-modeling.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md, papers/leroy2024_mast3r.md, papers/shen2025_fastvggt.md, papers/wang2025_faster-vggt-block-sparse.md, papers/feng2025_quantvggt.md, papers/shen2026_lyra2.md]
+updated: 2026-04-24
+sources: [papers/zhong2026_instantsfm.md, papers/pataki2025_mp-sfm.md, papers/yu2025_cusfm.md, papers/murai2025_mast3r-slam.md, papers/li2025_megasam.md, papers/zhao2025_diffusionsfm.md, papers/zhang2025_loger.md, papers/jin2026_zipmap.md, papers/zhang2024_cameras-as-rays.md, papers/jang2025_pow3r.md, papers/edstedt2025_roma-v2.md, papers/zhang2025_feed-forward-3d-survey.md, papers/wang2026_feed-forward-3d-scene-modeling.md, papers/chen2026_ttt3r.md, papers/he2023_detector-free-sfm.md, papers/yu2025_madpose.md, papers/leroy2024_mast3r.md, papers/shen2025_fastvggt.md, papers/wang2025_faster-vggt-block-sparse.md, papers/feng2025_quantvggt.md, papers/shen2026_lyra2.md, papers/chen2026_lingbot-map.md]
 operating_points: [op:default]
 status: draft
 ---
@@ -30,7 +30,9 @@ required_capabilities: [pose-regression, pointmap-prediction, long-context-scali
 - **Texture-poor + low-overlap joint handling** — [[he2023_detector-free-sfm|DetectorFreeSfM]] closes texture-poor; [[pataki2025_mp-sfm|MP-SfM]] closes low-overlap. Each paper tests only its own failure mode; neither tests the intersection. Search target: future benchmark that combines both regimes (e.g., Texture-Poor SfM dataset + MP-SfM's 0%-overlap ETH3D split). Resolved by: Bet #019 below.
 - **Pair-pose quality as SfM frontend** — MADPose shows +15–27 AUC@10° pair-pose gains but no paper has integrated it into multi-view SfM init. The cross-pair shift-consistency problem is the integration blocker. Search target: papers solving global mono-depth-affine consistency across image sequences. Cross-referenced from [[relative-pose-estimation]] Bet #016.
 - **View-selection-bias in standard benchmarks** — [[wang2026_feed-forward-3d-scene-modeling]] §7.1 observes that RealEstate10K / ACID / most Tier-3 training benchmarks use fixed view splits that let models game specific viewpoint patterns, and few provide 3D ground truth. The thread's "outdoor generalization under-tested" concern (see Open questions) was implicitly about domain shift; Wang 2026 reframes it as a protocol-design problem — the benchmarks don't stratify by viewpoint-gap difficulty. Search target: benchmark papers that explicitly vary baseline / overlap / contextual-gap as a difficulty axis and report 3D-ground-truth-backed accuracy.
-- **VGGT-efficiency sub-family for long-context feed-forward pointmap prediction** — ~~[[wang2026_feed-forward-3d-scene-modeling]] §4.3 flags a parallel efficiency direction to the TTT story... None are in the wiki.~~ **Partially closed 2026-04-21 by ingesting all three papers.** The family now lives in the wiki as four ideas across three orthogonal resource axes: [[vggt-token-merge-3-part-partition_shen2025]] (token count), [[pooled-qk-block-sparse-global-attention_wang2025]] (attention sparsity), [[vggt-dual-smoothed-quantization_feng2025]] + [[frame-aware-ptq-calibration-sampling_feng2025]] (numerical precision, bundled). The **open portion of the gap** is the head-to-head benchmark vs. the TTT-scaling family ([[loger-hybrid-ttt-plus-swa_zhang2025]], [[large-chunk-ttt-fast-weights_jin2026]], [[ttt3r-closed-form-confidence-lr_chen2026]], [[ttt-mlp-kv-compression_elflein2026]]): none of the six papers compare to the other branch on a common long-sequence benchmark. Bet #030 is the natural experiment. Additional search target: a VGGT-compression paper that includes 500+ frame pose ATE numbers directly comparable to TTT3R's — currently inferred indirectly through VGGT-as-baseline comparisons.
+- **VGGT-efficiency sub-family for long-context feed-forward pointmap prediction** — ~~[[wang2026_feed-forward-3d-scene-modeling]] §4.3 flags a parallel efficiency direction to the TTT story... None are in the wiki.~~ **Partially closed 2026-04-21 by ingesting all three VGGT-compression papers. Further reframed 2026-04-24: the long-sequence scaling problem has three families, not two.** LingBot-Map ([[three-context-geometric-attention_chen2026]]) introduces structured-attention decomposition — a third orthogonal axis to TTT and VGGT-compression. VGGT-compression ideas: [[vggt-token-merge-3-part-partition_shen2025]] (token count), [[pooled-qk-block-sparse-global-attention_wang2025]] (attention sparsity), [[vggt-dual-smoothed-quantization_feng2025]] + [[frame-aware-ptq-calibration-sampling_feng2025]] (numerical precision, bundled). TTT ideas: [[loger-hybrid-ttt-plus-swa_zhang2025]], [[large-chunk-ttt-fast-weights_jin2026]], [[ttt3r-closed-form-confidence-lr_chen2026]], [[ttt-mlp-kv-compression_elflein2026]]. Structured-attention ideas: [[three-context-geometric-attention_chen2026]] + the three sub-ideas. The **open portion of the gap** is now a three-way head-to-head on a common long-sequence benchmark — no published paper compares across all three families. Bet #030 (updated) + Bet #031 (new, three-way) are the scheduled experiments. LingBot ships Oxford-Spires dense (3840 frames) ATE numbers that nothing else matches (7.11 vs next-best 25.05), so that benchmark is a candidate common testbed.
+- **Calibration-grade outdoor accuracy from fully feed-forward methods (update 2026-04-24)** — LingBot-Map's Oxford-Spires results show that a fully feed-forward streaming model can now **outperform** optimization-based methods (VIPE ATE 10.52, DroidSLAM 21.84) and offline feed-forward methods (DA3 12.87, VGGT 24.78) on large-scale outdoor trajectory estimation, at ATE 6.42 m sparse / 7.11 m dense. This closes the gap at the sequence-level for up-to-scale reconstruction on this benchmark. The remaining calibration-grade gap is **metric** (LingBot is up-to-scale relative to the anchor-point-cloud normalization, not absolute-metric) and on benchmarks requiring absolute scale (Map-free VCRE AUC), [[leroy2024_mast3r|MASt3R]]'s per-pair metric pointmap still leads. Search target: a streaming feed-forward model that combines LingBot's long-sequence behaviour with MASt3R-style metric anchoring — see Bet #026 (pre-existing) for the TTT3R + MASt3R variant; Bet #031 in this update proposes the GCA + MASt3R variant.
+- **Gauge-decoupled streaming** (Wang 2026 §4.5.1 LongStream) — ~~flagged 2026-04-21 as uningested search target.~~ **Closed 2026-04-24 by ingesting LingBot-Map.** The anchor context in GCA *is* the gauge-decoupling mechanism: first n frames define a fixed coordinate + scale reference, decoupling the gauge from per-frame pose updates. Concretized as the portable atomic idea [[anchor-frame-scale-grounding_chen2026]] (scope: stage-swap at the new stage [[feed-forward-sfm.coordinate-grounding]]). Adoptable by any monocular streaming feed-forward SfM independently of the rest of GCA — this is an open retrofit target (DUSt3R/MASt3R streaming variants are natural adopters).
 - **Reconstruction-vs-generation spectrum now has its canonical video-world exemplar** — [[wang2026_feed-forward-3d-scene-modeling]] §7.6 introduced the spectrum; [[shen2026_lyra2|Lyra 2.0]] is now the in-wiki *generation-first, reconstruction-second* anchor (generate video from a single image via bi-directional DiT, then feed-forward lift via DAv3 + fine-tune). The relevance to this thread is that Lyra 2.0's [[per-frame-3d-cache-retrieval_shen2026]] is a pure *routing* mechanism that could in principle serve the long-context-scaling problem on this thread's side — selecting which frames enter a TTT-family fast-weight update by 3D visibility rather than temporal proximity. Currently no in-wiki SfM paper does this; [[wang2026_feed-forward-3d-scene-modeling]] §4.5.1's LongStream (gauge-decoupled streaming) is the closest adjacent mechanism. Search target: a feed-forward SfM paper that applies visibility-based frame selection to long-horizon pose/pointmap prediction; alternatively, a demonstration that Lyra 2.0-style retrieval ports to the Tier-3 reconstruction setting (Bet #027 candidate — currently filed on the primary thread as it involves cross-thread composition).
 
 ## Working hypothesis
@@ -171,6 +173,34 @@ quadratic attention costs.
   [[feed-forward-sfm.ptq-calibration-sampling]]. VGGT-compression family,
   numerical-precision axis. **Commercial-license clean** (CC-BY-4.0 paper,
   Apache-2.0 code) — the only one of the three compression papers that is.
+- [LingBot-Map (Chen 2026)](../papers/chen2026_lingbot-map.md): **a third
+  long-sequence-scaling family** — structured-attention decomposition, distinct
+  from both TTT (LoGeR/ZipMap/TTT3R) and VGGT-compression (FastVGGT/Faster-VGGT/
+  QuantVGGT). Introduces Geometric Context Attention (GCA): partitions
+  streaming attention into *anchor context* (first 3 frames, fixed references),
+  *pose-reference window* (last k frames with full tokens), and *trajectory
+  memory* (6 compact tokens per evicted frame + Video RoPE). Every component
+  ablates as strictly positive; Video RoPE alone is the largest single ATE
+  mover. Ablation + the counter-intuitive Table-7 result (bounded window beats
+  full causal attention on ATE) together argue that distant image tokens add
+  noise, not signal — structured eviction is not just efficiency, it's an
+  accuracy lever. Dominates on long-sequence Oxford-Spires (ATE 6.42 sparse →
+  7.11 dense at 12× length, vs CUT3R 18→32, TTT3R 19→25, Wint3R 21→33) at 20 FPS.
+  Introduces new stage [[feed-forward-sfm.coordinate-grounding]] and splits the
+  attention-mechanism stage into typed variants (prior alias-to-global-attention
+  broken). Ideas:
+  [[three-context-geometric-attention_chen2026]] (composite, topology-rewrite,
+  co_requires the three sub-ideas),
+  [[anchor-frame-scale-grounding_chen2026]] (coordinate-grounding filler),
+  [[compact-trajectory-memory-tokens_chen2026]] (long-context-memory filler —
+  CUT3R-state candidate replacement),
+  [[video-rope-on-trajectory-tokens_chen2026]] (temporal positional encoding
+  refinement, drop-in for any compressed memory),
+  [[sliding-window-pairwise-pose-loss_chen2026]] (drop-in training objective),
+  [[camera-to-world-pose-parameterization_chen2026]] (drop-in, unablated),
+  [[paged-kv-cache-streaming-sfm_chen2026]] (systems-level, orthogonal, ≈2×
+  inference speedup). **No LICENSE file in repo as of 2026-04-24** (research-
+  use assumed; `license_code: unknown`).
 
 ### Cross-cutting: matching and features
 - [RoMa v2 (Edstedt 2025)](../papers/edstedt2025_roma-v2.md): dense matcher
@@ -207,6 +237,30 @@ quadratic attention costs.
   axes — unlike TTT fillers which replace the attention function class, these
   preserve it and compute less. Theoretically stackable (Bet #029); head-to-head
   vs TTT-family untested (Bet #030).
+- **Structured-attention decomposition as a third scaling family (NEW 2026-04-24).**
+  [[chen2026_lingbot-map|LingBot-Map]] partitions the streaming attention state
+  into three typed contexts (anchor / pose-reference window / trajectory memory)
+  grounded in classical SLAM's architecture. Unlike TTT (which replaces
+  attention-function-class with fast-weights) and unlike VGGT-compression
+  (which preserves attention-function-class but computes less), this family
+  *preserves* attention but imposes geometrically-grounded eviction/partitioning.
+  The load-bearing observation: bounded-window attention (k=64) **beats** full
+  causal attention on ATE + RPE-trans (Table 7), independent of efficiency —
+  distant image tokens add noise, not signal. This argues structured eviction
+  is an accuracy mechanism, not just an efficiency one. LingBot's 20 FPS at
+  10K+ frames on Oxford-Spires with flat ATE scaling (+0.69 m over 12× length
+  vs CUT3R's +14.31 m) is the first evidence that this family competes with
+  TTT + VGGT-compression on long sequences. Head-to-head across all three
+  families: Bet #030 (updated) / Bet #031 (three-way).
+- **Gauge decoupling is a learnable mechanism.** Wang 2026 §4.5.1's LongStream
+  flagged keyframe-relative pose + cache-consistent training as a stability
+  mechanism for very-long-sequence metric reconstruction, previously filed as
+  an uningested search target. LingBot-Map's [[anchor-frame-scale-grounding_chen2026]]
+  is a concrete instantiation: the first 3 frames define a canonical coordinate
+  + scale reference that every subsequent frame attends to; anchor-point-cloud
+  mean-distance normalization at training time teaches the network a consistent
+  scale convention. Gauge decoupling is no longer a search target — it's a
+  portable atomic idea.
 - **DUSt3R/MASt3R** is the gravitational center — Pow3R extends it, MASt3R-SLAM
   runs it in real-time, DiffusionSfM rethinks it.
 - **Monocular depth priors** are the bridge between classical and learned: MP-SfM
@@ -222,10 +276,14 @@ quadratic attention costs.
 - How sensitive are feed-forward methods to domain shift? Most train on
   ScanNet/CO3D — outdoor generalization is under-tested.
 - Will test-time-training replace attention for long-context 3D? Or will
-  the VGGT-compression family (FastVGGT / QuantVGGT / SparseVGGT — flagged by
-  [[wang2026_feed-forward-3d-scene-modeling]] §4.3 as the orthogonal
-  efficiency branch) close the same deployment gap via full-attention
-  compression?
+  the VGGT-compression family close the same deployment gap via full-
+  attention compression? Or will structured-attention decomposition
+  ([[three-context-geometric-attention_chen2026|GCA]]) win — preserving
+  full-attention semantics while geometrically grounding which tokens get
+  retained? LingBot-Map's evidence on Oxford-Spires dense (ATE 7.11 vs
+  TTT3R 25.05 at 3840 frames) suggests structured attention is at least
+  competitive with TTT at the long-sequence regime; the three-way head-to-
+  head is Bet #031.
 - **Reconstruction-vs-generation spectrum** ([[wang2026_feed-forward-3d-scene-modeling]]
   §7.6): when should a feed-forward SfM output observed geometry only, and
   when should it hallucinate plausible structure for occluded / unseen
@@ -234,10 +292,16 @@ quadratic attention costs.
   help sparse-view + texture-poor cases — at the cost of metric fidelity.
   This question also lives in [[generative-3d-from-2d-priors]] and is the
   seam between the two threads.
-- **Gauge-decoupled streaming** ([[wang2026_feed-forward-3d-scene-modeling]]
-  §4.5.1: LongStream): keyframe-relative poses + cache-consistent training
-  as a stability mechanism for very-long-sequence metric reconstruction — a
-  concrete mechanism we haven't ingested; search target for the next round.
+- **Loop closure + feed-forward streaming**: LingBot-Map explicitly flags no-
+  loop-closure as a limitation, addressed implicitly via trajectory-memory
+  retention but not via explicit revisit detection. Classical SLAM solves
+  this via pose-graph bundle adjustment; no feed-forward streaming model
+  currently integrates this end-to-end. Bet #033 below proposes the hybrid.
+- **Anchor-geometry-degenerate failure modes**: LingBot's anchor-frame scale
+  grounding requires the first n frames to have non-degenerate geometry
+  (parallax, non-planarity). Unaddressed: what happens on static-start videos,
+  purely-rotational captures, or near-planar anchor regions? This is a new
+  search target for the next ingest round.
 
 ## Related threads
 - [[radiance-field-evolution]]
@@ -344,7 +408,7 @@ triggers: [ingest-of-idea:vggt-token-merge-3-part-partition_shen2025, ingest-of-
 created: 2026-04-21 · updated: 2026-04-21
 
 ### Bet #030 — VGGT-compression family vs TTT-scaling family on a common long-sequence benchmark
-status: proposed
+status: superseded-by-#031
 combines: [[vggt-token-merge-3-part-partition_shen2025]], [[pooled-qk-block-sparse-global-attention_wang2025]], [[vggt-dual-smoothed-quantization_feng2025]], [[ttt3r-closed-form-confidence-lr_chen2026]], [[large-chunk-ttt-fast-weights_jin2026]], [[ttt-mlp-kv-compression_elflein2026]], [[loger-hybrid-ttt-plus-swa_zhang2025]]
 stage_target: feed-forward-sfm.global-attention (the shared bottleneck)
 op_target: op:default (Tier 3)
@@ -357,5 +421,70 @@ expected_gain: first direct Pareto comparison across the two Tier-3 scaling bran
 risk: benchmarks don't isolate *scaling behavior* well — most Tier-3 pose benchmarks saturate at <500 frames. The experiment may need a new long-sequence pose benchmark (gluing ScanNet-50 sequences, extending DTU MVS). This is partly already flagged in the view-selection-bias capability gap from [[wang2026_feed-forward-3d-scene-modeling]] §7.1.
 validating_experiment: run {dense VGGT, TTT3R, ZipMap, VGG-T3, LoGeR, FastVGGT, Faster-VGGT, QuantVGGT, triple stack from Bet #029} on ScanNet-50 / ScanNet-gluing-to-2000-frames / ETH3D-gluing / 7-Scenes at 500 / 1000 / 2000 frames. Report ATE, AUC@5, wall-clock, peak-VRAM. Produce the efficient frontier per sequence length.
 triggers: [ingest-of-idea:vggt-token-merge-3-part-partition_shen2025, ingest-of-idea:pooled-qk-block-sparse-global-attention_wang2025, ingest-of-idea:vggt-dual-smoothed-quantization_feng2025]
-created: 2026-04-21 · updated: 2026-04-21
+created: 2026-04-21 · updated: 2026-04-24
+note: Superseded 2026-04-24 by Bet #031 which adds the structured-attention decomposition family (GCA). The two-family head-to-head is no longer complete.
+
+### Bet #031 — Three-way scaling-family head-to-head: TTT × VGGT-compression × structured-attention (GCA)
+status: proposed
+combines: [[three-context-geometric-attention_chen2026]], [[compact-trajectory-memory-tokens_chen2026]], [[video-rope-on-trajectory-tokens_chen2026]], [[ttt3r-closed-form-confidence-lr_chen2026]], [[large-chunk-ttt-fast-weights_jin2026]], [[loger-hybrid-ttt-plus-swa_zhang2025]], [[vggt-token-merge-3-part-partition_shen2025]], [[pooled-qk-block-sparse-global-attention_wang2025]], [[vggt-dual-smoothed-quantization_feng2025]]
+stage_target: feed-forward-sfm.attention-mechanism (and long-context-memory — the shared Tier-3 long-sequence bottleneck)
+op_target: op:default (Tier 3)
+confidence: high
+magnitude: substantial
+cost: weeks
+breakage_risk: low
+hypothesis: Three long-sequence scaling paradigms now coexist on this thread: (1) TTT fast-weights (replace attention-function-class with recurrent state), (2) VGGT-compression (preserve attention, compute less), (3) structured-attention decomposition (preserve attention, evict by geometric role). LingBot-Map's Oxford-Spires dense ATE (7.11 at 3840 frames) is the current public best — 3.5× lower than TTT3R (25.05) at equal sequence length. That a purely feed-forward structured-attention model beats TTT without any inference-time parameter updates contradicts the implicit "TTT is required for long-sequence streaming" assumption. A clean three-way head-to-head on a common benchmark settles which family dominates in each regime. Sub-hypotheses: (a) GCA wins at ≥3000 frames on pose ATE (LingBot data supports this); (b) TTT wins under distribution shift (fast-weights adapt; GCA is fixed after training); (c) VGGT-compression wins on raw throughput when sequences fit in memory; (d) the three can be stacked — GCA's compact-trajectory-memory + VGGT-compression's W4A4 + TTT updates on top of GCA tokens — possibly additively.
+expected_gain: first three-way Pareto comparison across all Tier-3 scaling families; principled OP selection; publication-quality insight regardless of winner; may reveal stacking opportunities (e.g., Bet #033 composition).
+risk: (a) training costs for GCA baseline are prohibitive (LingBot's 36.9K GPU-hrs total) — may need to use LingBot's public checkpoints and avoid reproducing training; (b) benchmarks need to extend beyond 3000 frames to reveal family differences (LingBot's Oxford-Spires dense is one, but we need variety); (c) TTT3R and GCA both claim ~20 FPS so throughput comparisons are meaningful but require careful kernel matching (FlashInfer for LingBot vs. whatever TTT3R uses).
+validating_experiment: run {dense VGGT, TTT3R, ZipMap, LoGeR, FastVGGT, Faster-VGGT, QuantVGGT, LingBot-Map, triple VGGT-compression stack (Bet #029)} on Oxford-Spires sparse+dense / ScanNet-gluing-to-2000-frames / ETH3D-gluing / 7-Scenes at 500/1000/3000+ frames. Report ATE, AUC@5, wall-clock, peak-VRAM, FPS. Produce per-sequence-length efficient frontier.
+triggers: [ingest-of-idea:three-context-geometric-attention_chen2026]
+created: 2026-04-24 · updated: 2026-04-24
+
+### Bet #032 — LingBot compact-trajectory-memory replaces CUT3R's RNN state (structured eviction vs monolithic compression)
+status: proposed
+combines: [[compact-trajectory-memory-tokens_chen2026]], [[video-rope-on-trajectory-tokens_chen2026]]
+stage_target: feed-forward-sfm.long-context-memory (CUT3R's memory slot specifically)
+op_target: op:default (Tier 3, long-sequence streaming)
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: CUT3R compresses the entire observation history into a single shared recurrent state — aggressive, monolithic, and empirically forgets (18.16→32.47 ATE over Oxford-Spires sparse→dense). LingBot's compact-trajectory-memory takes the *opposite* approach: retain an independent compressed summary per frame (6 tokens + Video RoPE for temporal ordering), letting each frame contribute distinctly to long-range attention. Both are compressed memories; the LingBot variant trades O(1) RNN state for O(T·6) structured eviction + temporal ordering. Hypothesis: swapping CUT3R's RNN state for LingBot's compact-trajectory-memory (without the rest of GCA — no anchor context, no pose-reference window modification) improves long-sequence retention significantly, at the cost of slightly-growing memory (6T vs RNN's O(1)). This isolates the *form of compression* from the rest of GCA's contribution.
+expected_gain: on Oxford-Spires dense, CUT3R's ATE improves from 32.47 toward LingBot's 7.11; likely lands somewhere in between (15-20m range), which would establish structured-per-frame eviction as strictly better than RNN compression at modest memory cost.
+risk: (a) CUT3R's RNN state is deeply integrated into its architecture (coupled with its specific recurrent update dynamics); swapping to token eviction requires architectural surgery. (b) Without the anchor context, scale grounding may drift — the benefit of compact-trajectory-memory may be partially attributable to the anchor context it's paired with in GCA. Mitigation: also test CUT3R + compact-trajectory-memory + anchor-grounding (approaching full GCA minus pose-reference-window).
+validating_experiment: modify [[chen2026_ttt3r|TTT3R's]] CUT3R-base to (a) replace RNN state with per-frame 6-token memory + Video RoPE; (b) retrain or apply closed-form update adapter. Evaluate on Oxford-Spires dense / ETH3D-SLAM. Compare ATE vs original CUT3R vs full LingBot-Map.
+triggers: [ingest-of-idea:compact-trajectory-memory-tokens_chen2026]
+created: 2026-04-24 · updated: 2026-04-24
+
+### Bet #033 — GCA + TTT3R closed-form adaptation on trajectory-memory tokens (stacking paradigms)
+status: proposed
+combines: [[three-context-geometric-attention_chen2026]], [[compact-trajectory-memory-tokens_chen2026]], [[ttt3r-closed-form-confidence-lr_chen2026]]
+stage_target: feed-forward-sfm.long-context-memory
+op_target: op:default (Tier 3, long-sequence streaming, distribution shift)
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: GCA and TTT3R solve the long-sequence problem via orthogonal mechanisms: GCA uses structured feed-forward attention (no inference-time updates); TTT3R updates a recurrent fast-weight at inference using a closed-form confidence-guided learning rate. Hypothesis: applying TTT3R's closed-form update *to GCA's compact-trajectory-memory tokens* (instead of CUT3R's RNN state) gives the best of both — GCA's structural advantage plus TTT's adaptive advantage under distribution shift. Three sub-hypotheses: (a) under in-distribution test data, GCA alone matches stacked performance (TTT adds nothing); (b) under out-of-distribution test data (e.g., extreme weather, unusual camera motion), TTT-on-GCA adapts and outperforms pure GCA; (c) the combined model provides a clean Pareto trade-off between inference cost and OOD robustness.
+expected_gain: +5-15% AUC@3 on out-of-distribution evaluation (e.g., MapFree, underwater captures, low-light Oxford-Spires-like scenes). In-distribution GCA-alone is likely sufficient.
+risk: (a) TTT3R's closed-form LR derivation assumes CUT3R-style RNN state; re-derivation for per-frame-token-memory is nontrivial. (b) GCA's trajectory-memory tokens are small (6/frame) — TTT updates may have insufficient capacity to encode meaningful adaptation. (c) Applying TTT on top of a fully-trained GCA may destabilize the pre-trained representations. Mitigation: treat TTT updates as a residual; validate on Oxford-Spires dense first to confirm in-distribution stability before moving to OOD.
+validating_experiment: (phase 1) derive TTT closed-form LR adapted for GCA's per-frame token structure. (phase 2) apply to pretrained LingBot-Map on Oxford-Spires dense; confirm in-distribution no-regression. (phase 3) evaluate on OOD benchmarks: MapFree (metric long-range), cross-domain Oxford-Spires-to-7-Scenes transfer, rain/low-light drone videos if available.
+triggers: [ingest-of-idea:three-context-geometric-attention_chen2026, ingest-of-idea:ttt3r-closed-form-confidence-lr_chen2026]
+created: 2026-04-24 · updated: 2026-04-24
+
+### Bet #034 — GCA + classical loop-closure backend (close LingBot's stated limitation)
+status: proposed
+combines: [[three-context-geometric-attention_chen2026]], [[anchor-frame-scale-grounding_chen2026]]
+stage_target: feed-forward-sfm.attention-mechanism + a new pose-graph-refinement stage (to be created as sfm.pose-graph-backend or similar when this bet reaches feasible)
+op_target: op:default (Tier 3, long-sequence streaming with revisits)
+confidence: med
+magnitude: substantial
+cost: weeks
+breakage_risk: med
+hypothesis: LingBot-Map's stated limitation is no explicit loop closure — revisits are handled only by the trajectory memory's implicit retention. On sequences with genuine loops (indoor surveys, multi-pass outdoor scans), implicit retention degrades with memory compression. A hybrid with a classical pose-graph BA backend (a-la [[murai2025_mast3r-slam|MASt3R-SLAM]] or VGGT-SLAM) — triggered on detected revisits — should close this gap while preserving GCA's feed-forward core. The anchor context is already a form of gauge-decoupling, so adding BA refinement to revisited keyframes is architecturally well-motivated: the gauge is already fixed, BA just improves the relative poses. Hypothesis: GCA + revisit-triggered BA matches or beats pure MASt3R-SLAM on loop-heavy benchmarks.
+expected_gain: on Oxford-Spires revisit scenes (multi-pass captures) and ScanNet repeated loops, reduce the 0.5-2m residual ATE drift that LingBot can't correct without loop closure. Specifically, match or beat MASt3R-SLAM's 15 FPS while improving long-sequence accuracy.
+risk: (a) revisit detection is its own open problem (requires either image-retrieval embeddings or scene-graph reasoning). (b) triggered BA breaks the pure-feed-forward property of GCA — becomes hybrid. (c) may need retraining GCA to produce BA-consumable outputs (covariances, connectivity hints).
+validating_experiment: (phase 1) implement visibility/image-embedding-based revisit detector on top of frozen LingBot-Map. (phase 2) pipe detected revisit pairs to a classical pose-graph BA backend. (phase 3) evaluate on Oxford-Spires sparse+dense + ScanNet-10 (multi-loop sequences). Compare to MASt3R-SLAM, VGGT-SLAM, and LingBot-Map baseline.
+triggers: [ingest-of-idea:three-context-geometric-attention_chen2026]
+created: 2026-04-24 · updated: 2026-04-24
 
